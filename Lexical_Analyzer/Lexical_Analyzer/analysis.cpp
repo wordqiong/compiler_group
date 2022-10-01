@@ -385,6 +385,7 @@ void analysis::spearateStates()
     
 }
 
+//在自动机中调用，判断从自动机输出的单词类型并输出到文件，类似<类型，原值>
 void analysis::kindJudge(char* str)
 {
 
