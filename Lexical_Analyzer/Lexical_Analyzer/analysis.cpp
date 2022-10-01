@@ -158,7 +158,47 @@ void analysis::deleSpaces() {
     //界符 的空格可以删去
     //但需要判断这个是不是界符的范围内 因为 ";"肯定不算是界符
 
-    //先不删除了 删不动了
+    bool flag1 = true, flag2 = true;
+    for (int i = 0; buffer_read[buffer_choose].buffer[i] != '\0'; i++)
+    {
+        //不能删除字符串内的空格
+        if (buffer_read[buffer_choose].buffer[i] == '"')
+            flag1 = !flag1;
+        //不能删除空格字符
+        if (buffer_read[buffer_choose].buffer[i] == '\'')
+            flag2 = !flag2;
+        if (buffer_read[buffer_choose].buffer[i] == ' ' && flag1 && flag2)
+        {
+            //找到空格的最后，末尾或是第一个不是空格的位置
+            int j = i + 1;
+            for(; buffer_read[buffer_choose].buffer[j]!='\0'&& buffer_read[buffer_choose].buffer[j] == ' ';j++)
+            { }
+            //如果是到末尾了，直接修改尾零位置即可
+            if (buffer_read[buffer_choose].buffer[j] == '\0')
+            {
+                buffer_read[buffer_choose].buffer[i] = '\0';
+                break;
+            }
+            //判断空格可不可以删除，只要左右两边有一个是 周围可以没有空格就能与其他区分 的即可
+            //但是例如 a > = b 这种错误写法就无法辨别，会将>与=之间的空格给吃掉
+            //bool b = 1 > = 2;
+            
+            // TODO:这个要修改，可能需要修改spaceCanDelete判断函数以解决上述问题
+            if (buffer_read[buffer_choose].buffer[j] != '\0' && ((spaceCanDelete(buffer_read[buffer_choose].buffer[j]) || (i > 0 && spaceCanDelete(buffer_read[buffer_choose].buffer[i - 1])))))
+            {
+                //把后面的移动到前面
+                int k = i;
+                for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
+                    buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
+                buffer_read[buffer_choose].buffer[k] = '\0';
+                
+                // TODO:这里i--有啥用？没太明白
+                i--;
+            }
+        }
+
+    }
+    
 }
 
 //状态机，从buffer_end中读取语句并划分成单词  

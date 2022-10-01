@@ -83,6 +83,13 @@ int base::wordWrongAnalysis(char str[], int type) {
     return 0;
 }
 
+bool base::spaceCanDelete(char c)
+{
+    if ((c > 'z' || (c < 'a' && c > 'Z') || (c < 'A' && c > '9') || (c < '0')) && c != '_' && c != '$')
+        return true;
+    return false;
+}
+
 
 /********************************************
  * 判断输入字符类型 是 int型整数吗

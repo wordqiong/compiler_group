@@ -10,7 +10,6 @@ public:
     Buffer() {
         count = 0;
     }
-    ~Buffer();
 };
 class analysis :public base {
 
