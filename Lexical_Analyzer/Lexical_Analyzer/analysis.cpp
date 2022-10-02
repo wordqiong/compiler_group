@@ -78,7 +78,6 @@ void analysis::getStrBuffer() {
             buffer_choose = 1 - buffer_choose;
             buffer_flag = 0;
         }
-
     }
 
 }//循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中

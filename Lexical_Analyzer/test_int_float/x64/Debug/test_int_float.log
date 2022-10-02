@@ -1,0 +1,5 @@
+﻿  test1.cpp
+D:\学习文件\大三\大三上\编译原理\词法分析器\compiler_group-main\Lexical_Analyzer\test_int_float\test1.cpp(35,22): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+D:\学习文件\大三\大三上\编译原理\词法分析器\compiler_group-main\Lexical_Analyzer\test_int_float\test1.cpp(109,22): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+D:\学习文件\大三\大三上\编译原理\词法分析器\compiler_group-main\Lexical_Analyzer\test_int_float\test1.cpp(96): warning C4715: “isInt”: 不是所有的控件路径都返回值
+  test_int_float.vcxproj -> D:\学习文件\大三\大三上\编译原理\词法分析器\compiler_group-main\Lexical_Analyzer\x64\Debug\test_int_float.exe
