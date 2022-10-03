@@ -233,6 +233,7 @@ void analysis::deleSpaces() {
 //状态机，从buffer_end中读取语句并划分成单词  
 //不需要考虑注释，因此/只是除法
 //输入是一行预处理后的代码，将其分割为单词进行类型判定
+
 void analysis::spearateStates()
 {
     char word[BUFFER_SIZE];
@@ -244,7 +245,7 @@ void analysis::spearateStates()
     {
         switch (state)
         {
-        //初态
+            //初态
         case 0:
             switch (charKind(buffer_end.buffer[i]))
             {
@@ -279,6 +280,10 @@ void analysis::spearateStates()
             case 8:
                 word[count++] = buffer_end.buffer[i];
                 state = 8;
+                break;
+            case 10:
+                word[count++] = buffer_end.buffer[i];
+                state = 10;
                 break;
             default:
                 word[count++] = buffer_end.buffer[i];
@@ -354,7 +359,8 @@ void analysis::spearateStates()
             {
                 //此时一定不是初态，所以不需要判断i与1的关系
                 if (buffer_end.buffer[i - 1] == '\\')
-                { }
+                {
+                }
                 else
                 {
                     word[count] = '\0';
@@ -374,7 +380,7 @@ void analysis::spearateStates()
             break;
         case 7:
             //要结束的字符，直接结束
-            word[count] = '\0';   
+            word[count] = '\0';
             i--;
             finish = 1;
             state = 9;
@@ -385,7 +391,7 @@ void analysis::spearateStates()
             case 8:
                 word[count++] = buffer_end.buffer[i];
                 break;
-            default: 
+            default:
                 word[count] = '\0';
                 i--;
                 finish = 1;
@@ -399,8 +405,21 @@ void analysis::spearateStates()
             count = 0;
             finish = 0;
             i--;
-
             kindJudge(word);
+            break;
+        case 10://空格另加
+            switch (charKind(buffer_end.buffer[i]))
+            {
+            case 10:
+                word[count++] = buffer_end.buffer[i];
+                break;
+            default:
+                word[count] = '\0';
+                i--;
+                finish = 1;
+                state = 9;
+                break;
+            }
             break;
         default:
             break;
@@ -409,9 +428,10 @@ void analysis::spearateStates()
         {
             word[count] = '\0';
             kindJudge(word);
+            break;
         }
     }
-    
+
 }
 
 //在自动机中调用，判断从自动机输出的单词类型并输出到文件，类似<类型，原值>
