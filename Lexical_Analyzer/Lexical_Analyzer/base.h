@@ -1,6 +1,7 @@
 #include<iostream>
 
-
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable: 4996)
 /****************************************
  * base 类 
  * 完成基本的类型判断  

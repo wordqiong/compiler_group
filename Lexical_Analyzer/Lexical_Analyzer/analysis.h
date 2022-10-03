@@ -4,11 +4,15 @@
 class Buffer {
 
 public:
-    char buffer[BUFFER_SIZE];
+    char* buffer;
     int count;
 
     Buffer() {
         count = 0;
+        buffer = new char[BUFFER_SIZE];
+    }
+    ~Buffer() {
+        delete buffer;
     }
 };
 class analysis :public base {
@@ -28,6 +32,7 @@ protected:
     Buffer buffer_end;
     int buffer_choose;
 
+    int note_flag;
     FILE* fin;
     FILE* fout;
 
@@ -36,6 +41,7 @@ public:
     analysis() {
         buffer_choose = 0;
 
+        note_flag = 0;
         fin = fopen("code_in.txt", "r");
         fout = fopen("res_out.txt", "w");
     }

@@ -9,22 +9,24 @@ void analysis::getStrBuffer() {
     //这时候就需要另外一个缓冲池，利用 界符 把缓冲池给分割开来，实现完整符号的读入
     //满了，处理完毕后，缓冲池交换，应用其对应的下符
     //然后将dele处理后的缓冲池 送到状态机进行分析 
-    char c;
-    int buffer_flag;//缓冲区是否需要轮转
+    char c='\0';
+    int buffer_flag=0;//缓冲区是否需要轮转
+
     while (1)
     {
+
         c = fgetc(fin);
         if (c == EOF)
         {
             break;
         }
+       
         //缓冲池满了
         if (buffer_read[buffer_choose].count == BUFFER_SIZE - 2)
         {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count] = c;
-
             int i;
-            for (i = 1; i < buffer_read[buffer_choose].count; i++)
+            for (i = 0; i < buffer_read[buffer_choose].count; i++)
             {
                 if (isDelimiter(buffer_read[buffer_choose].buffer[i]))
                 {
@@ -36,23 +38,26 @@ void analysis::getStrBuffer() {
                         buffer_read[1 - buffer_choose].buffer[j] = buffer_read[buffer_choose].buffer[k];
                     }
                     //count大小重新设置
-                    buffer_read[1 - buffer_choose].count = j - 1;
+                    buffer_read[1 - buffer_choose].count = j;
                     buffer_read[buffer_choose].count = i;
 
                     //设置终结点
                     buffer_read[1 - buffer_choose].buffer[j] = '\0';
-                    buffer_read[buffer_choose].buffer[i + 1] = '\0';
+                    buffer_read[buffer_choose].buffer[i+1] = '\0';
 
                     //缓冲区轮转
                     buffer_flag = 1;
+
                     break;
                 }
             }
+
         }
-        else if (c == '\n')
+        else if (c == '\n'&&!note_flag)
         {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count] = '\0';
         }
+
         else {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count++] = c;
             continue;//继续吧
@@ -61,13 +66,14 @@ void analysis::getStrBuffer() {
         deleNotes();
         deleSpaces();
 
-        //这个地方为啥用strlen不用.count，上面进行转移的时候改count没有将转移走的清除掉
-        if (strlen(buffer_read[buffer_choose].buffer) > 0)
+        if (buffer_read[buffer_choose].count > 0)
         {
             strcpy(buffer_end.buffer, buffer_read[buffer_choose].buffer);
             //进入状态机处理 
             //注：给的缓冲区 有可能是不完整的字串 如果传入的太长了 
             //eg: "111*n"超过300个了，就会分割开，
+            buffer_read[buffer_choose].count = 0;
+            //fprintf(fout, "  [ %s ] \n", buffer_read[buffer_choose].buffer);
             spearateStates();
         }
 
@@ -97,60 +103,83 @@ void analysis::deleNotes() {
         }
         if (flag_qoute == 1)
             continue;
-        if (buffer_read[buffer_choose].buffer[i] == '/')
+        if (buffer_read[buffer_choose].buffer[i] == '/'||note_flag==1)
         {
-            //这个地方要判断一下是否到末尾了，不能直接i+1
+            if (buffer_read[buffer_choose].buffer[i + 1] == '\0')
+            {
+                continue;
+            }
             if (buffer_read[buffer_choose].buffer[i + 1] == '/')
             {
                 //进入 //状态 直到\0停止
                 int j;
-                //为啥是到\0不是到\n，不是一行吗
+
                 for (j = i; buffer_read[buffer_choose].buffer[j] != '\0'; j++)
                 {
                     note[note_count++] = buffer_read[buffer_choose].buffer[j];
                     buffer_read[buffer_choose].buffer[j] = '\0';
                 }
                 note[note_count] = '\0';
-                std::cout << note << std::endl;
+                //fprintf(fout, "  [ %s ] --注释\n", note);
+                buffer_read[buffer_choose].count -= note_count;
                 note_count = 0;
 
-                //也许不需要 因为 读入一行
-                //开始前移
-                j++;
-                for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, i++)
-                {
-                    buffer_read[buffer_choose].buffer[i] = buffer_read[buffer_choose].buffer[j];
-                }
-                buffer_read[buffer_choose].buffer[i] = '\0';
                 break;
 
             }
-            if (buffer_read[buffer_choose].buffer[i + 1] == '*')
+            if (buffer_read[buffer_choose].buffer[i + 1] == '*' || note_flag == 1)
             {
                 //进入/* 状态 
-
+                note_flag = 1;
                 int j;
-                for (j = i + 2; buffer_read[buffer_choose].buffer[j] != '\0'; j++)
+                for (j = i + 2*(1-note_flag); buffer_read[buffer_choose].buffer[j] != '\0'; j++)
                 {
 
                     note[note_count++] = buffer_read[buffer_choose].buffer[j];
                     if (buffer_read[buffer_choose].buffer[j] == '*' && buffer_read[buffer_choose].buffer[j + 1] == '/')
                     {
+                        note_flag = 0;
+                        note[note_count++] = '/';
                         note[note_count] = '\0';
-                        std::cout << note << std::endl;
+                        //fprintf(fout, "  [ %s ]--注释 \n", note);
+                        
+                        buffer_read[buffer_choose].count -= note_count;
                         note_count = 0;
                         break;
                     }
                 }
-                //开始前移
-                j++;
-                for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, i++)
-                {
-                    buffer_read[buffer_choose].buffer[i] = buffer_read[buffer_choose].buffer[j];
+                
+                if (note_flag == 0)
+                    j = j + 2;
+                
+                    //开始前移
+                    
+                    for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, i++)
+                    {
+                        if (buffer_read[buffer_choose].buffer[j] == '\n')
+                        {
+                            i--;
+                            continue;
+                        }
+                        buffer_read[buffer_choose].buffer[i] = buffer_read[buffer_choose].buffer[j];
+                    }
+                
+                if(note_flag) {
+                    //意味着多行注释，直接printf
+                    note[note_count] = '\0';
+                    //fprintf(fout, " [ %s ]--注释 \n", note);
+                    
+                    buffer_read[buffer_choose].buffer[i] = '\0';
+                    buffer_read[buffer_choose].count -= note_count;
+                    break;
+                    //注意的是 \n被我直接读进来了，需要进行处理
+
+
+
                 }
                 buffer_read[buffer_choose].buffer[i] = '\0';
             }
-            //除了这两种情况是不是要加一个错误处理
+           
         }
     }
 }
