@@ -1,14 +1,13 @@
+bool b = a > = b;
+int a =? 5;
+char c = ' ';
+int a=5x1x6x8;
 #include<iostream>
 #include<string>
 #include<cmath>
 #include<cstring>
 
-/*脜路录赂脌茂碌脙脣茫路篓*/int b;
-/*     
-
-
-*/
-int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;int c;
+/*欧几里得算法*/
 int main()
 {
 	int T,a,b,c,ans;
@@ -17,7 +16,7 @@ int main()
 	{
 		cin>>a>>b>>c;
 		ans=0;
-		if(c%gcd(a,b)!=0)//脫娄脫脙
+		if(c%gcd(a,b)!=0)//应用
 		{
 			cout<<0<<endl;
 		}
@@ -25,6 +24,8 @@ int main()
 		{
 			for(int i=1;i<=(c-b)/a;i++)
 			{
+if(a&&b)
+;
 				if((c-a*i)/b*b==(c-a*i))
 				ans++;
 			}

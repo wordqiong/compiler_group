@@ -69,6 +69,7 @@ void analysis::getStrBuffer() {
         if (buffer_read[buffer_choose].count > 0)
         {
             strcpy(buffer_end.buffer, buffer_read[buffer_choose].buffer);
+            buffer_end.count = buffer_read[buffer_choose].count;
             //进入状态机处理 
             //注：给的缓冲区 有可能是不完整的字串 如果传入的太长了 
             //eg: "111*n"超过300个了，就会分割开，
@@ -86,6 +87,7 @@ void analysis::getStrBuffer() {
         }
 
     }
+    cout << "词法分析结果已保存到res_out.txt中。" << endl;
 
 }//循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
 void analysis::deleNotes() {
@@ -213,7 +215,8 @@ void analysis::deleSpaces() {
             //bool b = 1 > = 2;
             
             // TODO:这个要修改，可能需要修改spaceCanDelete判断函数以解决上述问题
-            if (buffer_read[buffer_choose].buffer[j] != '\0' && ((spaceCanDelete(buffer_read[buffer_choose].buffer[j]) || (i > 0 && spaceCanDelete(buffer_read[buffer_choose].buffer[i - 1])))))
+            //if (buffer_read[buffer_choose].buffer[j] != '\0' && ((spaceCanDelete(buffer_read[buffer_choose].buffer[j]) || (i > 0 && spaceCanDelete(buffer_read[buffer_choose].buffer[i - 1])))))
+            if (buffer_read[buffer_choose].buffer[j] != '\0' && ((isDelimiter(buffer_read[buffer_choose].buffer[j]) || (i > 0 && isDelimiter(buffer_read[buffer_choose].buffer[i - 1])))))
             {
                 //把后面的移动到前面
                 int k = i;
@@ -241,7 +244,7 @@ void analysis::spearateStates()
     bool finish = false;
     int state = 0;//初态，state为0就表示了在初态
 
-    for (int i = 0; i < buffer_end.count; i++)
+    for (int i = 0; i <= buffer_end.count; i++)
     {
         switch (state)
         {
@@ -455,7 +458,7 @@ void analysis::kindJudge(char* str)
         kind = BinocularOperator;
     else if (isDelimiter(str) == 1)//判断是否为界符        
         kind = Delimiter;
-    else if (isBlank)
+    else if (isBlank(str) == 1)//判断是否是空格
         kind = Blank;
     else
         kind = WrongWord;
@@ -470,24 +473,34 @@ void analysis::printResult(int kind, char* str, int opt)
         {
         case KeyWord:
             fprintf(fout, "[关键字]----[%s]\n", str);
+            break;
         case SignWord:
             fprintf(fout, "[标识符]----[%s]\n", str);
+            break;
         case Integer:
             fprintf(fout, "[整数]----[%s]\n", str);
+            break;
         case FloatPoint:
             fprintf(fout, "[浮点数]----[%s]\n", str);
+            break;
         case MonocularOperator:
             fprintf(fout, "[单目运算符]----[%s]\n", str);
+            break;
         case BinocularOperator:
             fprintf(fout, "[双目运算符]----[%s]\n", str);
+            break;
         case Delimiter:
             fprintf(fout, "[界符]----[%s]\n", str);
+            break;
         case WrongWord:
             fprintf(fout, "[错误词]----[%s]\n", str);
+            break;
         case Blank:
             fprintf(fout, "[空格]----[%s]\n", str);
+            break;
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
+            break;
         }
     }
     else
@@ -498,22 +511,31 @@ void analysis::printResult(int kind, char* str, int opt)
         {
         case KeyWord:
             fprintf(fout, "[关键字]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case SignWord:
             fprintf(fout, "[标识符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case Integer:
             fprintf(fout, "[整数]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case FloatPoint:
             fprintf(fout, "[浮点数]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case MonocularOperator:
             fprintf(fout, "[单目运算符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case BinocularOperator:
             fprintf(fout, "[双目运算符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case Delimiter:
             fprintf(fout, "[界符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case WrongWord:
             fprintf(fout, "[错误词]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         case Blank:
             fprintf(fout, "[空格]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
         }
@@ -527,25 +549,37 @@ int analysis::getWordKindCode(int kind, char* str)
     {
     case KeyWord:
         ret = WordCode["keyword"];
+        break;
     case SignWord:
         ret = WordCode["signword"];
+        break;
     case Integer:
         ret = WordCode["integer"];
+        break;
     case FloatPoint:
         ret = WordCode["float"];
+        break;
     case MonocularOperator:
         ret = WordCode["str"];
+        break;
     case BinocularOperator:
         ret = WordCode["str"];
+        break;
     case Delimiter:
         ret = WordCode["str"];
+        break;
     case WrongWord:
         ret = WordCode["wrongword"];
+        break;
     case Blank:
         ret = WordCode["blank"];
+        break;
     default:
         ret =-100;
+        break;
     }
+    //TODO:这里修改
+    return ret;
 }
 analysis::~analysis()
 {
