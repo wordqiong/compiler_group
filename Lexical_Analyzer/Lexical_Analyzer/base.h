@@ -18,7 +18,7 @@ public:
     bool spaceCanDelete(char c);//判断空格能否删除
 
 protected:
-    int isSeprater(char c);//分隔符
+    int isSeparator(char c);//分隔符
     int isBracketsLeft(char c);//左括号
     int isBracketsRight(char c);//右括号
     int isBracketsLeftBig(char c);//左大括号

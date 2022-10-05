@@ -343,7 +343,7 @@ int base::isSpecialSign(char c) {
 /********************************************
  * 判断输入字符类型 是 分隔符
  * *********************************************/
-int base::isSeprater(char c)
+int base::isSeparator(char c)
 {
     if (Seprater == c)
         return 1;

@@ -11,13 +11,26 @@ const int BinocularOperator = 6;//双目运算符
 const int Delimiter = 7;//界符
 const int WrongWord = 8;//错误
 const int Blank = 9;//空格
-const int Seprater = 10; //分隔符
+const int Separator = 10; //分隔符
 const int BracketsLeft = 11; //左括号
 const int BracketsRight = 12; //右括号
 const int BracketsLeftBig = 13; //左大括号
 const int BracketsRightBig = 14; //右大括号
 const int End = 15; //结束符
-const int bland=0;
+
+const char keyword[50][12] = { "break","case","char","class","continue","do","default","double","define",
+"else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while","iostream" };//24个
+
+const char* delimiter = ";"; //界符
+const char* separator = ",";//分隔符
+const char* bracketsLeft = "(";//左括号
+const char* bracketsRight = ")";//右括号
+const char* bracketsLeftBig ="{"; //左大括号
+const char* bracketsRightBig ="}"; //右大括号
+const char* endsign = "#";
+const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" };   //单目运算符 11个
+const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=" }; //双目运算符 12个
+
 
 class Buffer {
 

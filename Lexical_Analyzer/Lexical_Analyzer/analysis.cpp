@@ -489,17 +489,17 @@ void analysis::kindJudge(char* str)
         kind = Delimiter;
     else if (isBlank(str) == 1)//判断是否是空格
         kind = Blank;
-    else if (isSeprater(str[0]) == 1)
-        kind = Seprater;
-    else if (isBracketsLeft(str[0]) == 1)
+    else if (isSeparator(str[0]) == 1&&strlen(str)==1)
+        kind = Separator;
+    else if (isBracketsLeft(str[0]) == 1 && strlen(str) == 1)
         kind = BracketsLeft;
-    else if (isBracketsRight(str[0]) == 1)
+    else if (isBracketsRight(str[0]) == 1 && strlen(str) == 1)
         kind = BracketsRight;
-    else if (isBracketsLeftBig(str[0]) == 1)
+    else if (isBracketsLeftBig(str[0]) == 1 && strlen(str) == 1)
         kind = BracketsLeftBig;
-    else if (isBracketsRightBig(str[0]) == 1)
+    else if (isBracketsRightBig(str[0]) == 1 && strlen(str) == 1)
         kind = BracketsRightBig;
-    else if (isEnd(str[0]) == 1)
+    else if (isEnd(str[0]) == 1 && strlen(str) == 1)
         kind = End;
     else
         kind = WrongWord;
@@ -539,7 +539,7 @@ void analysis::printResult(int kind, char* str, int opt)
         case Blank:
             fprintf(fout, "[空格]----[%s]\n", str);
             break;
-        case Seprater:
+        case Separator:
             fprintf(fout, "[分隔符]----[%s]\n", str);
             break;
         case BracketsLeft:
@@ -596,7 +596,7 @@ void analysis::printResult(int kind, char* str, int opt)
         case Blank:
             fprintf(fout, "[空格]----[%d]----[%s]\n", WordKindCode, str);
             break;
-        case Seprater:
+        case Separator:
             fprintf(fout, "[分隔符]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case BracketsLeft:
@@ -614,7 +614,6 @@ void analysis::printResult(int kind, char* str, int opt)
         case End:
             fprintf(fout, "[结束符]----[%d]----[%s]\n", WordKindCode, str);
             break;
-
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
         }
@@ -645,13 +644,31 @@ int analysis::getWordKindCode(int kind, char* str)
         ret = WordCode["str"];
         break;
     case Delimiter:
-        ret = WordCode["str"];
+        ret = WordCode[delimiter];
         break;
     case WrongWord:
         ret = WordCode["wrongword"];
         break;
     case Blank:
         ret = WordCode["blank"];
+        break;
+    case Separator:
+        ret = WordCode[separator];
+        break;
+    case BracketsLeft:
+        ret = WordCode[bracketsLeft];
+        break;
+    case BracketsRight:
+        ret = WordCode[bracketsRight];
+        break;
+    case BracketsLeftBig:
+        ret = WordCode[bracketsLeftBig];
+        break;
+    case BracketsRightBig:
+        ret = WordCode[bracketsRightBig];
+        break;
+    case End:
+        ret = WordCode[endsign];
         break;
     default:
         ret = -100;
@@ -667,14 +684,13 @@ analysis::analysis()
     note_flag = 0;
     //map赋初值
     const int keyword_size = 24;
-    const int delimiter_size = 9;
     const int monocular_operator_size = 11;
     const int binocular_operator_size = 12;
     int cnt = 0;
+    //关键字
     for (int i = 0; i < keyword_size; i++)
         WordCode[keyword[i]] = ++cnt;
-    for (int i = 0; i < delimiter_size; i++)
-        WordCode[delimiter[i]] = ++cnt;
+    //算符
     for (int i = 0; i < monocular_operator_size; i++)
         WordCode[monocular_operator[i]] = ++cnt;
     for (int i = 0; i < binocular_operator_size; i++)
@@ -682,8 +698,24 @@ analysis::analysis()
     WordCode["signword"] = ++cnt;
     WordCode["wrongword"] = ++cnt;
     WordCode["blank"] = ++cnt;
+    WordCode[delimiter] = ++cnt;
+    WordCode[separator] = ++cnt;
+    WordCode[bracketsLeft] = ++cnt;
+    WordCode[bracketsRight] = ++cnt;
+    WordCode[bracketsLeftBig] = ++cnt;
+    WordCode[bracketsRightBig] = ++cnt;
+    WordCode[endsign] = ++cnt;
+    //数字
     WordCode["integer"] = ++cnt;
     WordCode["float"] = ++cnt;
+
+    //打印单词种别码值
+    map<string, int>::iterator iter;
+    iter = WordCode.begin();
+    while (iter != WordCode.end()) {
+        cout << iter->first << " : " << iter->second << endl;
+        iter++;
+    }
     fin = fopen("code_in.txt", "r");
     fout = fopen("res_out.txt", "w");
 }
