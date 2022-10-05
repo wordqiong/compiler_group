@@ -17,7 +17,7 @@ const int BracketsRight = 12; //右括号
 const int BracketsLeftBig = 13; //左大括号
 const int BracketsRightBig = 14; //右大括号
 const int End = 15; //结束符
-
+const int bland=0;
 
 class Buffer {
 
