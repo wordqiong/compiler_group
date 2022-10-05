@@ -1,14 +1,14 @@
 #include "analysis.h"
-//å¤šè¡Œæ³¨é‡Šçš„æƒ…å†µ æ²¡æœ‰æ·»åŠ  å³ å¤šè¡Œæ³¨é‡Šçš„æƒ…å†µä¸‹ ä¸åº”è¯¥
+//¶àĞĞ×¢ÊÍµÄÇé¿ö Ã»ÓĞÌí¼Ó ¼´ ¶àĞĞ×¢ÊÍµÄÇé¿öÏÂ ²»Ó¦¸Ã
 void analysis::getStrBuffer() {
-    //è‡ªå·±è¯»åˆ°ä¸œè¥¿ å°±ä¸æ–­çš„å¾€ç¼“å†²åŒºé‡Œæ·»åŠ 
-    //è¯»åˆ°/n æˆ–è€… ç¼“å†²åŒºæ»¡  è¿›è¡ŒdeleNotes 
-    //éœ€è¦è®¾ç½®ä¸¤ä¸ªç¼“å†²æ±  ï¼Œå› ä¸ºç¼“å†²æ± æ»¡äº†ï¼Œå¯èƒ½å­—æ¯è¿˜æ²¡æœ‰è¯»å®Œ
-    //è¿™æ—¶å€™å°±éœ€è¦å¦å¤–ä¸€ä¸ªç¼“å†²æ± ï¼Œåˆ©ç”¨ ç•Œç¬¦ æŠŠç¼“å†²æ± ç»™åˆ†å‰²å¼€æ¥ï¼Œå®ç°å®Œæ•´ç¬¦å·çš„è¯»å…¥
-    //æ»¡äº†ï¼Œå¤„ç†å®Œæ¯•åï¼Œç¼“å†²æ± äº¤æ¢ï¼Œåº”ç”¨å…¶å¯¹åº”çš„ä¸‹ç¬¦
-    //ç„¶åå°†deleå¤„ç†åçš„ç¼“å†²æ±  é€åˆ°çŠ¶æ€æœºè¿›è¡Œåˆ†æ 
+    //×Ô¼º¶Áµ½¶«Î÷ ¾Í²»¶ÏµÄÍù»º³åÇøÀïÌí¼Ó
+    //¶Áµ½/n »òÕß »º³åÇøÂú  ½øĞĞdeleNotes 
+    //ĞèÒªÉèÖÃÁ½¸ö»º³å³Ø £¬ÒòÎª»º³å³ØÂúÁË£¬¿ÉÄÜ×ÖÄ¸»¹Ã»ÓĞ¶ÁÍê
+    //ÕâÊ±ºò¾ÍĞèÒªÁíÍâÒ»¸ö»º³å³Ø£¬ÀûÓÃ ½ç·û °Ñ»º³å³Ø¸ø·Ö¸î¿ªÀ´£¬ÊµÏÖÍêÕû·ûºÅµÄ¶ÁÈë
+    //ÂúÁË£¬´¦ÀíÍê±Ïºó£¬»º³å³Ø½»»»£¬Ó¦ÓÃÆä¶ÔÓ¦µÄÏÂ·û
+    //È»ºó½«dele´¦ÀíºóµÄ»º³å³Ø ËÍµ½×´Ì¬»ú½øĞĞ·ÖÎö 
     char c = '\0';
-    int buffer_flag = 0;//ç¼“å†²åŒºæ˜¯å¦éœ€è¦è½®è½¬
+    int buffer_flag = 0;//»º³åÇøÊÇ·ñĞèÒªÂÖ×ª
 
     while (1)
     {
@@ -19,7 +19,7 @@ void analysis::getStrBuffer() {
             break;
         }
 
-        //ç¼“å†²æ± æ»¡äº†
+        //»º³å³ØÂúÁË
         if (buffer_read[buffer_choose].count == BUFFER_SIZE - 2)
         {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count] = c;
@@ -28,22 +28,22 @@ void analysis::getStrBuffer() {
             {
                 if (isDelimiter(buffer_read[buffer_choose].buffer[i]))
                 {
-                    int j;//åˆ†ç•Œç‚¹
+                    int j;//·Ö½çµã
                     int k;
-                    //æŠŠbuffer_chooseçš„è½¬ç§»åˆ°1-buffer_chooseä¸­ï¼Œ
+                    //°Ñbuffer_chooseµÄ×ªÒÆµ½1-buffer_chooseÖĞ£¬
                     for (j = 0, k = i + 1; k <= buffer_read[buffer_choose].count; k++, j++)
                     {
                         buffer_read[1 - buffer_choose].buffer[j] = buffer_read[buffer_choose].buffer[k];
                     }
-                    //countå¤§å°é‡æ–°è®¾ç½®
+                    //count´óĞ¡ÖØĞÂÉèÖÃ
                     buffer_read[1 - buffer_choose].count = j;
                     buffer_read[buffer_choose].count = i;
 
-                    //è®¾ç½®ç»ˆç»“ç‚¹
+                    //ÉèÖÃÖÕ½áµã
                     buffer_read[1 - buffer_choose].buffer[j] = '\0';
                     buffer_read[buffer_choose].buffer[i + 1] = '\0';
 
-                    //ç¼“å†²åŒºè½®è½¬
+                    //»º³åÇøÂÖ×ª
                     buffer_flag = 1;
 
                     break;
@@ -58,9 +58,9 @@ void analysis::getStrBuffer() {
 
         else {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count++] = c;
-            continue;//ç»§ç»­å§
+            continue;//¼ÌĞø°É
         }
-        //ç»§ç»­å¤„ç†æ¢è¡Œå/ç¼“å†²æ± æ»¡åçš„å¤„ç†
+        //¼ÌĞø´¦Àí»»ĞĞºó/»º³å³ØÂúºóµÄ´¦Àí
         deleNotes();
         deleSpaces();
 
@@ -68,9 +68,9 @@ void analysis::getStrBuffer() {
         {
             strcpy(buffer_end.buffer, buffer_read[buffer_choose].buffer);
             buffer_end.count = buffer_read[buffer_choose].count;
-            //è¿›å…¥çŠ¶æ€æœºå¤„ç† 
-            //æ³¨ï¼šç»™çš„ç¼“å†²åŒº æœ‰å¯èƒ½æ˜¯ä¸å®Œæ•´çš„å­—ä¸² å¦‚æœä¼ å…¥çš„å¤ªé•¿äº† 
-            //eg: "111*n"è¶…è¿‡300ä¸ªäº†ï¼Œå°±ä¼šåˆ†å‰²å¼€ï¼Œ
+            //½øÈë×´Ì¬»ú´¦Àí 
+            //×¢£º¸øµÄ»º³åÇø ÓĞ¿ÉÄÜÊÇ²»ÍêÕûµÄ×Ö´® Èç¹û´«ÈëµÄÌ«³¤ÁË 
+            //eg: "111*n"³¬¹ı300¸öÁË£¬¾Í»á·Ö¸î¿ª£¬
             buffer_read[buffer_choose].count = 0;
             //fprintf(fout, "  [ %s ] \n", buffer_read[buffer_choose].buffer);
             spearateStates();
@@ -78,7 +78,7 @@ void analysis::getStrBuffer() {
 
         if (buffer_flag == 1)
         {
-            //ä¸‹ä¸€æ¬¡ ç¼“å†²åŒºè½®è½¬
+            //ÏÂÒ»´Î »º³åÇøÂÖ×ª
             buffer_read[buffer_choose].count = 0;
             buffer_choose = 1 - buffer_choose;
             buffer_flag = 0;
@@ -88,13 +88,13 @@ void analysis::getStrBuffer() {
     cout << "The result of lexical analysis has been saved in the res_out.txt file." << endl;
 
 }
-//å¾ªç¯å¾—åˆ°ä¸€ä¸²æ–°çš„strbuffer  å¹¶ç»è¿‡deleNoteså é€åˆ°çŠ¶æ€æœºå‡½æ•°ä¸­
+//Ñ­»·µÃµ½Ò»´®ĞÂµÄstrbuffer  ²¢¾­¹ıdeleNotesºó ËÍµ½×´Ì¬»úº¯ÊıÖĞ
 void analysis::deleNotes() {
-    //åˆ é™¤æ³¨é‡Š
+    //É¾³ı×¢ÊÍ
     char note[BUFFER_SIZE];
     char note_count = 0;
     bool flag_qoute = 0;
-    //çŠ¶æ€æœº è¯»åˆ°éâ€œâ€åŒ…å«çš„/è¿›å…¥å¾ªç¯
+    //×´Ì¬»ú ¶Áµ½·Ç¡°¡±°üº¬µÄ/½øÈëÑ­»·
     for (int i = 0; buffer_read[buffer_choose].buffer[i] != '\0'; i++)
     {
         if (buffer_read[buffer_choose].buffer[i] == '"')
@@ -112,7 +112,7 @@ void analysis::deleNotes() {
             }
             if (buffer_read[buffer_choose].buffer[i + 1] == '/')
             {
-                //è¿›å…¥ //çŠ¶æ€ ç›´åˆ°\0åœæ­¢
+                //½øÈë //×´Ì¬ Ö±µ½\0Í£Ö¹
                 int j;
 
                 for (j = i; buffer_read[buffer_choose].buffer[j] != '\0'; j++)
@@ -121,7 +121,7 @@ void analysis::deleNotes() {
                     buffer_read[buffer_choose].buffer[j] = '\0';
                 }
                 note[note_count] = '\0';
-                fprintf(fout, "  [ %s ] --æ³¨é‡Š\n", note);
+                fprintf(fout, "  [ %s ] --×¢ÊÍ\n", note);
                 buffer_read[buffer_choose].count -= note_count;
                 note_count = 0;
 
@@ -130,7 +130,7 @@ void analysis::deleNotes() {
             }
             if (buffer_read[buffer_choose].buffer[i + 1] == '*' || note_flag == 1)
             {
-                //è¿›å…¥/* çŠ¶æ€ 
+                //½øÈë/* ×´Ì¬ 
                 note_flag = 1;
                 int j;
                 for (j = i + 2 * (1 - note_flag); buffer_read[buffer_choose].buffer[j] != '\0'; j++)
@@ -142,7 +142,7 @@ void analysis::deleNotes() {
                         note_flag = 0;
                         note[note_count++] = '/';
                         note[note_count] = '\0';
-                        fprintf(fout, "  [ %s ]--æ³¨é‡Š \n", note);
+                        fprintf(fout, "  [ %s ]--×¢ÊÍ \n", note);
 
                         buffer_read[buffer_choose].count -= note_count;
                         note_count = 0;
@@ -153,7 +153,7 @@ void analysis::deleNotes() {
                 if (note_flag == 0)
                     j = j + 2;
 
-                //å¼€å§‹å‰ç§»
+                //¿ªÊ¼Ç°ÒÆ
 
                 for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, i++)
                 {
@@ -166,14 +166,14 @@ void analysis::deleNotes() {
                 }
 
                 if (note_flag) {
-                    //æ„å‘³ç€å¤šè¡Œæ³¨é‡Šï¼Œç›´æ¥printf
+                    //ÒâÎ¶×Å¶àĞĞ×¢ÊÍ£¬Ö±½Óprintf
                     note[note_count] = '\0';
-                    fprintf(fout, " [ %s ]--æ³¨é‡Š \n", note);
+                    fprintf(fout, " [ %s ]--×¢ÊÍ \n", note);
 
                     buffer_read[buffer_choose].buffer[i] = '\0';
                     buffer_read[buffer_choose].count -= note_count;
                     break;
-                    //æ³¨æ„çš„æ˜¯ \nè¢«æˆ‘ç›´æ¥è¯»è¿›æ¥äº†ï¼Œéœ€è¦è¿›è¡Œå¤„ç†
+                    //×¢ÒâµÄÊÇ \n±»ÎÒÖ±½Ó¶Á½øÀ´ÁË£¬ĞèÒª½øĞĞ´¦Àí
 
 
 
@@ -185,32 +185,32 @@ void analysis::deleNotes() {
     }
 }
 void analysis::deleSpaces() {
-    //ç•Œç¬¦ çš„ç©ºæ ¼å¯ä»¥åˆ å»
-    //ä½†éœ€è¦åˆ¤æ–­è¿™ä¸ªæ˜¯ä¸æ˜¯ç•Œç¬¦çš„èŒƒå›´å†… å› ä¸º ";"è‚¯å®šä¸ç®—æ˜¯ç•Œç¬¦
+    //½ç·û µÄ¿Õ¸ñ¿ÉÒÔÉ¾È¥
+    //µ«ĞèÒªÅĞ¶ÏÕâ¸öÊÇ²»ÊÇ½ç·ûµÄ·¶Î§ÄÚ ÒòÎª ";"¿Ï¶¨²»ËãÊÇ½ç·û
 
     bool flag1 = true, flag2 = true;
     for (int i = 0; buffer_read[buffer_choose].buffer[i] != '\0'; i++)
     {
-        //ä¸èƒ½åˆ é™¤å­—ç¬¦ä¸²å†…çš„ç©ºæ ¼
+        //²»ÄÜÉ¾³ı×Ö·û´®ÄÚµÄ¿Õ¸ñ
         if (buffer_read[buffer_choose].buffer[i] == '"')
             flag1 = !flag1;
-        //ä¸èƒ½åˆ é™¤ç©ºæ ¼å­—ç¬¦
+        //²»ÄÜÉ¾³ı¿Õ¸ñ×Ö·û
         if (buffer_read[buffer_choose].buffer[i] == '\'')
             flag2 = !flag2;
         if ((buffer_read[buffer_choose].buffer[i] == ' '|| buffer_read[buffer_choose].buffer[i] == '\t') && flag1 && flag2)
         {
-            //æ‰¾åˆ°ç©ºæ ¼çš„æœ€åï¼Œæœ«å°¾æˆ–æ˜¯ç¬¬ä¸€ä¸ªä¸æ˜¯ç©ºæ ¼çš„ä½ç½®
+            //ÕÒµ½¿Õ¸ñµÄ×îºó£¬Ä©Î²»òÊÇµÚÒ»¸ö²»ÊÇ¿Õ¸ñµÄÎ»ÖÃ
             int j = i + 1;
             for (; buffer_read[buffer_choose].buffer[j] != '\0' && (buffer_read[buffer_choose].buffer[j] == ' '|| buffer_read[buffer_choose].buffer[j] == '\t'); j++)
             {
             }
-            //å¦‚æœæ˜¯åˆ°æœ«å°¾äº†ï¼Œç›´æ¥ä¿®æ”¹å°¾é›¶ä½ç½®å³å¯
+            //Èç¹ûÊÇµ½Ä©Î²ÁË£¬Ö±½ÓĞŞ¸ÄÎ²ÁãÎ»ÖÃ¼´¿É
             if (buffer_read[buffer_choose].buffer[j] == '\0')
             {
                 buffer_read[buffer_choose].buffer[i] = '\0';
                 break;
             }
-            //å¦‚æœæ˜¯å¼€å¤´,ç›´æ¥å…¨åˆ å°±è¡Œ
+            //Èç¹ûÊÇ¿ªÍ·,Ö±½ÓÈ«É¾¾ÍĞĞ
             if (i == 0)
             {
                 int k = i;
@@ -218,38 +218,38 @@ void analysis::deleSpaces() {
                     buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                 buffer_read[buffer_choose].buffer[k] = '\0';
 
-                // i--æ˜¯å› ä¸ºåŸæ¥içš„ä½ç½®æ˜¯ç©ºæ ¼ï¼Œç°åœ¨è¢«åˆ é™¤æ‰äº†ï¼Œæ‰€ä»¥å›é€€ä¸€ä¸ªå•ä½
+                // i--ÊÇÒòÎªÔ­À´iµÄÎ»ÖÃÊÇ¿Õ¸ñ£¬ÏÖÔÚ±»É¾³ıµôÁË£¬ËùÒÔ»ØÍËÒ»¸öµ¥Î»
                 i--;
             }
             else
             {
-                //å¦‚æœä¹‹é—´æœ‰å¤šä¸ªç©ºæ ¼ï¼Œå…ˆåˆ åˆ°åªæœ‰ä¸€ä¸ª
+                //Èç¹ûÖ®¼äÓĞ¶à¸ö¿Õ¸ñ£¬ÏÈÉ¾µ½Ö»ÓĞÒ»¸ö
                 if (j - i >= 2)
                 {
                     int k = i + 1;
                     for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
                         buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                     buffer_read[buffer_choose].buffer[k] = '\0';
-                    //å…ˆå°†jç§»åŠ¨åˆ°i+1çš„ä½ç½®
+                    //ÏÈ½«jÒÆ¶¯µ½i+1µÄÎ»ÖÃ
                     j = i + 1;
-                    //è¿™é‡Œä¸éœ€è¦i--å›é€€
+                    //ÕâÀï²»ĞèÒªi--»ØÍË
                 }
 
-                //åˆ¤æ–­ç©ºæ ¼å¯ä¸å¯ä»¥åˆ é™¤ï¼Œåªè¦å·¦å³ä¸¤è¾¹æœ‰ä¸€ä¸ªæ˜¯ å‘¨å›´å¯ä»¥æ²¡æœ‰ç©ºæ ¼å°±èƒ½ä¸å…¶ä»–åŒºåˆ† çš„å³å¯
-                //ä½†æ˜¯ä¾‹å¦‚ a > = b è¿™ç§é”™è¯¯å†™æ³•å°±æ— æ³•è¾¨åˆ«ï¼Œä¼šå°†>ä¸=ä¹‹é—´çš„ç©ºæ ¼ç»™åƒæ‰
+                //ÅĞ¶Ï¿Õ¸ñ¿É²»¿ÉÒÔÉ¾³ı£¬Ö»Òª×óÓÒÁ½±ßÓĞÒ»¸öÊÇ ÖÜÎ§¿ÉÒÔÃ»ÓĞ¿Õ¸ñ¾ÍÄÜÓëÆäËûÇø·Ö µÄ¼´¿É
+                //µ«ÊÇÀıÈç a > = b ÕâÖÖ´íÎóĞ´·¨¾ÍÎŞ·¨±æ±ğ£¬»á½«>Óë=Ö®¼äµÄ¿Õ¸ñ¸ø³Ôµô
                 //bool b = 1 > = 2;
 
-                // TODO:è¿™ä¸ªè¦ä¿®æ”¹ï¼Œå¯èƒ½éœ€è¦ä¿®æ”¹spaceCanDeleteåˆ¤æ–­å‡½æ•°ä»¥è§£å†³ä¸Šè¿°é—®é¢˜
+                // TODO:Õâ¸öÒªĞŞ¸Ä£¬¿ÉÄÜĞèÒªĞŞ¸ÄspaceCanDeleteÅĞ¶Ïº¯ÊıÒÔ½â¾öÉÏÊöÎÊÌâ
                 if (buffer_read[buffer_choose].buffer[j] != '\0' && ((spaceCanDelete(buffer_read[buffer_choose].buffer[j]) || (i > 0 && spaceCanDelete(buffer_read[buffer_choose].buffer[i - 1])))))
                     //if (buffer_read[buffer_choose].buffer[j] != '\0' && ((isDelimiter(buffer_read[buffer_choose].buffer[j]) || (i > 0 && isDelimiter(buffer_read[buffer_choose].buffer[i - 1])))))
                 {
-                    //æŠŠåé¢çš„ç§»åŠ¨åˆ°å‰é¢
+                    //°ÑºóÃæµÄÒÆ¶¯µ½Ç°Ãæ
                     int k = i;
                     for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
                         buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                     buffer_read[buffer_choose].buffer[k] = '\0';
 
-                    // i--æ˜¯å› ä¸ºåŸæ¥içš„ä½ç½®æ˜¯ç©ºæ ¼ï¼Œç°åœ¨è¢«åˆ é™¤æ‰äº†ï¼Œæ‰€ä»¥å›é€€ä¸€ä¸ªå•ä½
+                    // i--ÊÇÒòÎªÔ­À´iµÄÎ»ÖÃÊÇ¿Õ¸ñ£¬ÏÖÔÚ±»É¾³ıµôÁË£¬ËùÒÔ»ØÍËÒ»¸öµ¥Î»
                     i--;
                 }
 
@@ -260,30 +260,30 @@ void analysis::deleSpaces() {
 
 }
 
-//çŠ¶æ€æœºï¼Œä»buffer_endä¸­è¯»å–è¯­å¥å¹¶åˆ’åˆ†æˆå•è¯  
-//ä¸éœ€è¦è€ƒè™‘æ³¨é‡Šï¼Œå› æ­¤/åªæ˜¯é™¤æ³•
-//è¾“å…¥æ˜¯ä¸€è¡Œé¢„å¤„ç†åçš„ä»£ç ï¼Œå°†å…¶åˆ†å‰²ä¸ºå•è¯è¿›è¡Œç±»å‹åˆ¤å®š
+//×´Ì¬»ú£¬´Óbuffer_endÖĞ¶ÁÈ¡Óï¾ä²¢»®·Ö³Éµ¥´Ê  
+//²»ĞèÒª¿¼ÂÇ×¢ÊÍ£¬Òò´Ë/Ö»ÊÇ³ı·¨
+//ÊäÈëÊÇÒ»ĞĞÔ¤´¦ÀíºóµÄ´úÂë£¬½«Æä·Ö¸îÎªµ¥´Ê½øĞĞÀàĞÍÅĞ¶¨
 
 void analysis::spearateStates()
 {
     char word[BUFFER_SIZE];
-    int count = 0;//å½“å‰wordä¸­çš„å­—ç¬¦ä¸ªæ•°
+    int count = 0;//µ±Ç°wordÖĞµÄ×Ö·û¸öÊı
     bool finish = false;
-    int state = 0;//åˆæ€ï¼Œstateä¸º0å°±è¡¨ç¤ºäº†åœ¨åˆæ€
+    int state = 0;//³õÌ¬£¬stateÎª0¾Í±íÊ¾ÁËÔÚ³õÌ¬
 
     for (int i = 0; i <= buffer_end.count; i++)
     {
         switch (state)
         {
-            //åˆæ€
+            //³õÌ¬
         case 0:
             switch (charKind(buffer_end.buffer[i]))
             {
-            case 1://å­—æ¯
+            case 1://×ÖÄ¸
                 word[count++] = buffer_end.buffer[i];
                 state = 1;
                 break;
-            case 2://æ•°å­—
+            case 2://Êı×Ö
                 word[count++] = buffer_end.buffer[i];
                 state = 2;
                 break;
@@ -291,7 +291,7 @@ void analysis::spearateStates()
                 word[count++] = buffer_end.buffer[i];
                 state = 3;
                 break;
-            case 4://è½¬ä¹‰ç¬¦åªä¼šåœ¨å­—ç¬¦ä¸²å†…éƒ¨ä½¿ç”¨ï¼Œå¦åˆ™ä½œä¸ºä¸€ä¸ªå­—ç¬¦å•ç‹¬å‡ºæ¥
+            case 4://×ªÒå·ûÖ»»áÔÚ×Ö·û´®ÄÚ²¿Ê¹ÓÃ£¬·ñÔò×÷ÎªÒ»¸ö×Ö·ûµ¥¶À³öÀ´
                 word[count++] = buffer_end.buffer[i];
                 state = 4;
                 break;
@@ -330,7 +330,7 @@ void analysis::spearateStates()
                 word[count] = '\0';
                 i--;
                 finish = 1;
-                state = 9;//ç»“æŸçŠ¶æ€
+                state = 9;//½áÊø×´Ì¬
             }
             break;
         case 2:
@@ -351,18 +351,18 @@ void analysis::spearateStates()
                     word[count] = '\0';
                     i--;
                     finish = 1;
-                    state = 9;//ç»“æŸçŠ¶æ€
+                    state = 9;//½áÊø×´Ì¬
                 }
                 break;
             default:
                 word[count] = '\0';
                 i--;
                 finish = 1;
-                state = 9;//ç»“æŸçŠ¶æ€
+                state = 9;//½áÊø×´Ì¬
                 break;
             }
             break;
-        case 3://å¥½åƒ$_å’Œå­—æ¯æ˜¯ä¸€æ ·çš„æ“ä½œ
+        case 3://ºÃÏñ$_ºÍ×ÖÄ¸ÊÇÒ»ÑùµÄ²Ù×÷
             switch (charKind(buffer_end.buffer[i]))
             {
             case 1:case 2:case 3:
@@ -372,22 +372,22 @@ void analysis::spearateStates()
                 word[count] = '\0';
                 i--;
                 finish = 1;
-                state = 9;//ç»“æŸçŠ¶æ€
+                state = 9;//½áÊø×´Ì¬
                 break;
             }
             break;
         case 4:
-            //å­—ç¬¦ä¸²å†…è½¬ä¹‰ç¬¦çš„æƒ…å†µåœ¨5æ€å†…éƒ¨å¤„ç†ï¼Œè¿™é‡Œå¤„ç†å•ç‹¬çš„'\'
+            //×Ö·û´®ÄÚ×ªÒå·ûµÄÇé¿öÔÚ5Ì¬ÄÚ²¿´¦Àí£¬ÕâÀï´¦Àíµ¥¶ÀµÄ'\'
             word[count] = '\0';
             i--;
             finish = 1;
-            state = 9;//ç»“æŸçŠ¶æ€
+            state = 9;//½áÊø×´Ì¬
             break;
         case 5:
             word[count++] = buffer_end.buffer[i];
             if (charKind(buffer_end.buffer[i]) == '"')
             {
-                //æ­¤æ—¶ä¸€å®šä¸æ˜¯åˆæ€ï¼Œæ‰€ä»¥ä¸éœ€è¦åˆ¤æ–­iä¸1çš„å…³ç³»
+                //´ËÊ±Ò»¶¨²»ÊÇ³õÌ¬£¬ËùÒÔ²»ĞèÒªÅĞ¶ÏiÓë1µÄ¹ØÏµ
                 if (buffer_end.buffer[i - 1] == '\\')
                 {
                 }
@@ -409,7 +409,7 @@ void analysis::spearateStates()
             }
             break;
         case 7:
-            //è¦ç»“æŸçš„å­—ç¬¦ï¼Œç›´æ¥ç»“æŸ
+            //Òª½áÊøµÄ×Ö·û£¬Ö±½Ó½áÊø
             word[count] = '\0';
             i--;
             finish = 1;
@@ -429,15 +429,15 @@ void analysis::spearateStates()
                 break;
             }
             break;
-        case 9://ç»“æŸæ€
-            //æ­¤æ—¶wordå·²ç»å¾—åˆ°ï¼Œå¹¶ä¸”æœ€åä»¥\0ç»“å°¾ï¼Œæ•…çŠ¶æ€æ¢æˆåˆå§‹çŠ¶æ€
+        case 9://½áÊøÌ¬
+            //´ËÊ±wordÒÑ¾­µÃµ½£¬²¢ÇÒ×îºóÒÔ\0½áÎ²£¬¹Ê×´Ì¬»»³É³õÊ¼×´Ì¬
             state = 0;
             count = 0;
             finish = 0;
             i--;
             kindJudge(word);
             break;
-        case 10://ç©ºæ ¼å¦åŠ 
+        case 10://¿Õ¸ñÁí¼Ó
             switch (charKind(buffer_end.buffer[i]))
             {
             case 10:
@@ -464,28 +464,28 @@ void analysis::spearateStates()
 
 }
 
-//åœ¨è‡ªåŠ¨æœºä¸­è°ƒç”¨ï¼Œåˆ¤æ–­ä»è‡ªåŠ¨æœºè¾“å‡ºçš„å•è¯ç±»å‹å¹¶è¾“å‡ºåˆ°æ–‡ä»¶ï¼Œç±»ä¼¼<ç±»å‹ï¼ŒåŸå€¼>
+//ÔÚ×Ô¶¯»úÖĞµ÷ÓÃ£¬ÅĞ¶Ï´Ó×Ô¶¯»úÊä³öµÄµ¥´ÊÀàĞÍ²¢Êä³öµ½ÎÄ¼ş£¬ÀàËÆ<ÀàĞÍ£¬Ô­Öµ>
 void analysis::kindJudge(char* str)
 {
     int kind = 0;
-    if (isKeyWord(str) == 1) //åˆ¤æ–­æ˜¯å¦ä¸ºå…³é”®å­—
+    if (isKeyWord(str) == 1) //ÅĞ¶ÏÊÇ·ñÎª¹Ø¼ü×Ö
     {
         kind = KeyWord;
-        //fprintf(fout, "  [ %s ]  ----  [ å…³é”®å­— ]\n", str);
+        //fprintf(fout, "  [ %s ]  ----  [ ¹Ø¼ü×Ö ]\n", str);
     }
-    else if (isSignWord(str) == 1)  //åˆ¤æ–­æ˜¯å¦ä¸ºæ ‡è¯†ç¬¦
+    else if (isSignWord(str) == 1)  //ÅĞ¶ÏÊÇ·ñÎª±êÊ¶·û
         kind = SignWord;
-    else if (isInt(str) == 1)//åˆ¤æ–­æ˜¯å¦ä¸ºæ•´æ•°
+    else if (isInt(str) == 1)//ÅĞ¶ÏÊÇ·ñÎªÕûÊı
         kind = Integer;
-    else if (isFloat(str) == 1)//åˆ¤æ–­æ˜¯å¦ä¸ºæµ®ç‚¹æ•°
+    else if (isFloat(str) == 1)//ÅĞ¶ÏÊÇ·ñÎª¸¡µãÊı
         kind = FloatPoint;
-    else if (isMonocularOperator(str) == 1)//åˆ¤æ–­æ˜¯å¦ä¸ºå•ç›®è¿ç®—ç¬¦
+    else if (isMonocularOperator(str) == 1)//ÅĞ¶ÏÊÇ·ñÎªµ¥Ä¿ÔËËã·û
         kind = MonocularOperator;
-    else if (isBinocularOperator(str) == 1)//åˆ¤æ–­æ˜¯å¦ä¸ºåŒç›®è¿ç®—ç¬¦
+    else if (isBinocularOperator(str) == 1)//ÅĞ¶ÏÊÇ·ñÎªË«Ä¿ÔËËã·û
         kind = BinocularOperator;
-    else if (isDelimiter(str) == 1)//åˆ¤æ–­æ˜¯å¦ä¸ºç•Œç¬¦        
+    else if (isDelimiter(str) == 1)//ÅĞ¶ÏÊÇ·ñÎª½ç·û        
         kind = Delimiter;
-    else if (isBlank(str) == 1)//åˆ¤æ–­æ˜¯å¦æ˜¯ç©ºæ ¼
+    else if (isBlank(str) == 1)//ÅĞ¶ÏÊÇ·ñÊÇ¿Õ¸ñ
         kind = Blank;
     else if (isSeparator(str[0]) == 1&&strlen(str)==1)
         kind = Separator;
@@ -511,53 +511,53 @@ void analysis::printResult(int kind, char* str, int opt)
         switch (kind)
         {
         case KeyWord:
-            fprintf(fout, "[å…³é”®å­—]----[%s]\n", str);
+            fprintf(fout, "[¹Ø¼ü×Ö]----[%s]\n", str);
             break;
         case SignWord:
-            fprintf(fout, "[æ ‡è¯†ç¬¦]----[%s]\n", str);
+            fprintf(fout, "[±êÊ¶·û]----[%s]\n", str);
             break;
         case Integer:
-            fprintf(fout, "[æ•´æ•°]----[%s]\n", str);
+            fprintf(fout, "[ÕûÊı]----[%s]\n", str);
             break;
         case FloatPoint:
-            fprintf(fout, "[æµ®ç‚¹æ•°]----[%s]\n", str);
+            fprintf(fout, "[¸¡µãÊı]----[%s]\n", str);
             break;
         case MonocularOperator:
-            fprintf(fout, "[å•ç›®è¿ç®—ç¬¦]----[%s]\n", str);
+            fprintf(fout, "[µ¥Ä¿ÔËËã·û]----[%s]\n", str);
             break;
         case BinocularOperator:
-            fprintf(fout, "[åŒç›®è¿ç®—ç¬¦]----[%s]\n", str);
+            fprintf(fout, "[Ë«Ä¿ÔËËã·û]----[%s]\n", str);
             break;
         case Delimiter:
-            fprintf(fout, "[ç•Œç¬¦]----[%s]\n", str);
+            fprintf(fout, "[½ç·û]----[%s]\n", str);
             break;
         case WrongWord:
-            fprintf(fout, "[é”™è¯¯è¯]----[%s]\n", str);
+            fprintf(fout, "[´íÎó´Ê]----[%s]\n", str);
             break;
         case Blank:
-            fprintf(fout, "[ç©ºæ ¼]----[%s]\n", str);
+            fprintf(fout, "[¿Õ¸ñ]----[%s]\n", str);
             break;
         case Separator:
-            fprintf(fout, "[åˆ†éš”ç¬¦]----[%s]\n", str);
+            fprintf(fout, "[·Ö¸ô·û]----[%s]\n", str);
             break;
         case BracketsLeft:
-            fprintf(fout, "[å·¦æ‹¬å·]----[%s]\n", str);
+            fprintf(fout, "[×óÀ¨ºÅ]----[%s]\n", str);
             break;
         case BracketsRight:
-            fprintf(fout, "[å³æ‹¬å·]----[%s]\n", str);
+            fprintf(fout, "[ÓÒÀ¨ºÅ]----[%s]\n", str);
             break;
         case BracketsLeftBig:
-            fprintf(fout, "[å·¦å¤§æ‹¬å·]----[%s]\n", str);
+            fprintf(fout, "[×ó´óÀ¨ºÅ]----[%s]\n", str);
             break;
         case BracketsRightBig:
-            fprintf(fout, "[å³å¤§æ‹¬å·]----[%s]\n", str);
+            fprintf(fout, "[ÓÒ´óÀ¨ºÅ]----[%s]\n", str);
             break;
         case End:
-            fprintf(fout, "[ç»“æŸç¬¦]----[%s]\n", str);
+            fprintf(fout, "[½áÊø·û]----[%s]\n", str);
             break;
 
         default:
-            fprintf(fout, "[å…¶ä»–]----[%s]\n", str);
+            fprintf(fout, "[ÆäËû]----[%s]\n", str);
             break;
         }
     }
@@ -568,52 +568,52 @@ void analysis::printResult(int kind, char* str, int opt)
         switch (kind)
         {
         case KeyWord:
-            fprintf(fout, "[å…³é”®å­—]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[¹Ø¼ü×Ö]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case SignWord:
-            fprintf(fout, "[æ ‡è¯†ç¬¦]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[±êÊ¶·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case Integer:
-            fprintf(fout, "[æ•´æ•°]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[ÕûÊı]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case FloatPoint:
-            fprintf(fout, "[æµ®ç‚¹æ•°]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[¸¡µãÊı]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case MonocularOperator:
-            fprintf(fout, "[å•ç›®è¿ç®—ç¬¦]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[µ¥Ä¿ÔËËã·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case BinocularOperator:
-            fprintf(fout, "[åŒç›®è¿ç®—ç¬¦]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[Ë«Ä¿ÔËËã·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case Delimiter:
-            fprintf(fout, "[ç•Œç¬¦]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[½ç·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case WrongWord:
-            fprintf(fout, "[é”™è¯¯è¯]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[´íÎó´Ê]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case Blank:
-            fprintf(fout, "[ç©ºæ ¼]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[¿Õ¸ñ]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case Separator:
-            fprintf(fout, "[åˆ†éš”ç¬¦]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[·Ö¸ô·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case BracketsLeft:
-            fprintf(fout, "[å·¦æ‹¬å·]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[×óÀ¨ºÅ]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case BracketsRight:
-            fprintf(fout, "[å³æ‹¬å·]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[ÓÒÀ¨ºÅ]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case BracketsLeftBig:
-            fprintf(fout, "[å·¦å¤§æ‹¬å·]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[×ó´óÀ¨ºÅ]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case BracketsRightBig:
-            fprintf(fout, "[å³å¤§æ‹¬å·]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[ÓÒ´óÀ¨ºÅ]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case End:
-            fprintf(fout, "[ç»“æŸç¬¦]----[%d]----[%s]\n", WordKindCode, str);
+            fprintf(fout, "[½áÊø·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         default:
-            fprintf(fout, "[å…¶ä»–]----[%s]\n", str);
+            fprintf(fout, "[ÆäËû]----[%s]\n", str);
         }
     }
 }
@@ -672,7 +672,7 @@ int analysis::getWordKindCode(int kind, char* str)
         ret = -100;
         break;
     }
-    //TODO:è¿™é‡Œä¿®æ”¹
+    //TODO:ÕâÀïĞŞ¸Ä
     return ret;
 }
 
@@ -680,15 +680,15 @@ analysis::analysis()
 {
     buffer_choose = 0;
     note_flag = 0;
-    //mapèµ‹åˆå€¼
+    //map¸³³õÖµ
     const int keyword_size = 24;
     const int monocular_operator_size = 11;
     const int binocular_operator_size = 12;
     int cnt = 0;
-    //å…³é”®å­—
+    //¹Ø¼ü×Ö
     for (int i = 0; i < keyword_size; i++)
         WordCode[keyword[i]] = ++cnt;
-    //ç®—ç¬¦
+    //Ëã·û
     for (int i = 0; i < monocular_operator_size; i++)
         WordCode[monocular_operator[i]] = ++cnt;
     for (int i = 0; i < binocular_operator_size; i++)
@@ -703,11 +703,11 @@ analysis::analysis()
     WordCode["{"] = ++cnt;
     WordCode["}"] = ++cnt;
     WordCode["#"] = ++cnt;
-    //æ•°å­—
+    //Êı×Ö
     WordCode["integer"] = ++cnt;
     WordCode["float"] = ++cnt;
 
-    //æ‰“å°å•è¯ç§åˆ«ç å€¼
+    //´òÓ¡µ¥´ÊÖÖ±ğÂëÖµ
     map<string, int>::iterator iter;
     iter = WordCode.begin();
     while (iter != WordCode.end()) {
