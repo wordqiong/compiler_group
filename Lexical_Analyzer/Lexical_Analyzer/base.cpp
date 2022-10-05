@@ -102,6 +102,10 @@ int base::wordWrongAnalysis(char str[], int type) {
 
 bool base::spaceCanDelete(char c)
 {
+    //单边判断，认为有可能组成双目运算符的算符身边空格不可删除，但是像f = 5这种空格也不会删掉了
+    //需要添加=，避免有= =出现
+    if (c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '>' || c == '<' || c == '!')
+        return false;
     if ((c > 'z' || (c < 'a' && c > 'Z') || (c < 'A' && c > '9') || (c < '0')) && c != '_' && c != '$')
         return true;
     return false;
@@ -296,9 +300,15 @@ int base::isMonocularOperator(char str[]) {
  * *********************************************/
 int base::isBlank(char str[])
 {
-    if (strlen(str) == 1&&str[0]==' ') {
-                return 1;
+    for (int i = 0; i < strlen(str); i++)
+    {
+        if (str[i] != ' ')
+            return 0;
     }
+    return 1;
+    //if (strlen(str) == 1 && str[0] == ' ') {
+    //    return 1;
+    //}
     return 0;
 
 }

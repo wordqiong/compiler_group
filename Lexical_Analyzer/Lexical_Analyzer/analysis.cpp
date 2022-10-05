@@ -9,8 +9,8 @@ void analysis::getStrBuffer() {
     //这时候就需要另外一个缓冲池，利用 界符 把缓冲池给分割开来，实现完整符号的读入
     //满了，处理完毕后，缓冲池交换，应用其对应的下符
     //然后将dele处理后的缓冲池 送到状态机进行分析 
-    char c='\0';
-    int buffer_flag=0;//缓冲区是否需要轮转
+    char c = '\0';
+    int buffer_flag = 0;//缓冲区是否需要轮转
 
     while (1)
     {
@@ -20,7 +20,7 @@ void analysis::getStrBuffer() {
         {
             break;
         }
-       
+
         //缓冲池满了
         if (buffer_read[buffer_choose].count == BUFFER_SIZE - 2)
         {
@@ -43,7 +43,7 @@ void analysis::getStrBuffer() {
 
                     //设置终结点
                     buffer_read[1 - buffer_choose].buffer[j] = '\0';
-                    buffer_read[buffer_choose].buffer[i+1] = '\0';
+                    buffer_read[buffer_choose].buffer[i + 1] = '\0';
 
                     //缓冲区轮转
                     buffer_flag = 1;
@@ -53,7 +53,7 @@ void analysis::getStrBuffer() {
             }
 
         }
-        else if (c == '\n'&&!note_flag)
+        else if (c == '\n' && !note_flag)
         {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count] = '\0';
         }
@@ -87,9 +87,10 @@ void analysis::getStrBuffer() {
         }
 
     }
-    cout << "词法分析结果已保存到res_out.txt中。" << endl;
+    cout << "The result of lexical analysis has been saved in the res_out.txt file." << endl;
 
-}//循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
+}
+//循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
 void analysis::deleNotes() {
     //删除注释
     char note[BUFFER_SIZE];
@@ -105,7 +106,7 @@ void analysis::deleNotes() {
         }
         if (flag_qoute == 1)
             continue;
-        if (buffer_read[buffer_choose].buffer[i] == '/'||note_flag==1)
+        if (buffer_read[buffer_choose].buffer[i] == '/' || note_flag == 1)
         {
             if (buffer_read[buffer_choose].buffer[i + 1] == '\0')
             {
@@ -134,7 +135,7 @@ void analysis::deleNotes() {
                 //进入/* 状态 
                 note_flag = 1;
                 int j;
-                for (j = i + 2*(1-note_flag); buffer_read[buffer_choose].buffer[j] != '\0'; j++)
+                for (j = i + 2 * (1 - note_flag); buffer_read[buffer_choose].buffer[j] != '\0'; j++)
                 {
 
                     note[note_count++] = buffer_read[buffer_choose].buffer[j];
@@ -144,33 +145,33 @@ void analysis::deleNotes() {
                         note[note_count++] = '/';
                         note[note_count] = '\0';
                         //fprintf(fout, "  [ %s ]--注释 \n", note);
-                        
+
                         buffer_read[buffer_choose].count -= note_count;
                         note_count = 0;
                         break;
                     }
                 }
-                
+
                 if (note_flag == 0)
                     j = j + 2;
-                
-                    //开始前移
-                    
-                    for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, i++)
+
+                //开始前移
+
+                for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, i++)
+                {
+                    if (buffer_read[buffer_choose].buffer[j] == '\n')
                     {
-                        if (buffer_read[buffer_choose].buffer[j] == '\n')
-                        {
-                            i--;
-                            continue;
-                        }
-                        buffer_read[buffer_choose].buffer[i] = buffer_read[buffer_choose].buffer[j];
+                        i--;
+                        continue;
                     }
-                
-                if(note_flag) {
+                    buffer_read[buffer_choose].buffer[i] = buffer_read[buffer_choose].buffer[j];
+                }
+
+                if (note_flag) {
                     //意味着多行注释，直接printf
                     note[note_count] = '\0';
                     //fprintf(fout, " [ %s ]--注释 \n", note);
-                    
+
                     buffer_read[buffer_choose].buffer[i] = '\0';
                     buffer_read[buffer_choose].count -= note_count;
                     break;
@@ -181,7 +182,7 @@ void analysis::deleNotes() {
                 }
                 buffer_read[buffer_choose].buffer[i] = '\0';
             }
-           
+
         }
     }
 }
@@ -198,39 +199,67 @@ void analysis::deleSpaces() {
         //不能删除空格字符
         if (buffer_read[buffer_choose].buffer[i] == '\'')
             flag2 = !flag2;
-        if (buffer_read[buffer_choose].buffer[i] == ' ' && flag1 && flag2)
+        if ((buffer_read[buffer_choose].buffer[i] == ' '|| buffer_read[buffer_choose].buffer[i] == '\t') && flag1 && flag2)
         {
             //找到空格的最后，末尾或是第一个不是空格的位置
             int j = i + 1;
-            for(; buffer_read[buffer_choose].buffer[j]!='\0'&& buffer_read[buffer_choose].buffer[j] == ' ';j++)
-            { }
+            for (; buffer_read[buffer_choose].buffer[j] != '\0' && (buffer_read[buffer_choose].buffer[j] == ' '|| buffer_read[buffer_choose].buffer[j] == '\t'); j++)
+            {
+            }
             //如果是到末尾了，直接修改尾零位置即可
             if (buffer_read[buffer_choose].buffer[j] == '\0')
             {
                 buffer_read[buffer_choose].buffer[i] = '\0';
                 break;
             }
-            //判断空格可不可以删除，只要左右两边有一个是 周围可以没有空格就能与其他区分 的即可
-            //但是例如 a > = b 这种错误写法就无法辨别，会将>与=之间的空格给吃掉
-            //bool b = 1 > = 2;
-            
-            // TODO:这个要修改，可能需要修改spaceCanDelete判断函数以解决上述问题
-            //if (buffer_read[buffer_choose].buffer[j] != '\0' && ((spaceCanDelete(buffer_read[buffer_choose].buffer[j]) || (i > 0 && spaceCanDelete(buffer_read[buffer_choose].buffer[i - 1])))))
-            if (buffer_read[buffer_choose].buffer[j] != '\0' && ((isDelimiter(buffer_read[buffer_choose].buffer[j]) || (i > 0 && isDelimiter(buffer_read[buffer_choose].buffer[i - 1])))))
+            //如果是开头,直接全删就行
+            if (i == 0)
             {
-                //把后面的移动到前面
                 int k = i;
                 for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
                     buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                 buffer_read[buffer_choose].buffer[k] = '\0';
-                
-                // TODO:这里i--有啥用？没太明白
+
+                // i--是因为原来i的位置是空格，现在被删除掉了，所以回退一个单位
                 i--;
+            }
+            else
+            {
+                //如果之间有多个空格，先删到只有一个
+                if (j - i >= 2)
+                {
+                    int k = i + 1;
+                    for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
+                        buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
+                    buffer_read[buffer_choose].buffer[k] = '\0';
+                    //先将j移动到i+1的位置
+                    j = i + 1;
+                    //这里不需要i--回退
+                }
+
+                //判断空格可不可以删除，只要左右两边有一个是 周围可以没有空格就能与其他区分 的即可
+                //但是例如 a > = b 这种错误写法就无法辨别，会将>与=之间的空格给吃掉
+                //bool b = 1 > = 2;
+
+                // TODO:这个要修改，可能需要修改spaceCanDelete判断函数以解决上述问题
+                if (buffer_read[buffer_choose].buffer[j] != '\0' && ((spaceCanDelete(buffer_read[buffer_choose].buffer[j]) || (i > 0 && spaceCanDelete(buffer_read[buffer_choose].buffer[i - 1])))))
+                    //if (buffer_read[buffer_choose].buffer[j] != '\0' && ((isDelimiter(buffer_read[buffer_choose].buffer[j]) || (i > 0 && isDelimiter(buffer_read[buffer_choose].buffer[i - 1])))))
+                {
+                    //把后面的移动到前面
+                    int k = i;
+                    for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
+                        buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
+                    buffer_read[buffer_choose].buffer[k] = '\0';
+
+                    // i--是因为原来i的位置是空格，现在被删除掉了，所以回退一个单位
+                    i--;
+                }
+
             }
         }
 
     }
-    
+
 }
 
 //状态机，从buffer_end中读取语句并划分成单词  
@@ -575,7 +604,7 @@ int analysis::getWordKindCode(int kind, char* str)
         ret = WordCode["blank"];
         break;
     default:
-        ret =-100;
+        ret = -100;
         break;
     }
     //TODO:这里修改
