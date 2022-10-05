@@ -2,12 +2,18 @@
 
 
 const char keyword[50][12] = { "break","case","char","class","continue","do","default","double","define",
-"else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while","iostream" };//24个
+"else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while" };//23个
 
-const char Delimiter[20] = { ',','(',')','{','}',';','<','>','#' }; //界符 9个
+const char Delimiter = { ';' }; //界符
+const char Seprater = ',';
+const char Brackets_Left = '(';
+const char Brackets_Right = ')';
+const char Brackets_Left_Big = '{';
+const char Brackets_Right_Big = '}';
+const char End = '#';
 
-const char Monocular_Operator[20] = { '+','-','*','/','!','%','~','&','|','^','=' };   //单目运算符 11个
-const char Binocular_Operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=" }; //双目运算符 12个
+const char Monocular_Operator[20] = { '+','-','*','/','!','%','~','&','|','^','>','<','='};   //单目运算符 13个
+const char Binocular_Operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>"}; //双目运算符 12个
 
 /********************************************
  * 判断输入字符类型 是 数字 字母 还是 其他符号 状态机使用
@@ -45,14 +51,10 @@ int base::charKind(char c) {
  * *********************************************/
 int base::isDelimiter(char c) {
 
-    for (int i = 0; i < 20; i++)
-    {
-        if (Delimiter[i] == c)
-        {
-            return 1;
-        }
-    }
+    if (Delimiter == c)
+        return 1;
     return 0;
+
 }
 
 /********************************************
@@ -62,13 +64,8 @@ int base::isDelimiter(char c) {
 int base::isDelimiter(char* c) {
     if (strlen(c) == 1)
     {
-        for (int i = 0; i < 20; i++)
-        {
-            if (Delimiter[i] == c[0])
-            {
-                return 1;
-            }
-        }
+        if (Delimiter == c[0])
+            return 1;
     }
     return 0;
 }
@@ -342,6 +339,71 @@ int base::isSpecialSign(char c) {
         return 1;
     return 0;
 }
+
+/********************************************
+ * 判断输入字符类型 是 分隔符
+ * *********************************************/
+int base::isSeprater(char c)
+{
+    if (Seprater == c)
+        return 1;
+    return 0;
+}
+
+/********************************************
+ * 判断输入字符类型 是 左括号
+ * *********************************************/
+int base::isBracketsLeft(char c)
+{
+    if (Brackets_Left == c)
+        return 1;
+    return 0;
+}
+
+/********************************************
+ * 判断输入字符类型 是 右括号
+ * *********************************************/
+int base::isBracketsRight(char c)
+{
+    if (Brackets_Right == c)
+        return 1;
+    return 0;
+
+}
+
+/********************************************
+ * 判断输入字符类型 是 左大括号
+ * *********************************************/
+int base::isBracketsLeftBig(char c)
+{
+    if (Brackets_Left_Big == c)
+        return 1;
+    return 0;
+
+}
+
+/********************************************
+ * 判断输入字符类型 是 右大括号
+ * *********************************************/
+int base::isBracketsRightBig(char c)
+{
+    if (Brackets_Right_Big == c)
+        return 1;
+    return 0;
+
+}
+
+/********************************************
+ * 判断输入字符类型 是 结束符
+ * *********************************************/
+int base::isEnd(char c)
+{
+    if (End == c)
+        return 1;
+    return 0;
+}
+
+
 
 base::~base()
 {

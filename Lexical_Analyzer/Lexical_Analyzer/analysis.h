@@ -11,14 +11,13 @@ const int BinocularOperator = 6;//双目运算符
 const int Delimiter = 7;//界符
 const int WrongWord = 8;//错误
 const int Blank = 9;//空格
+const int Seprater = 10; //分隔符
+const int BracketsLeft = 11; //左括号
+const int BracketsRight = 12; //右括号
+const int BracketsLeftBig = 13; //左大括号
+const int BracketsRightBig = 14; //右大括号
+const int End = 15; //结束符
 
-const char keyword[50][12] = { "break","case","char","class","continue","do","default","double","define",
-"else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while","iostream" };//24个
-
-const char delimiter[20][5] = {",","(",")","{","}",";","<",">","#"}; //界符 9个
-
-const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","="};   //单目运算符 11个
-const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=" }; //双目运算符 12个
 
 class Buffer {
 
@@ -57,31 +56,7 @@ protected:
     map<string, int> WordCode;
 public:
 
-    analysis() {
-        buffer_choose = 0;
-        note_flag = 0;
-        //map赋初值
-        const int keyword_size = 24;
-        const int delimiter_size = 9;
-        const int monocular_operator_size = 11;
-        const int binocular_operator_size = 12;
-        int cnt = 0;
-        for (int i = 0; i < keyword_size; i++)
-            WordCode[keyword[i]] = ++cnt;
-        for (int i = 0; i < delimiter_size; i++)
-            WordCode[delimiter[i]] = ++cnt;
-        for (int i = 0; i < monocular_operator_size; i++)
-            WordCode[monocular_operator[i]] = ++cnt;
-        for (int i = 0; i < binocular_operator_size; i++)
-            WordCode[binocular_operator[i]] = ++cnt;
-        WordCode["signword"] = ++cnt;
-        WordCode["wrongword"] = ++cnt;
-        WordCode["blank"] = ++cnt;
-        WordCode["integer"] = ++cnt;
-        WordCode["float"] = ++cnt;
-        fin = fopen("code_in.txt", "r");
-        fout = fopen("res_out.txt", "w");
-    }
+    analysis();
     void getStrBuffer();//循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
     void deleNotes();//清除注释 
     void deleSpaces();//删除空格

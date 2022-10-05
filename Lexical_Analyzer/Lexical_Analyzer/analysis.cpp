@@ -123,7 +123,7 @@ void analysis::deleNotes() {
                     buffer_read[buffer_choose].buffer[j] = '\0';
                 }
                 note[note_count] = '\0';
-                //fprintf(fout, "  [ %s ] --注释\n", note);
+                fprintf(fout, "  [ %s ] --注释\n", note);
                 buffer_read[buffer_choose].count -= note_count;
                 note_count = 0;
 
@@ -144,7 +144,7 @@ void analysis::deleNotes() {
                         note_flag = 0;
                         note[note_count++] = '/';
                         note[note_count] = '\0';
-                        //fprintf(fout, "  [ %s ]--注释 \n", note);
+                        fprintf(fout, "  [ %s ]--注释 \n", note);
 
                         buffer_read[buffer_choose].count -= note_count;
                         note_count = 0;
@@ -170,7 +170,7 @@ void analysis::deleNotes() {
                 if (note_flag) {
                     //意味着多行注释，直接printf
                     note[note_count] = '\0';
-                    //fprintf(fout, " [ %s ]--注释 \n", note);
+                    fprintf(fout, " [ %s ]--注释 \n", note);
 
                     buffer_read[buffer_choose].buffer[i] = '\0';
                     buffer_read[buffer_choose].count -= note_count;
@@ -489,9 +489,21 @@ void analysis::kindJudge(char* str)
         kind = Delimiter;
     else if (isBlank(str) == 1)//判断是否是空格
         kind = Blank;
+    else if (isSeprater(str[0]) == 1)
+        kind = Seprater;
+    else if (isBracketsLeft(str[0]) == 1)
+        kind = BracketsLeft;
+    else if (isBracketsRight(str[0]) == 1)
+        kind = BracketsRight;
+    else if (isBracketsLeftBig(str[0]) == 1)
+        kind = BracketsLeftBig;
+    else if (isBracketsRightBig(str[0]) == 1)
+        kind = BracketsRightBig;
+    else if (isEnd(str[0]) == 1)
+        kind = End;
     else
         kind = WrongWord;
-    printResult(kind, str, 1);
+    printResult(kind, str, 0);
 }
 
 void analysis::printResult(int kind, char* str, int opt)
@@ -527,6 +539,25 @@ void analysis::printResult(int kind, char* str, int opt)
         case Blank:
             fprintf(fout, "[空格]----[%s]\n", str);
             break;
+        case Seprater:
+            fprintf(fout, "[分隔符]----[%s]\n", str);
+            break;
+        case BracketsLeft:
+            fprintf(fout, "[左括号]----[%s]\n", str);
+            break;
+        case BracketsRight:
+            fprintf(fout, "[右括号]----[%s]\n", str);
+            break;
+        case BracketsLeftBig:
+            fprintf(fout, "[左大括号]----[%s]\n", str);
+            break;
+        case BracketsRightBig:
+            fprintf(fout, "[右大括号]----[%s]\n", str);
+            break;
+        case End:
+            fprintf(fout, "[结束符]----[%s]\n", str);
+            break;
+
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
             break;
@@ -565,6 +596,25 @@ void analysis::printResult(int kind, char* str, int opt)
         case Blank:
             fprintf(fout, "[空格]----[%d]----[%s]\n", WordKindCode, str);
             break;
+        case Seprater:
+            fprintf(fout, "[分隔符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case BracketsLeft:
+            fprintf(fout, "[左括号]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case BracketsRight:
+            fprintf(fout, "[右括号]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case BracketsLeftBig:
+            fprintf(fout, "[左大括号]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case BracketsRightBig:
+            fprintf(fout, "[右大括号]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case End:
+            fprintf(fout, "[结束符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
         }
@@ -609,6 +659,33 @@ int analysis::getWordKindCode(int kind, char* str)
     }
     //TODO:这里修改
     return ret;
+}
+
+analysis::analysis()
+{
+    buffer_choose = 0;
+    note_flag = 0;
+    //map赋初值
+    const int keyword_size = 24;
+    const int delimiter_size = 9;
+    const int monocular_operator_size = 11;
+    const int binocular_operator_size = 12;
+    int cnt = 0;
+    for (int i = 0; i < keyword_size; i++)
+        WordCode[keyword[i]] = ++cnt;
+    for (int i = 0; i < delimiter_size; i++)
+        WordCode[delimiter[i]] = ++cnt;
+    for (int i = 0; i < monocular_operator_size; i++)
+        WordCode[monocular_operator[i]] = ++cnt;
+    for (int i = 0; i < binocular_operator_size; i++)
+        WordCode[binocular_operator[i]] = ++cnt;
+    WordCode["signword"] = ++cnt;
+    WordCode["wrongword"] = ++cnt;
+    WordCode["blank"] = ++cnt;
+    WordCode["integer"] = ++cnt;
+    WordCode["float"] = ++cnt;
+    fin = fopen("code_in.txt", "r");
+    fout = fopen("res_out.txt", "w");
 }
 analysis::~analysis()
 {
