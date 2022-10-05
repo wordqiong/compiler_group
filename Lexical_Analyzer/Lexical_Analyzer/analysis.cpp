@@ -1,6 +1,4 @@
 #include "analysis.h"
-
-
 //多行注释的情况 没有添加 即 多行注释的情况下 不应该
 void analysis::getStrBuffer() {
     //自己读到东西 就不断的往缓冲区里添加
@@ -644,7 +642,7 @@ int analysis::getWordKindCode(int kind, char* str)
         ret = WordCode["str"];
         break;
     case Delimiter:
-        ret = WordCode[delimiter];
+        ret = WordCode[";"];
         break;
     case WrongWord:
         ret = WordCode["wrongword"];
@@ -653,22 +651,22 @@ int analysis::getWordKindCode(int kind, char* str)
         ret = WordCode["blank"];
         break;
     case Separator:
-        ret = WordCode[separator];
+        ret = WordCode[","];
         break;
     case BracketsLeft:
-        ret = WordCode[bracketsLeft];
+        ret = WordCode["("];
         break;
     case BracketsRight:
-        ret = WordCode[bracketsRight];
+        ret = WordCode[")"];
         break;
     case BracketsLeftBig:
-        ret = WordCode[bracketsLeftBig];
+        ret = WordCode["{"];
         break;
     case BracketsRightBig:
-        ret = WordCode[bracketsRightBig];
+        ret = WordCode["}"];
         break;
     case End:
-        ret = WordCode[endsign];
+        ret = WordCode["#"];
         break;
     default:
         ret = -100;
@@ -698,13 +696,13 @@ analysis::analysis()
     WordCode["signword"] = ++cnt;
     WordCode["wrongword"] = ++cnt;
     WordCode["blank"] = ++cnt;
-    WordCode[delimiter] = ++cnt;
-    WordCode[separator] = ++cnt;
-    WordCode[bracketsLeft] = ++cnt;
-    WordCode[bracketsRight] = ++cnt;
-    WordCode[bracketsLeftBig] = ++cnt;
-    WordCode[bracketsRightBig] = ++cnt;
-    WordCode[endsign] = ++cnt;
+    WordCode[";"] = ++cnt;
+    WordCode[","] = ++cnt;
+    WordCode["("] = ++cnt;
+    WordCode[")"] = ++cnt;
+    WordCode["{"] = ++cnt;
+    WordCode["}"] = ++cnt;
+    WordCode["#"] = ++cnt;
     //数字
     WordCode["integer"] = ++cnt;
     WordCode["float"] = ++cnt;
