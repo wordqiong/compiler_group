@@ -173,7 +173,7 @@ void analysis::deleNotes() {
                     buffer_read[buffer_choose].buffer[i] = '\0';
                     buffer_read[buffer_choose].count -= note_count;
                     break;
-                    //注意的是 \n被我直接读进来了，需要进行处理
+                    
 
 
 
