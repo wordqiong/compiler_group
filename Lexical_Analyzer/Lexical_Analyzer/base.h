@@ -24,6 +24,8 @@ protected:
     int isBracketsLeftBig(char c);//左大括号
     int isBracketsRightBig(char c);//右大括号
     int isEnd(char c);//结束符
+    int isStr(char str[]);//字符串
+    int isChar(char str[]);//字串是字符
 
 
     int isInt(char str[]);//整型

@@ -403,7 +403,93 @@ int base::isEnd(char c)
     return 0;
 }
 
+/********************************************
+ * 判断输入字串类型 是 字串 "xxxxxx"
+ * *********************************************/
+int base::isStr(char str[]) 
+{
+    //小型状态机
+    int i = 0;
+    for (i = 0; i < strlen(str); i++)
+    {
+        if (str[i] == ' ')
+            continue;
+        else
+            break;
+    }
+    int flag = 0;
+    //此时i为非' '的首字符
+    if (str[i] == '"')
+    {
+        i++;
+        flag = 1;//第一个"
+    }
+    if (flag == 1)
+    {
+        for (i; i < strlen(str); i++)
+        {
+            if (str[i] == '"' && str[i - 1] != '\\')
+                return 1;
+        }
+    }
+    return 0;
+}
 
+/********************************************
+ * 判断输入字串类型 是 字符 'x'
+ * *********************************************/
+int base::isChar(char str[]) 
+{
+    //小型状态机
+    int i = 0;
+    for (i = 0; i < strlen(str); i++)
+    {
+        if (str[i] == ' ')
+            continue;
+        else
+            break;
+    }
+    int flag = 0;
+    //此时i为非' '的首字符
+    if (str[i] == '\'')
+    {
+        i++;
+        flag = 1;//第一个"
+    }
+    if (flag == 1)
+    { 
+        //只允许 '\x'
+        if (str[i] == '\\')
+        {
+            if (isNum(str[i]))
+            {
+                flag = 2;//10进制
+            }
+            else if (str[i] == 'x')
+            {
+                flag = 3;//16进制
+            }
+            else
+            {
+                if (str[i + 2] == '\'')
+                    return 1;
+          
+            }
+            if (flag == 2 && isInt(&str[i]) && strlen(&str[i]) == 3)
+                return 1;
+            if (flag == 3 && isInt(&str[i]) && strlen(&str[i]) == 5)
+                return 1;
+
+        }
+        else {
+            if (str[i + 1] == '\'')
+                return 1;
+            return 0;
+        }
+
+    }
+    return 0;
+}
 
 base::~base()
 {
