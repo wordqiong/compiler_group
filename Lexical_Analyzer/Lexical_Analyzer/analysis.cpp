@@ -72,7 +72,7 @@ void analysis::getStrBuffer() {
             //注：给的缓冲区 有可能是不完整的字串 如果传入的太长了 
             //eg: "111*n"超过300个了，就会分割开，
             buffer_read[buffer_choose].count = 0;
-            //fprintf(fout, "  [ %s ] \n", buffer_read[buffer_choose].buffer);
+            fprintf(fout_pre, "%s\n", buffer_read[buffer_choose].buffer);
             spearateStates();
         }
 
@@ -86,6 +86,8 @@ void analysis::getStrBuffer() {
 
     }
     cout << "The result of lexical analysis has been saved in the res_out.txt file." << endl;
+    cout << "The pre-processed code has been saved in the pre-processed_code.txt file." << endl;
+    cout << "The word_lable has been saved in the word-lable.txt file." << endl;
 
 }
 //循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
@@ -121,7 +123,7 @@ void analysis::deleNotes() {
                     buffer_read[buffer_choose].buffer[j] = '\0';
                 }
                 note[note_count] = '\0';
-                fprintf(fout, "  [ %s ] --注释\n", note);
+                fprintf(fout, "[注释]----[ %s ]\n", note);
                 buffer_read[buffer_choose].count -= note_count;
                 note_count = 0;
 
@@ -142,7 +144,7 @@ void analysis::deleNotes() {
                         note_flag = 0;
                         note[note_count++] = '/';
                         note[note_count] = '\0';
-                        fprintf(fout, "  [ %s ]--注释 \n", note);
+                        fprintf(fout, "[注释]----[ %s ]\n", note);
 
                         buffer_read[buffer_choose].count -= note_count;
                         note_count = 0;
@@ -168,7 +170,7 @@ void analysis::deleNotes() {
                 if (note_flag) {
                     //意味着多行注释，直接printf
                     note[note_count] = '\0';
-                    fprintf(fout, " [ %s ]--注释 \n", note);
+                    fprintf(fout, "[注释]----[ %s ]\n", note);
 
                     buffer_read[buffer_choose].buffer[i] = '\0';
                     buffer_read[buffer_choose].count -= note_count;
@@ -315,6 +317,10 @@ void analysis::spearateStates()
                 word[count++] = buffer_end.buffer[i];
                 state = 10;
                 break;
+            case 11://正负实数或其他
+                word[count++] = buffer_end.buffer[i];
+                state = 11;
+                break;
             default:
                 word[count++] = buffer_end.buffer[i];
                 break;
@@ -418,7 +424,7 @@ void analysis::spearateStates()
         case 8:
             switch (charKind(buffer_end.buffer[i]))
             {
-            case 8:
+            case 8:case 11:
                 word[count++] = buffer_end.buffer[i];
                 break;
             default:
@@ -451,6 +457,27 @@ void analysis::spearateStates()
                 break;
             }
             break;
+        case 11:
+            switch (charKind(buffer_end.buffer[i]))
+            {
+                //只有第二个就是数字的才能算作正负实数
+            case 2:
+                word[count++] = buffer_end.buffer[i];
+                state = 2;
+                break;
+            case 8:case 11:
+                word[count++] = buffer_end.buffer[i];
+                state = 8;
+                break;
+            default:
+                word[count] = '\0';
+                i--;
+                finish = 1;
+                state = 9;
+                break;
+            }
+            break;
+
         default:
             break;
         }
@@ -680,6 +707,10 @@ analysis::analysis()
 {
     buffer_choose = 0;
     note_flag = 0;
+    fin = fopen("code_in.txt", "r");
+    fout = fopen("res_out.txt", "w");
+    fout_pre = fopen("pre-process_code.txt", "w");
+    fout_lable = fopen("word_lable.txt", "w");
     //map赋初值
     const int keyword_size = 24;
     const int monocular_operator_size = 11;
@@ -711,11 +742,10 @@ analysis::analysis()
     map<string, int>::iterator iter;
     iter = WordCode.begin();
     while (iter != WordCode.end()) {
-        cout << iter->first << " : " << iter->second << endl;
+        //cout << iter->first << " : " << iter->second << endl;
+        fprintf(fout_lable, "%s : %d\n", iter->first.c_str(), iter->second);
         iter++;
     }
-    fin = fopen("code_in.txt", "r");
-    fout = fopen("res_out.txt", "w");
 }
 analysis::~analysis()
 {

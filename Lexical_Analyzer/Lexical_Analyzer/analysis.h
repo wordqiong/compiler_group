@@ -67,6 +67,8 @@ protected:
     int note_flag;
     FILE* fin;
     FILE* fout;
+    FILE* fout_pre;
+    FILE* fout_lable;
     map<string, int> WordCode;
 public:
 

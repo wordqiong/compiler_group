@@ -1,5 +1,7 @@
-		float f =  15.6051;
-string str="hgjds65dhjsa\"j\""
+1.5e16
+!##@+15.6
+		float f =  -15.6051;
+string str="hgjds65dhjsa\"j\"";
 bool b = a > = b;
 int a =? 5;
 char c = ' ';
