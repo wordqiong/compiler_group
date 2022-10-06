@@ -29,7 +29,8 @@ protected:
 
 
     int isInt(char str[]);//整型
-    int isFloat(char str[]);//float 型
+    int isFloat(char str[]);//float 型 +-xx.xx e +-xx.xx
+    int isFloatTool(char str[]);//float型 +-xx.xx
 
     int isSignWord(char str[]);// 标识符 
     int isKeyWord(char str[]);//保留字  关键字 

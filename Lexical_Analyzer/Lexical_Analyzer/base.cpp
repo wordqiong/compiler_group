@@ -121,16 +121,20 @@ int base::isInt(char str[]) {
     const int HEX = 16;
     int intType = DEC;
     int len = 0;
-    len = strlen(str);
-
+    char t[200] = { "" };
+    if (str[0] == '+' || str[0] == '-')
+        strcpy(t, &str[1]);
+    else
+        strcpy(t, str);
+    len = strlen(t);
     //判断数的进制
-    if (isNum(str[0]))
+    if (isNum(t[0]))
     {
-        if (str[0] == '0' && str[1] != '\0')//判断是八进制还是十六进制，当首位是0且数字不止一位时考虑下一位，
+        if (t[0] == '0' && t[1] != '\0')//判断是八进制还是十六进制，当首位是0且数字不止一位时考虑下一位，
         {
-            if (isNum(str[1]))
+            if (isNum(t[1]))
                 intType = OCT;
-            else if (str[1] == 'x' || str[1] == 'X')
+            else if (t[1] == 'x' || t[1] == 'X')
                 intType = HEX;
             else
                 return 0;
@@ -147,9 +151,9 @@ int base::isInt(char str[]) {
     case OCT:
         for (int i = 1; i < len; i++)//八进制数首位为0，长度至少为2.
         {
-            if (isNum(str[i]))
+            if (isNum(t[i]))
             {
-                if (str[i] >= '0' && str[i] <= '7')
+                if (t[i] >= '0' && t[i] <= '7')
                     ;
                 else
                     return 2;
@@ -162,7 +166,7 @@ int base::isInt(char str[]) {
     case DEC:
         for (int i = 0; i < len; i++)
         {
-            if (isNum(str[i]))
+            if (isNum(t[i]))
                 ;
             else
                 return 0;
@@ -172,11 +176,11 @@ int base::isInt(char str[]) {
     case HEX:
         for (int i = 2; i < len; i++)//十六进制数前两位为0x\0X，长度至少为3.
         {
-            if (isNum(str[i]) || (str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F'))
+            if (isNum(t[i]) || (t[i] >= 'a' && t[i] <= 'f') || (t[i] >= 'A' && t[i] <= 'F'))
                 ;
             else
             {
-                if (!isLetter(str[i]))//十六进制数中出现非字母
+                if (!isLetter(t[i]))//十六进制数中出现非字母
                     return 0;
                 else
                     return 2;
@@ -189,6 +193,56 @@ int base::isInt(char str[]) {
 }
 
 
+int base::isFloatTool(char str[])//判断xx.xx的情况，无小数点视为非小数，否则无法与整数区分
+{
+    int len = 0;
+    int dotAppearNum = 0;
+    char t[200] = { "" };
+    if (str[0] == '+' || str[0] == '-')
+        strcpy(t, &str[1]);
+    else
+        strcpy(t, str);
+    len = strlen(t);
+    for (int i = 0; i < len; i++)
+    {
+        if (len > 0)//确保有首位和最后一位
+        {
+            if (i == 0)//判断首位
+            {
+                if (!isNum(t[i]))//不是数字
+                {
+                    if (t[i] == '.')
+                        return 2;
+                    else
+                        return 0;
+                }
+            }
+            if (i < len - 1)//判断非最后一位且不是首位
+            {
+                if (!isNum(t[i]) && t[i] != '.')//既不是数字也不是小数点
+                    return 0;
+                if (t[i] == '.')//如果是小数点
+                {
+                    dotAppearNum++;
+                    if (dotAppearNum > 1)//出现多个小数点的情况
+                        return 2;
+                }
+            }
+            if (i == len - 1)//判断末位
+            {
+                //既不是数字也不是f\F、d\D
+                if (!isNum(t[i]) && t[i] != 'f' && t[i] != 'F' && t[i] != 'd' && t[i] != 'D')
+                    return 0;
+            }          
+        }
+    }
+    if (dotAppearNum < 1)
+        return 0;
+    return 1;
+}
+
+
+
 /********************************************
  * 判断输入字符类型 是 float 型浮点数吗
  * 返回值为0 意味着 压根不是
@@ -199,6 +253,7 @@ int base::isFloat(char str[]) {
     int len = 0;
     int dotAppearNum = 0;
     len = strlen(str);
+    char t[200] = { "" };
     //判断78e\E56的情况
     int pos = -1;
     for (int i = 0; i < len; i++)
@@ -211,52 +266,25 @@ int base::isFloat(char str[]) {
     }
     if (pos != -1)//出现了e/E
     {
+        int j = 0;       
         if (pos == 0 || pos == len - 1)//e在首位或末尾
             return 0;
-        for (int j = 0; j < pos; j++)
-            if (!isNum(str[j]))
+        if (str[0] == '+' || str[0] == '-')
+        {        
+            if (str[1] == 'e' || str[1] == 'E')//首位是符号位时保证e不在符号位之后
                 return 0;
-        for (int j = pos+1; j <len; j++)
-            if (!isNum(str[j]))
-                return 0;
+        }
+        memcpy(t, &str[j], pos + 1);//最后一位不是尾零
+        t[pos] = '\0';
+        if (isFloatTool(t) != 1&&isInt(t)!=1)
+            return 0;
+        j = pos + 1;//数字的起始位        
+        memcpy(t, &str[j], len-pos);//最后一位是尾零
+        if (isFloatTool(t) != 1 && isInt(t) != 1)
+            return 0;
         return 1;
     }
-    //判断xx.xx的情况
-    for (int i = 0; i < len; i++)
-    {
-        if (len > 0)//确保有首位和最后一位
-        {
-            if (i == 0)//判断首位
-            {
-                if (!isNum(str[i]))//不是数字
-                {
-                    if (str[i] == '.')
-                        return 2;
-                    else
-                        return 0;
-                }
-            }
-            if (i < len - 1)//判断非最后一位且不是首位
-            {
-                if (!isNum(str[i]) && str[i] != '.')//既不是数字也不是小数点
-                    return 0;
-                if (str[i] == '.')//如果是小数点
-                {
-                    dotAppearNum++;
-                    if (dotAppearNum > 1)//出现多个小数点的情况
-                        return 2;
-                }
-            }
-            if (i == len - 1)//判断末位
-            {
-                //既不是数字也不是f\F、d\D
-                if (!isNum(str[i]) && str[i] != 'f' && str[i] != 'F' && str[i] != 'd' && str[i] != 'D')
-                    return 0;
-            }
-        }
-    }
-
-    return 1;
+    return isFloatTool(str);
 }
 
 /********************************************
