@@ -1,0 +1,39 @@
+1.5e16
+!##@+15.6
+float f = -15.6051;
+string str="hgjds65dhjsa\"j\"";
+bool b = a > = b;
+int a =?5;
+char c =' ';
+int a=5x1x6x8;
+#define A 5
+#include<iostream>
+#include<string>
+#include<cmath>
+#include<cstring>
+int main()
+{
+int T,a,b,c,ans;
+cin>>T;
+while(T--)
+{
+cin>>a>>b>>c;
+ans=0;
+if(c%gcd(a,b)!=0)
+{
+cout<<0<<endl;
+}
+else
+{
+for(int i=1;i<=(c-b)/a;i++)
+{
+if(a&&b)
+;
+if((c-a*i)/b*b==(c-a*i))
+ans++;
+}
+cout<<ans<<endl;
+}
+}
+return 0;
+}
