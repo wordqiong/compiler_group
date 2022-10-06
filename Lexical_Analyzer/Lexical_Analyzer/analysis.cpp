@@ -505,7 +505,7 @@ void analysis::kindJudge(char* str)
         kind = Delimiter;
     else if (isBlank(str) == 1)//判断是否是空格
         kind = Blank;
-    else if (isSeparator(str[0]) == 1&&strlen(str)==1)
+    else if (isSeparator(str[0]) == 1 && strlen(str) == 1)
         kind = Separator;
     else if (isBracketsLeft(str[0]) == 1 && strlen(str) == 1)
         kind = BracketsLeft;
@@ -517,6 +517,10 @@ void analysis::kindJudge(char* str)
         kind = BracketsRightBig;
     else if (isEnd(str[0]) == 1 && strlen(str) == 1)
         kind = End;
+    else if (isStr(str))
+        kind = Str;
+    else if (isChar(str))
+        kind = Char;
     else
         kind = WrongWord;
     printResult(kind, str, 0);
@@ -573,7 +577,12 @@ void analysis::printResult(int kind, char* str, int opt)
         case End:
             fprintf(fout, "[结束符]----[%s]\n", str);
             break;
-
+        case Str:
+            fprintf(fout, "[字符串]----[%s]\n", str);
+            break;
+        case Char:
+            fprintf(fout, "[字符]----[%s]\n", str);
+            break;
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
             break;
@@ -630,6 +639,12 @@ void analysis::printResult(int kind, char* str, int opt)
         case End:
             fprintf(fout, "[结束符]----[%d]----[%s]\n", WordKindCode, str);
             break;
+        case Str:
+            fprintf(fout, "[字符串]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Char:
+            fprintf(fout, "[字符]----[%d]----[%s]\n", WordKindCode, str);
+            break;
         default:
             fprintf(fout, "[其他]----[%s]\n", str);
         }
@@ -642,7 +657,7 @@ int analysis::getWordKindCode(int kind, char* str)
     switch (kind)
     {
     case KeyWord:
-        ret = WordCode["keyword"];
+        ret = WordCode[str];
         break;
     case SignWord:
         ret = WordCode["signword"];
@@ -654,10 +669,10 @@ int analysis::getWordKindCode(int kind, char* str)
         ret = WordCode["float"];
         break;
     case MonocularOperator:
-        ret = WordCode["str"];
+        ret = WordCode[str];
         break;
     case BinocularOperator:
-        ret = WordCode["str"];
+        ret = WordCode[str];
         break;
     case Delimiter:
         ret = WordCode[";"];
@@ -686,6 +701,12 @@ int analysis::getWordKindCode(int kind, char* str)
     case End:
         ret = WordCode["#"];
         break;
+    case Str:
+        ret = WordCode["string"];
+        break;
+    case Char:
+        ret = WordCode["char"];
+        break;
     default:
         ret = -100;
         break;
@@ -704,8 +725,8 @@ analysis::analysis()
     fout_lable = fopen("word_lable.txt", "w");
     //map赋初值
     const int keyword_size = 24;
-    const int monocular_operator_size = 11;
-    const int binocular_operator_size = 12;
+    const int monocular_operator_size = 13;
+    const int binocular_operator_size = 14;
     int cnt = 0;
     //关键字
     for (int i = 0; i < keyword_size; i++)
@@ -725,6 +746,8 @@ analysis::analysis()
     WordCode["{"] = ++cnt;
     WordCode["}"] = ++cnt;
     WordCode["#"] = ++cnt;
+    WordCode["string"] = ++cnt;
+    WordCode["char"] = ++cnt;
     //数字
     WordCode["integer"] = ++cnt;
     WordCode["float"] = ++cnt;
@@ -737,6 +760,15 @@ analysis::analysis()
         fprintf(fout_lable, "%s : %d\n", iter->first.c_str(), iter->second);
         iter++;
     }
+    /*
+    * 测试isFloat判断含有e的浮点数
+    * 预期输出1，0，0，0
+    * 实际输出1，0，0，0
+    char t[][20] = { "7e5","8eeee","e80","7e"};
+    for (int i = 0; i < 4; i++)
+        cout << isFloat(t[i]) << endl;
+        */
+   
 }
 analysis::~analysis()
 {

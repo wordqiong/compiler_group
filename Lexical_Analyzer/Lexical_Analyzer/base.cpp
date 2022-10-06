@@ -138,6 +138,9 @@ int base::isInt(char str[]) {
         else
             intType = DEC;
     }
+    else {
+        return 0;
+    }
     //检查数的格式是否正确
     switch (intType)
     {
@@ -182,19 +185,43 @@ int base::isInt(char str[]) {
         return 1;
         break;
     }
+    return 0;
 }
 
 
 /********************************************
  * 判断输入字符类型 是 float 型浮点数吗
  * 返回值为0 意味着 压根不是
- * 返回值为1 意味着 是
+ * 返回值为1 意味着 是 包括xx.xx和xx e\E xx两种情况
  * 返回值为2 意味着 是但float命名错误 即：出现 0.0.1
  * *********************************************/
 int base::isFloat(char str[]) {
     int len = 0;
     int dotAppearNum = 0;
     len = strlen(str);
+    //判断78e\E56的情况
+    int pos = -1;
+    for (int i = 0; i < len; i++)
+    {
+        if (str[i] == 'e' || str[i] == 'E')
+        {
+            pos = i;
+            break;
+        }
+    }
+    if (pos != -1)//出现了e/E
+    {
+        if (pos == 0 || pos == len - 1)//e在首位或末尾
+            return 0;
+        for (int j = 0; j < pos; j++)
+            if (!isNum(str[j]))
+                return 0;
+        for (int j = pos+1; j <len; j++)
+            if (!isNum(str[j]))
+                return 0;
+        return 1;
+    }
+    //判断xx.xx的情况
     for (int i = 0; i < len; i++)
     {
         if (len > 0)//确保有首位和最后一位
@@ -228,6 +255,7 @@ int base::isFloat(char str[]) {
             }
         }
     }
+
     return 1;
 }
 

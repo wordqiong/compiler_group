@@ -17,6 +17,8 @@ const int BracketsRight = 12; //右括号
 const int BracketsLeftBig = 13; //左大括号
 const int BracketsRightBig = 14; //右大括号
 const int End = 15; //结束符
+const int Str = 16;
+const int Char = 17;
 
 const char keyword[50][12] = { "break","case","char","class","continue","do","default","double","define",
 "else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while","iostream" };//24个
@@ -29,8 +31,8 @@ const char* bracketsLeftBig ="{"; //左大括号
 const char* bracketsRightBig ="}"; //右大括号
 const char* endsign = "#";
 */
-const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" };   //单目运算符 11个
-const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=" }; //双目运算符 12个
+const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" ,">","<"};   //单目运算符 13个
+const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>"}; //双目运算符 14个
 
 
 class Buffer {
