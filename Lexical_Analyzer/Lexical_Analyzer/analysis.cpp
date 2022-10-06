@@ -317,10 +317,6 @@ void analysis::spearateStates()
                 word[count++] = buffer_end.buffer[i];
                 state = 10;
                 break;
-            case 11://正负实数或其他
-                word[count++] = buffer_end.buffer[i];
-                state = 11;
-                break;
             default:
                 word[count++] = buffer_end.buffer[i];
                 break;
@@ -360,6 +356,21 @@ void analysis::spearateStates()
                     state = 9;//结束状态
                 }
                 break;
+            case 8:
+                //现在是+-，前面是Ee
+                if ((buffer_end.buffer[i] == '+' || buffer_end.buffer[i] == '-') && (buffer_end.buffer[i - 1] == 'e' || buffer_end.buffer[i - 1] == 'E'))
+                {
+                    word[count++] = buffer_end.buffer[i];
+                    break;
+                }
+                else
+                {
+                    word[count] = '\0';
+                    i--;
+                    finish = 1;
+                    state = 9;//结束状态
+                    break;
+                }
             default:
                 word[count] = '\0';
                 i--;
@@ -448,26 +459,6 @@ void analysis::spearateStates()
             {
             case 10:
                 word[count++] = buffer_end.buffer[i];
-                break;
-            default:
-                word[count] = '\0';
-                i--;
-                finish = 1;
-                state = 9;
-                break;
-            }
-            break;
-        case 11:
-            switch (charKind(buffer_end.buffer[i]))
-            {
-                //只有第二个就是数字的才能算作正负实数
-            case 2:
-                word[count++] = buffer_end.buffer[i];
-                state = 2;
-                break;
-            case 8:case 11:
-                word[count++] = buffer_end.buffer[i];
-                state = 8;
                 break;
             default:
                 word[count] = '\0';
