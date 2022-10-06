@@ -402,7 +402,7 @@ void analysis::spearateStates()
             break;
         case 5:
             word[count++] = buffer_end.buffer[i];
-            if (charKind(buffer_end.buffer[i]) == '"')
+            if (buffer_end.buffer[i] == '"')
             {
                 //此时一定不是初态，所以不需要判断i与1的关系
                 if (buffer_end.buffer[i - 1] == '\\')
