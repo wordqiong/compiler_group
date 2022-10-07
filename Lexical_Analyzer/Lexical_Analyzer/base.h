@@ -30,6 +30,7 @@ protected:
     int isPointArrow(char str[]);//->
     int isRegion(char str[]);//::
     int isRegionXigou(char str[]);//::~
+    int isColon(char c);//:
 
     int isEnd(char c);//结束符
     int isStr(char str[]);//字符串

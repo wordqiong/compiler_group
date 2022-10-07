@@ -19,6 +19,7 @@
 . : 62
 / : 28
 /= : 49
+: : 68
 ::~ : 67
 ; : 55
 ;; : 66
@@ -44,12 +45,12 @@ define : 9
 do : 6
 double : 8
 else : 10
-float : 69
+float : 70
 for : 12
 if : 13
 include : 15
 int : 14
-integer : 68
+integer : 69
 iostream : 24
 long : 16
 main : 17

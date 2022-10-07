@@ -17,6 +17,7 @@ const char Brackets_Right_Square = ']';
 const char Point_Arrow[5] = "->";
 const char Region[5] = "::";
 const char Region_Xigou[5] = "::~";
+const char Colon = ':';
 
 const char Monocular_Operator[20] = { '+','-','*','/','!','%','~','&','|','^','>','<','='};   //单目运算符 13个
 const char Binocular_Operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>"}; //双目运算符 12个
@@ -614,6 +615,17 @@ int base::isRegionXigou(char str[])
     return 0;
 
 }//::~
+
+/********************************************
+ * 判断输入字串类型 是 字符 ':'
+ * *********************************************/
+int base::isColon(char c)
+{
+    if (c == Colon)
+        return 1;
+    return 0;
+
+}//:
 
 base::~base()
 {

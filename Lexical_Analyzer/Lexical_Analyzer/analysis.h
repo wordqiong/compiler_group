@@ -25,6 +25,7 @@ const int Point_Arrow = 20;
 const int Region = 21;
 const int Region_Xigou = 22;
 const int Point = 23;
+const int Colon = 24;
 const char keyword[50][12] = { "break","case","char","class","continue","do","default","double","define",
 "else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while","iostream" };//24个
 /*

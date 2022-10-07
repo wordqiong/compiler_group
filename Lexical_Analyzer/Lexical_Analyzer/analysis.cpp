@@ -555,6 +555,8 @@ void analysis::kindJudge(char* str)
         kind = Region;
     else if (isRegionXigou(str) == 1)
         kind = Region_Xigou;
+    else if (strlen(str) == 1 && isColon(str[0]) == 1)
+        kind = Colon;
     else if (isPoint(str[0]) == 1 && strlen(str) == 1)
         kind = Point;
     else if (isStr(str))
@@ -638,6 +640,9 @@ void analysis::printResult(int kind, char* str, int opt)
         case Region_Xigou:
             fprintf(fout, "[Îö¹¹·û]----[%s]\n", str);
             break;
+        case Colon:
+            fprintf(fout, "[Ã°ºÅ]----[%s]\n", str);
+            break;
         case Point:
             fprintf(fout, "[µã·û]----[%s]\n", str);
             break;
@@ -717,6 +722,9 @@ void analysis::printResult(int kind, char* str, int opt)
             break;
         case Region_Xigou:
             fprintf(fout, "[Îö¹¹·û]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Colon:
+            fprintf(fout, "[Ã°ºÅ]----[%d]----[%s]\n", WordKindCode, str);
             break;
         case Point:
             fprintf(fout, "[µã·û]----[%d]----[%s]\n", WordKindCode, str);
@@ -798,6 +806,9 @@ int analysis::getWordKindCode(int kind, char* str)
     case Region_Xigou:
         ret = WordCode["::~"];
         break;
+    case Colon:
+        ret = WordCode[":"];
+        break;
     case Point:
         ret = WordCode["."];
         break;
@@ -846,6 +857,7 @@ analysis::analysis()
     WordCode["->"] = ++cnt;
     WordCode[";;"] = ++cnt;
     WordCode["::~"] = ++cnt;
+    WordCode[":"] = ++cnt;
     //Êý×Ö
     WordCode["integer"] = ++cnt;
     WordCode["float"] = ++cnt;
