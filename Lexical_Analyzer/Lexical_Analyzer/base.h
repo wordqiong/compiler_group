@@ -23,6 +23,14 @@ protected:
     int isBracketsRight(char c);//右括号
     int isBracketsLeftBig(char c);//左大括号
     int isBracketsRightBig(char c);//右大括号
+
+    int isPoint(char c);//.
+    int isBracketsLeftSquare(char c);//[
+    int isBracketsRightSquare(char c);//]
+    int isPointArrow(char str[]);//->
+    int isRegion(char str[]);//::
+    int isRegionXigou(char str[]);//::~
+
     int isEnd(char c);//结束符
     int isStr(char str[]);//字符串
     int isChar(char str[]);//字串是字符

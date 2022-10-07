@@ -11,6 +11,12 @@ const char Brackets_Right = ')';
 const char Brackets_Left_Big = '{';
 const char Brackets_Right_Big = '}';
 const char End = '#';
+const char Point = '.';
+const char Brackets_Left_Square = '[';
+const char Brackets_Right_Square = ']';
+const char Point_Arrow[5] = "->";
+const char Region[5] = "::";
+const char Region_Xigou[5] = "::~";
 
 const char Monocular_Operator[20] = { '+','-','*','/','!','%','~','&','|','^','>','<','='};   //单目运算符 13个
 const char Binocular_Operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>"}; //双目运算符 12个
@@ -546,6 +552,68 @@ int base::isChar(char str[])
     }
     return 0;
 }
+
+/********************************************
+ * 判断输入字串类型 是 字符 '.'
+ * *********************************************/
+int base::isPoint(char c) 
+{
+    if (Point == c)
+        return 1;
+    return 0;
+};//.
+
+/********************************************
+ * 判断输入字串类型 是 字符 '['
+ * *********************************************/
+int base::isBracketsLeftSquare(char c)
+{
+    if (Brackets_Left_Square == c)
+        return 1;
+    return 0;
+};//[
+
+/********************************************
+ * 判断输入字串类型 是 字符 ']'
+ * *********************************************/
+int base::isBracketsRightSquare(char c) 
+{
+    if (Brackets_Right_Square == c)
+        return 1;
+    return 0;
+
+};//]
+
+/********************************************
+ * 判断输入字串类型 是 字符 '->'
+ * *********************************************/
+int base::isPointArrow(char str[]) 
+{
+    if (strcmp(str, Point_Arrow) == 0)
+        return 1;
+    return 0;
+};//->
+
+/********************************************
+ * 判断输入字串类型 是 字符 '::'
+ * *********************************************/
+int base::isRegion(char str[]) 
+{
+    if (strcmp(str, Region) == 0)
+        return 1;
+    return 0;
+}//::
+
+/********************************************
+ * 判断输入字串类型 是 字符 '::~'
+ * *********************************************/
+int base::isRegionXigou(char str[]) 
+{
+    if (strcmp(str, Region_Xigou) == 0)
+        return 1;
+    return 0;
+
+}//::~
 
 base::~base()
 {
