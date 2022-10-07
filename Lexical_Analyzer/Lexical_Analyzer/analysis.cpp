@@ -441,9 +441,16 @@ void analysis::spearateStates()
             word[count++] = buffer_end.buffer[i];
             if (buffer_end.buffer[i] == '\'')
             {
-                word[count] = '\0';
-                finish = 1;
-                state = 9;
+                //还有一种情况是'\''，还是得判断
+                if (buffer_end.buffer[i - 1] == '\\')
+                {
+                }
+                else
+                {
+                    word[count] = '\0';
+                    finish = 1;
+                    state = 9;
+                }
             }
             break;
         case 7:
