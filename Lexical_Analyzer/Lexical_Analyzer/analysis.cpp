@@ -538,6 +538,18 @@ void analysis::kindJudge(char* str)
         kind = BracketsRightBig;
     else if (isEnd(str[0]) == 1 && strlen(str) == 1)
         kind = End;
+    else if (isBracketsLeftSquare(str[0]) == 1 && strlen(str) == 1)
+        kind = Brackets_Left_Square;
+    else if (isBracketsRightSquare(str[0]) == 1 && strlen(str) == 1)
+        kind = Brackets_Right_Square;
+    else if (isPointArrow(str) == 1)
+        kind = Point_Arrow;
+    else if (isRegion(str) == 1)
+        kind = Region;
+    else if (isRegionXigou(str) == 1)
+        kind = Region_Xigou;
+    else if (isPoint(str[0]) == 1 && strlen(str) == 1)
+        kind = Point;
     else if (isStr(str))
         kind = Str;
     else if (isChar(str))
@@ -604,6 +616,24 @@ void analysis::printResult(int kind, char* str, int opt)
         case Char:
             fprintf(fout, "[×Ö·û]----[%s]\n", str);
             break;
+        case Brackets_Left_Square:
+            fprintf(fout, "[×ó·½À¨ºÅ]----[%s]\n", str);
+            break;    
+        case Brackets_Right_Square:
+            fprintf(fout, "[ÓÒ·½À¨ºÅ]----[%s]\n", str);
+            break;
+        case Point_Arrow:
+            fprintf(fout, "[¼ýÍ·]----[%s]\n", str);
+            break;
+        case Region:
+            fprintf(fout, "[Óò·û]----[%s]\n", str);
+            break;
+        case Region_Xigou:
+            fprintf(fout, "[Îö¹¹·û]----[%s]\n", str);
+            break;
+        case Point:
+            fprintf(fout, "[µã·û]----[%s]\n", str);
+            break;
         default:
             fprintf(fout, "[ÆäËû]----[%s]\n", str);
             break;
@@ -665,6 +695,24 @@ void analysis::printResult(int kind, char* str, int opt)
             break;
         case Char:
             fprintf(fout, "[×Ö·û]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Brackets_Left_Square:
+            fprintf(fout, "[×ó·½À¨ºÅ]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Brackets_Right_Square:
+            fprintf(fout, "[ÓÒ·½À¨ºÅ]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Point_Arrow:
+            fprintf(fout, "[¼ýÍ·]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Region:
+            fprintf(fout, "[Óò·û]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Region_Xigou:
+            fprintf(fout, "[Îö¹¹·û]----[%d]----[%s]\n", WordKindCode, str);
+            break;
+        case Point:
+            fprintf(fout, "[µã·û]----[%d]----[%s]\n", WordKindCode, str);
             break;
         default:
             fprintf(fout, "[ÆäËû]----[%s]\n", str);
@@ -728,6 +776,24 @@ int analysis::getWordKindCode(int kind, char* str)
     case Char:
         ret = WordCode["char"];
         break;
+    case Brackets_Left_Square:
+        ret = WordCode["["];
+        break;
+    case Brackets_Right_Square:
+        ret = WordCode["]"];
+        break;
+    case Point_Arrow:
+        ret = WordCode["->"];
+        break;
+    case Region:
+        ret = WordCode["::"];
+        break;
+    case Region_Xigou:
+        ret = WordCode["::~"];
+        break;
+    case Point:
+        ret = WordCode["."];
+        break;
     default:
         ret = -100;
         break;
@@ -767,8 +833,12 @@ analysis::analysis()
     WordCode["{"] = ++cnt;
     WordCode["}"] = ++cnt;
     WordCode["#"] = ++cnt;
-    WordCode["string"] = ++cnt;
-    WordCode["char"] = ++cnt;
+    WordCode["."] = ++cnt;
+    WordCode["["] = ++cnt;
+    WordCode["]"] = ++cnt;
+    WordCode["->"] = ++cnt;
+    WordCode[";;"] = ++cnt;
+    WordCode["::~"] = ++cnt;
     //Êý×Ö
     WordCode["integer"] = ++cnt;
     WordCode["float"] = ++cnt;
