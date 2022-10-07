@@ -16,6 +16,20 @@ void analysis::getStrBuffer() {
         c = fgetc(fin);
         if (c == EOF)
         {
+            //结束了
+            deleNotes();
+            deleSpaces();
+            if (buffer_read[buffer_choose].count > 0)
+            {
+                strcpy(buffer_end.buffer, buffer_read[buffer_choose].buffer);
+                buffer_end.count = buffer_read[buffer_choose].count;
+                //进入状态机处理 
+                //注：给的缓冲区 有可能是不完整的字串 如果传入的太长了 
+                //eg: "111*n"超过300个了，就会分割开，
+                buffer_read[buffer_choose].count = 0;
+                fprintf(fout_pre, "%s\n", buffer_read[buffer_choose].buffer);
+                spearateStates();
+            }
             break;
         }
 
@@ -55,7 +69,10 @@ void analysis::getStrBuffer() {
         {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count] = '\0';
         }
-
+        else if (c == '\n')
+        {
+            buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count] = '\0';
+        }
         else {
             buffer_read[buffer_choose].buffer[buffer_read[buffer_choose].count++] = c;
             continue;//继续吧
@@ -94,7 +111,7 @@ void analysis::getStrBuffer() {
 void analysis::deleNotes() {
     //删除注释
     char note[BUFFER_SIZE];
-    char note_count = 0;
+    int note_count = 0;
     bool flag_qoute = 0;
     //状态机 读到非“”包含的/进入循环
     for (int i = 0; buffer_read[buffer_choose].buffer[i] != '\0'; i++)
@@ -102,17 +119,19 @@ void analysis::deleNotes() {
         if (buffer_read[buffer_choose].buffer[i] == '"')
         {
             flag_qoute = 1 - flag_qoute;
-            continue;
+            if (note_flag != 1)
+                continue;
         }
         if (flag_qoute == 1)
-            continue;
+            if (note_flag != 1)
+                continue;
         if (buffer_read[buffer_choose].buffer[i] == '/' || note_flag == 1)
         {
             if (buffer_read[buffer_choose].buffer[i + 1] == '\0')
             {
                 continue;
             }
-            if (buffer_read[buffer_choose].buffer[i + 1] == '/')
+            if (buffer_read[buffer_choose].buffer[i + 1] == '/'&&!note_flag)
             {
                 //进入 //状态 直到\0停止
                 int j;
@@ -139,7 +158,7 @@ void analysis::deleNotes() {
                 {
 
                     note[note_count++] = buffer_read[buffer_choose].buffer[j];
-                    if (buffer_read[buffer_choose].buffer[j] == '*' && buffer_read[buffer_choose].buffer[j + 1] == '/')
+                    if (!flag_qoute&&buffer_read[buffer_choose].buffer[j] == '*' && buffer_read[buffer_choose].buffer[j + 1] == '/')
                     {
                         note_flag = 0;
                         note[note_count++] = '/';
