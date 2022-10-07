@@ -13,6 +13,14 @@ void analysis::getStrBuffer() {
     while (1)
     {
 
+	/*
+	这是多行注释测试
+多
+行
+注释
+测试
+*/
+
         c = fgetc(fin);
         if (c == EOF)
         {

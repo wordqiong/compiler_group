@@ -229,16 +229,17 @@ void analysis::deleSpaces() {
             if (buffer_read[buffer_choose].buffer[j] == '\0')
             {
                 buffer_read[buffer_choose].buffer[i] = '\0';
+                buffer_read[buffer_choose].count -= (j - i);
                 break;
             }
             //如果是开头,直接全删就行
             if (i == 0)
             {
                 int k = i;
+                buffer_read[buffer_choose].count -= (j - i);
                 for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
                     buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                 buffer_read[buffer_choose].buffer[k] = '\0';
-
                 // i--是因为原来i的位置是空格，现在被删除掉了，所以回退一个单位
                 i--;
             }
@@ -248,6 +249,7 @@ void analysis::deleSpaces() {
                 if (j - i >= 2)
                 {
                     int k = i + 1;
+                    buffer_read[buffer_choose].count -= (j - (i + 1));
                     for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
                         buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                     buffer_read[buffer_choose].buffer[k] = '\0';
@@ -266,10 +268,10 @@ void analysis::deleSpaces() {
                 {
                     //把后面的移动到前面
                     int k = i;
+                    buffer_read[buffer_choose].count -= (j - i);
                     for (; buffer_read[buffer_choose].buffer[j] != '\0'; j++, k++)
                         buffer_read[buffer_choose].buffer[k] = buffer_read[buffer_choose].buffer[j];
                     buffer_read[buffer_choose].buffer[k] = '\0';
-
                     // i--是因为原来i的位置是空格，现在被删除掉了，所以回退一个单位
                     i--;
                 }
@@ -740,7 +742,7 @@ analysis::analysis()
     note_flag = 0;
     fin = fopen("code_in.txt", "r");
     fout = fopen("res_out.txt", "w");
-    fout_pre = fopen("pre-process_code.txt", "w");
+    fout_pre = fopen("pre-processed_code.txt", "w");
     fout_lable = fopen("word_lable.txt", "w");
     //map赋初值
     const int keyword_size = 24;
