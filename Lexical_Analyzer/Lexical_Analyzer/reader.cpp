@@ -90,6 +90,9 @@ static void packgram(void)
 
         }
         ritem[itemno++] = rule_number_as_item_number(ruleno);
+        //ExtDefList ::= ExtDef ExtDefList
+        //ritem  0 2 -2(-1-rule_index) 2 1 3 -3(-1-rule_index)
+        //
         assert(itemno < ITEM_NUMBER_MAX);
         ruleno++;
         assert(ruleno < ITEM_NUMBER_MAX);
@@ -133,10 +136,13 @@ static void check_and_convert_grammer(void)
     }
 
     {
+        //accept 
+        //拓展文法 加进去 
+        //S->S'
         symbol_list* p = symbol_list_new_sym(accept, empty_location);
         p->location = grammar->location;
         p->next = symbol_list_new_sym(startsymbol, empty_location);
-        p->next->next = symbol_list_new_sym(endtoken, empty_location);
+        //p->next->next = symbol_list_new_sym(endtoken, empty_location);
         p->next->next->next = symbol_list_new_sym(NULL, empty_location);
         p->next->next->next->next = grammar;
         nrules += 1;
@@ -169,11 +175,7 @@ void reader(void)
     errtoken->class_ = token_sym;
     errtoken->number = ntokens++;
 
-    /* Construct a token that represents all undefined literal tokens.
-       It is always token number 2.  */
-    undeftoken = symbol_get("$undefined", empty_location);
-    undeftoken->class_ = token_sym;
-    undeftoken->number = ntokens++;
+
 
     //openfile
     FILE* file = fopen(filename, "r");

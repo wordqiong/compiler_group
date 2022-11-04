@@ -24,6 +24,14 @@ struct First
 	first_number fisrt_numbers;//当前集合存了多少个
 };
 
+//derives[]是一个数组 derives[0] A, derives[1]B  
+//derives是一个rule_list 链表 数组
+//derives[1]是一个链表
+//derives[2]是一个链表
+//....
+//Relop(symbol)  relop > 链接 relop < 链接relop >= 链接relop <= 链接relop == 链接relop !=
+//nullable  ruleno  
+//rules[] 所有的rule
 First* set;//存所有symbol的 每个下标 与symbol表里的非终止符对应 
 
 //求first集合
@@ -32,30 +40,5 @@ First* set;//存所有symbol的 每个下标 与symbol表里的非终止符对应
 //是非终结符，看看nullable里 存的能不能推到空串 
 //推不倒，那就 把这个非终结符 加到first集合里   如果要print 那就一层层找就可以  //有可能出现互相包含的情况，这种认为文法错误吧
 //能推到，再看下一个符号 直到找完
-static void
-set_firsts(void);
-//生成所有非终结符的后继产生式
-static void
-set_fderives(void);
-//做一个封装，里面主要就是 set_fderives的功能 
-//封装一层 更加清晰 
-void
-new_closure(unsigned int n);
-
-//传入核心项 通过这个 产生对应的闭包函数 
-void
-closure(item_number* core, size_t n);
-
-
-void
-free_closure(void);
-
-new_itemsets();
-
-append_states();
-
-save_reductions();
-
-set_states();
 
 
