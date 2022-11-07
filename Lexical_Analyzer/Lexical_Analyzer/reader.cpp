@@ -59,10 +59,6 @@ symbol* endtoken;//
 static bool start_flag = false;
 
 
-
-
-
-
 //完成rule 的定义
 static void packgram(void)
 {
@@ -78,7 +74,7 @@ static void packgram(void)
         rules[ruleno].user_number = ruleno;
         rules[ruleno].number = ruleno;
         rules[ruleno].lhs = p->content.sym;
-        rules[ruleno].rhs = ritem + itemno;
+        rules[ruleno].rhs = ritem+itemno;
         for (p = p->next; p && p->content.sym; p = p->next)
         {
             rule_length++;
@@ -91,8 +87,9 @@ static void packgram(void)
         }
         ritem[itemno++] = rule_number_as_item_number(ruleno);
         //ExtDefList ::= ExtDef ExtDefList
-        //ritem  0 2 -2(-1-rule_index) 2 1 3 -3(-1-rule_index)
-        //
+        // ExtDefList ::= ExtDef
+        // map<int,char*> symbol;
+        //ritem  0 2 [-1-rule_index] 2 1 3 -3(-1-rule_index)
         assert(itemno < ITEM_NUMBER_MAX);
         ruleno++;
         assert(ruleno < ITEM_NUMBER_MAX);
