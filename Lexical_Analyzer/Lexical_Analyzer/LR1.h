@@ -2,15 +2,16 @@
 #include "grammar.h"
 #include <vector>
 #include <map>
+#include <queue>
 
 class LR1_item
 {
-private:
+public:
 	int left;//左侧符号序号编号
 	vector<int> right;//右侧符号序号编号
 	int dot_site;//中心点的位置
 	int forward;//向前看的符号编号 
-	int grammar_index;//这个LR1项是哪个产生式出来的
+	int grammar_index;//这个LR1项是哪个产生式出来的,其实是有冗余，有这个index就已经有了left和right
 public:
 	LR1_item(int l, vector<int>& r, int ds, int fw, int gi);
 	bool operator==(LR1_item& item);
@@ -28,13 +29,17 @@ public:
 
 class LR1_closure
 {
-private:
+public:
 	vector<LR1_item> key_item;//该闭包的关键项目，有没有用不知道
 	vector<LR1_item> closure;//项目闭包
 public:
 	//TODO:这个需要考虑要不要保留
 	bool isIn(LR1_item item);//返回该项目是否在该闭包中
-	bool operator==(LR1_closure& closure);
+	bool operator==(LR1_closure& clos);
+	map<int, vector<int>> getShiftinSymbol();//得到可移进的字符以及项目在闭包中的位置
+	set<int> getReduceSymbol();//得到可以归约的符号
+	//TODO:归约项要不要写
+
 };
 
 //class Closure_Sum
@@ -81,6 +86,9 @@ private:
 	//GOTO表就是非终结符与状态之间，只有状态转移或空
 	map<pair<int, int>, GOTO_Option> GOTO;
 	
+	LR1_item start_item; //初始项目
+	LR1_closure start_closure; //初始项目闭包
+
 public:
 	//得到所有项目
 	int getItemSum(); //从grammar继承的rules，从开始产生式开始，使得项目集中第一个是闭包
