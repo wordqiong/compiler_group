@@ -21,6 +21,12 @@
     <ClInclude Include="base.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="grammar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="LR1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base.cpp">
@@ -30,6 +36,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LR1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="grammar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
