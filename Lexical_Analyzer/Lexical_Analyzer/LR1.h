@@ -37,8 +37,7 @@ public:
 	bool isIn(LR1_item item);//返回该项目是否在该闭包中
 	bool operator==(LR1_closure& clos);
 	map<int, vector<int>> getShiftinSymbol();//得到可移进的字符以及项目在闭包中的位置
-	set<int> getReduceSymbol();//得到可以归约的符号
-	//TODO:归约项要不要写
+	vector<pair<int,int>> getReduceSymbol();//得到可以归约的符号和对应的产生式的序号
 
 };
 
@@ -72,19 +71,32 @@ class ACTION_item
 public:
 	ACTION_Option op;
 	int serial;//编号，根据op是移进，归约或接受而有不同的含义
+
+	ACTION_item(ACTION_Option ac_op, int num);
+	ACTION_item();
+};
+
+class GOTO_item
+{
+public:
+	GOTO_Option op;
+	int serial;//编号，在GOTO表里只有转移编号，就是闭包集中的编号
+
+	GOTO_item(GOTO_Option goto_op, int num);
+	GOTO_item();
 };
 
 class LR1_Grammar:grammar
 {
 private:
-	set<LR1_item> item_sum;//存所有的项目，也进行编个号
-	set<LR1_closure> closure_sum;//所有可能出现的闭包，相当于编个号
+	vector<LR1_item> item_sum;//存所有的项目，set没有编号
+	vector<LR1_closure> closure_sum;//所有可能出现的闭包，相当于编个号
 	map<pair<int, int>, int> DFA;//前面的pair是<closure的编号，符号的编号>，对应的是能连接的目标closure编号
 								//相当于就是表示连接关系    
 	//ACTION表和DFA有区别，在于归约项，如何当该归约时表示归约产生式序号
 	map<pair<int, int>, ACTION_item> ACTION;//ACTION表
 	//GOTO表就是非终结符与状态之间，只有状态转移或空
-	map<pair<int, int>, GOTO_Option> GOTO;
+	map<pair<int, int>, GOTO_item> GOTO;
 	
 	LR1_item start_item; //初始项目
 	LR1_closure start_closure; //初始项目闭包
@@ -95,13 +107,18 @@ public:
 
 	LR1_closure computeClosure(vector<LR1_item>);//给定项目计算闭包
 
+	//判断闭包集合中是否有该闭包，若有返回序号，若没有返回-1
+	int getClosureIndex(LR1_closure& clos);
+
 	//得到所有闭包，初始闭包是0号闭包，在过程中就把DFA确定了，但是这样没有序号？？？？？？？有的
-	int getClosureSum();
+	void getClosureSum();
 
-	//计算ACTION表
-	int computeACTION();
+	//计算ACTION表和GOTO表
+	void computeACTION_GOTO();
 
-	//计算GOTO表
-	int computeGOTO();
+	//打印ACTION和GOTO表
+	void printTable();
 
+	//进行归约，在过程中进行打印
+	void analyze(string file_path);
 };
