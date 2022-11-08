@@ -1,8 +1,14 @@
 #pragma once
 #include "grammar.h"
+#include "analysis.h"
 #include <vector>
 #include <map>
 #include <queue>
+#include <fstream>
+#include <iomanip>
+
+const string out_Table_path = "../work_dir/Tables.txt";//输出表地址
+const string analysis_process_path = "../work_dir/Analysis_Process.txt";//输出归约地址
 
 class LR1_item
 {
@@ -117,8 +123,8 @@ public:
 	void computeACTION_GOTO();
 
 	//打印ACTION和GOTO表
-	void printTable();
+	void printTables();
 
 	//进行归约，在过程中进行打印
-	void analyze(string file_path);
+	void analyze(vector<unit>& lexical_res);
 };

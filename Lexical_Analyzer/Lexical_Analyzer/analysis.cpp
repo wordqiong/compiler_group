@@ -1,4 +1,9 @@
 #include "analysis.h"
+unit::unit(string tp, string v)
+{
+    this->type = tp;
+    this->value = v;
+}
 //多行注释的情况 没有添加 即 多行注释的情况下 不应该
 void analysis::getStrBuffer() {
     //自己读到东西 就不断的往缓冲区里添加

@@ -40,6 +40,13 @@ const char* endsign = "#";
 const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" ,">","<"};   //单目运算符 13个
 const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>"}; //双目运算符 14个
 
+class unit
+{
+public:
+    string type;
+    string value;
+    unit(string tp, string v);
+};
 
 class Buffer {
 
