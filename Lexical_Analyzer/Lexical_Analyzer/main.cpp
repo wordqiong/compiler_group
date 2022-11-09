@@ -5,8 +5,8 @@ int main()
 {
 	analysis res;
 	res.getStrBuffer();
-	grammar rule("grammar(1).txt");
-	LR1_Grammar lr1_grammar();
 
+	LR1_Grammar lr1_grammar("grammar(1).txt");
+	lr1_grammar.checkClosure();
 	return 0;
 }

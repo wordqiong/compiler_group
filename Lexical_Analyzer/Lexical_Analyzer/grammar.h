@@ -56,7 +56,7 @@ public:
     set<int>non_terminals;//非终结符在symbol中的下标
     vector<rule>rules;//所有的文法 
     int start_location;//起始产生式在rules中的位置
-
+    grammar(){};
     grammar(const string file_path);
     //从file中读入grammar
     void ReadGrammar(const string file_path);
@@ -73,7 +73,7 @@ public:
     //返回一个符号串的first集合
     set<int>GetFirst(const vector<int>& str);
     //
-protected:
+public:
     bool haveStartToken;
     bool haveAllTerminalToken;
     bool haveExtendStartToken;

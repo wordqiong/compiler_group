@@ -429,8 +429,48 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 	}
 	ofs.close();
 }
+void LR1_item::print() {
 
-
+}
+void LR1_closure::print(const vector<symbol>symbols)
+{
+	//输出所有的key
+	fstream file_open;
+	file_open.open(closure_test_path, ios::out);
+	for (int i = 0; i < key_item.size(); i++)
+	{
+		file_open << "rule" << i << "  ";
+		file_open << "left: " << symbols[key_item[i].left].tag;
+		file_open << "  right: ";
+		for (int j = 0; j < key_item[i].right.size(); j++)
+		{
+			if (j == key_item[i].dot_site)
+			{
+				file_open << " * ";
+			}
+			file_open << symbols[key_item[i].right[j]].tag << " ";
+		}
+		file_open <<"     terim:  " << symbols[closure[i].forward].tag;
+		file_open << endl;
+	}
+	//输出所有的key
+	for (int i = 0; i < closure.size(); i++)
+	{
+		file_open << "rule" << i << "  ";
+		file_open << "left: " << symbols[closure[i].left].tag;
+		file_open << "  right: ";
+		for (int j = 0; j < closure[i].right.size(); j++)
+		{
+			if (j == closure[i].dot_site)
+			{
+				file_open << " * ";
+			}
+			file_open << symbols[closure[i].right[j]].tag << " ";
+		}
+		file_open << "     terim:  "<< symbols[closure[i].forward].tag;
+		file_open << endl;
+	}
+}
 LR1_closure LR1_Grammar::computeClosure(vector<LR1_item> lr1)
 {
 	//传入核心项
@@ -504,11 +544,10 @@ LR1_closure LR1_Grammar::computeClosure(vector<LR1_item> lr1)
 		}
 
 	}
-	
 	return closure_now;
 }
-//处理rule，转为item_sum存储
-int LR1_Grammar::getItemSum()
+//check
+int LR1_Grammar::checkClosure()
 {
 	//related var 
 	// vector<LR1_item> item_sum
@@ -516,7 +555,19 @@ int LR1_Grammar::getItemSum()
 	// vector<rule>rules;
 	// start_location
 
-	start_item.LR1_itemInit(rules[start_location].left_symbol, rules[start_location].right_symbol,0,Find_Symbol_Index_By_Token(EndToken),start_location);
-
+	start_item.LR1_itemInit(rules[1].left_symbol, rules[1].right_symbol,0,Find_Symbol_Index_By_Token(EndToken),start_location);
+	vector<LR1_item>lr1;
+	lr1.push_back(start_item);
+	 start_closure= computeClosure(lr1);
+	 start_closure.print(this->symbols);
+	 return 0;
 	
+}
+LR1_Grammar::LR1_Grammar(const string file_path)
+{
+	ReadGrammar(file_path);
+	//初始化 所有终结符的first
+	print();
+	//初始化所有非终结符的first
+	InitFirst();
 }

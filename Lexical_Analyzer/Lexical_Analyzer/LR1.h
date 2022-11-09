@@ -9,6 +9,7 @@
 
 const string out_Table_path = "../work_dir/Tables.txt";//输出表地址
 const string analysis_process_path = "../work_dir/Analysis_Process.txt";//输出归约地址
+const string closure_test_path = "../work_dir/closure_test.txt";//输出闭包测试地址
 
 class LR1_item
 {
@@ -19,6 +20,8 @@ public:
 	int forward;//向前看的符号编号 
 	int grammar_index;//这个LR1项是哪个产生式出来的,其实是有冗余，有这个index就已经有了left和right
 public:
+	void print();
+	LR1_item() { left = 0; dot_site = 0; forward = 0; grammar_index = 0; right.push_back(0); };
 	LR1_item(int l, vector<int>& r, int ds, int fw, int gi);
 	bool operator==(const LR1_item& item);
 	void LR1_itemInit(int l, vector<int>& r, int ds, int fw, int gi);
@@ -45,7 +48,7 @@ public:
 	bool operator==(LR1_closure& clos);
 	map<int, vector<int>> getShiftinSymbol();//得到可移进的字符以及项目在闭包中的位置
 	vector<pair<int, int>> getReduceSymbol();//得到可以归约的符号和对应的产生式的序号
-
+	void print(const vector<symbol>symbols);
 };
 
 //class Closure_Sum
@@ -70,7 +73,7 @@ enum ACTION_Option
 enum GOTO_Option
 {
 	GO,
-	REJECT
+	REJECT_
 };
 
 class ACTION_item
@@ -93,9 +96,9 @@ public:
 	GOTO_item();
 };
 
-class LR1_Grammar :grammar
+class LR1_Grammar :public grammar
 {
-private:
+public:
 	vector<LR1_item> item_sum;//存所有的项目，set没有编号
 	vector<LR1_closure> closure_sum;//所有可能出现的闭包，相当于编个号
 	map<pair<int, int>, int> DFA;//前面的pair是<closure的编号，符号的编号>，对应的是能连接的目标closure编号
@@ -107,10 +110,12 @@ private:
 
 	LR1_item start_item; //初始项目
 	LR1_closure start_closure; //初始项目闭包
-	
+	LR1_Grammar(){};
+	LR1_Grammar(const string file_path);
+
 public:
 	//得到所有项目
-	int getItemSum(); //从grammar继承的rules，从开始产生式开始，使得项目集中第一个是闭包
+	int checkClosure(); //从grammar继承的rules，从开始产生式开始，使得项目集中第一个是闭包
 
 	LR1_closure computeClosure(vector<LR1_item>);//给定项目计算闭包
 

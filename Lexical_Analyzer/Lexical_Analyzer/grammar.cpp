@@ -131,9 +131,7 @@ void  grammar::checkGrammar()
 		haveExtendStartToken = false;
 	}
 	else {
-		//拓展文法产生式在rule中的位置
-		start_location = index;
-		cout << "拓展产生式在rule中的位置" << index << endl;
+		
 		haveExtendStartToken = true;
 	}
 	index = Find_Symbol_Index_By_Token(AllTerminalToken);
@@ -235,6 +233,13 @@ void grammar::ReadGrammar(const string file_path) {
 					right_symbol_index.push_back(right_index_now);
 				}
 				this->rules.push_back(rule(left_symbol, right_symbol_index));
+				//拓展文法产生式在rule中的位置
+				if (symbols[left_symbol].tag == ExtendStartToken)
+				{
+					start_location = rules.size()-1;
+					cout << "拓展产生式在rule中的位置" << start_location << endl;
+				}
+				
 			}
 		}
 	}
@@ -457,7 +462,7 @@ set<int>grammar::GetFirst(const vector<int>& str) {
 		if (symbols[*i].type == symbol_class::token_sym)
 		{
 			is_epsilon = false;
-			mergeSet(first_set, symbols[*i].first_set, empty_location);
+			mergeSet(symbols[*i].first_set,first_set,  empty_location);
 
 			break;
 		}
@@ -467,7 +472,7 @@ set<int>grammar::GetFirst(const vector<int>& str) {
 			first_set.insert(*i);
 			break;
 		}
-		mergeSet(first_set, symbols[*i].first_set, empty_location);
+		mergeSet(symbols[*i].first_set, first_set, empty_location);
 		is_epsilon = symbols[*i].first_set.count(empty_location) && is_epsilon;
 		if (!is_epsilon)
 			break;

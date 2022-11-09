@@ -1,0 +1,97 @@
+rule0  left: Program  right:  * ExtDefList      terim:  #
+rule0  left: Program  right:  * ExtDefList      terim:  #
+rule1  left: ExtDefList  right:  * ExtDef ExtDefList      terim:  #
+rule2  left: ExtDefList  right: @      terim:  #
+rule3  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  return
+rule4  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  if
+rule5  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  else
+rule6  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  while
+rule7  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  void
+rule8  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  int
+rule9  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  <ID>
+rule10  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  <INT>
+rule11  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  ;
+rule12  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  ,
+rule13  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  (
+rule14  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  {
+rule15  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  +
+rule16  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  -
+rule17  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  *
+rule18  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  /
+rule19  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  >
+rule20  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  <
+rule21  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  >=
+rule22  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  <=
+rule23  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  !=
+rule24  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  ==
+rule25  left: ExtDef  right:  * VarSpecifier <ID> ;      terim:  #
+rule26  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  return
+rule27  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  if
+rule28  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  else
+rule29  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  while
+rule30  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  void
+rule31  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  int
+rule32  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  <ID>
+rule33  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  <INT>
+rule34  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  ;
+rule35  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  ,
+rule36  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  (
+rule37  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  {
+rule38  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  +
+rule39  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  -
+rule40  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  *
+rule41  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  /
+rule42  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  >
+rule43  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  <
+rule44  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  >=
+rule45  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  <=
+rule46  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  !=
+rule47  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  ==
+rule48  left: ExtDef  right:  * FunSpecifier FunDec Block      terim:  #
+rule49  left: VarSpecifier  right:  * int      terim:  <ID>
+rule50  left: FunSpecifier  right:  * void      terim:  return
+rule51  left: FunSpecifier  right:  * void      terim:  if
+rule52  left: FunSpecifier  right:  * void      terim:  else
+rule53  left: FunSpecifier  right:  * void      terim:  while
+rule54  left: FunSpecifier  right:  * void      terim:  void
+rule55  left: FunSpecifier  right:  * void      terim:  int
+rule56  left: FunSpecifier  right:  * void      terim:  <ID>
+rule57  left: FunSpecifier  right:  * void      terim:  <INT>
+rule58  left: FunSpecifier  right:  * void      terim:  ;
+rule59  left: FunSpecifier  right:  * void      terim:  ,
+rule60  left: FunSpecifier  right:  * void      terim:  (
+rule61  left: FunSpecifier  right:  * void      terim:  {
+rule62  left: FunSpecifier  right:  * void      terim:  +
+rule63  left: FunSpecifier  right:  * void      terim:  -
+rule64  left: FunSpecifier  right:  * void      terim:  *
+rule65  left: FunSpecifier  right:  * void      terim:  /
+rule66  left: FunSpecifier  right:  * void      terim:  >
+rule67  left: FunSpecifier  right:  * void      terim:  <
+rule68  left: FunSpecifier  right:  * void      terim:  >=
+rule69  left: FunSpecifier  right:  * void      terim:  <=
+rule70  left: FunSpecifier  right:  * void      terim:  !=
+rule71  left: FunSpecifier  right:  * void      terim:  ==
+rule72  left: FunSpecifier  right:  * int      terim:  return
+rule73  left: FunSpecifier  right:  * int      terim:  if
+rule74  left: FunSpecifier  right:  * int      terim:  else
+rule75  left: FunSpecifier  right:  * int      terim:  while
+rule76  left: FunSpecifier  right:  * int      terim:  void
+rule77  left: FunSpecifier  right:  * int      terim:  int
+rule78  left: FunSpecifier  right:  * int      terim:  <ID>
+rule79  left: FunSpecifier  right:  * int      terim:  <INT>
+rule80  left: FunSpecifier  right:  * int      terim:  ;
+rule81  left: FunSpecifier  right:  * int      terim:  ,
+rule82  left: FunSpecifier  right:  * int      terim:  (
+rule83  left: FunSpecifier  right:  * int      terim:  {
+rule84  left: FunSpecifier  right:  * int      terim:  +
+rule85  left: FunSpecifier  right:  * int      terim:  -
+rule86  left: FunSpecifier  right:  * int      terim:  *
+rule87  left: FunSpecifier  right:  * int      terim:  /
+rule88  left: FunSpecifier  right:  * int      terim:  >
+rule89  left: FunSpecifier  right:  * int      terim:  <
+rule90  left: FunSpecifier  right:  * int      terim:  >=
+rule91  left: FunSpecifier  right:  * int      terim:  <=
+rule92  left: FunSpecifier  right:  * int      terim:  !=
+rule93  left: FunSpecifier  right:  * int      terim:  ==
+rule94  left: FunSpecifier  right:  * void      terim:  #
+rule95  left: FunSpecifier  right:  * int      terim:  #
