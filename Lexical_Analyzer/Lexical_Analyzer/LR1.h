@@ -28,15 +28,6 @@ public:
 };
 
 
-////所有项目的一个集合
-//class Item_Sum
-//{
-//private:
-//	set<LR1_item> item_sum;
-//public:
-//	int getItemIndex(LR1_item& item);
-//};
-
 class LR1_closure
 {
 public:
@@ -50,14 +41,6 @@ public:
 	vector<pair<int, int>> getReduceSymbol();//得到可以归约的符号和对应的产生式的序号
 	void print(const vector<symbol>symbols);
 };
-
-//class Closure_Sum
-//{
-//private:
-//	set<LR1_closure> closure_sum;
-//public:
-//	int getClosureIndex(LR1_closure&);
-//};
 
 //构造出DFA后，每一个DFA中的闭包都是一个状态，要在ACTION和GOTO表里面使用的 
 
@@ -114,7 +97,7 @@ public:
 	LR1_Grammar(const string file_path);
 
 public:
-	//得到所有项目
+	//初始化start_item和start_closure
 	int checkClosure(); //从grammar继承的rules，从开始产生式开始，使得项目集中第一个是闭包
 
 	LR1_closure computeClosure(vector<LR1_item>);//给定项目计算闭包

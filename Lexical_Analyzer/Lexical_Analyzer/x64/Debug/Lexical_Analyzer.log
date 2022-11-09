@@ -1,0 +1,14 @@
+﻿  grammar.cpp
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(46,27): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(88,38): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(105,35): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(197,37): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(216,40): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(230,43): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(240,39): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\grammar.cpp(369,7): warning C4101: “useful_action”: 未引用的局部变量
+  main.cpp
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\analysis.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\Lexical_Analyzer\base.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  正在生成代码...
+  Lexical_Analyzer.vcxproj -> D:\大三上\编译原理\作业\词法分析器\Project\compiler_group\Lexical_Analyzer\x64\Debug\Lexical_Analyzer.exe

@@ -40,6 +40,7 @@ bool LR1_closure::operator==(LR1_closure& clos)
 		return false;
 
 	//TODO:变成两层循环了，看看怎么能更简单一些
+	//这里写的不对，只判断了clos的项目是不是在本closure内，没有反向判断，或这样的等号条件是不正确的，但是两个size是相等的才会到这里
 	for (int i = 0; i < clos.closure.size(); i++)
 	{
 		if (!this->isIn(clos.closure[i]))
@@ -59,10 +60,7 @@ map<int, vector<int>> LR1_closure::getShiftinSymbol()
 		int present_symbol = temp.right[temp.dot_site];//当前点后面的字符
 		//存在该字符
 		if (MAP.find(present_symbol) != MAP.end())
-		{
-			vector<int> target = MAP[present_symbol];
-			target.push_back(i);//插入项目的序号
-		}
+			MAP[present_symbol].push_back(i);//插入项目的序号
 		else
 		{
 			vector<int> target;
@@ -118,7 +116,8 @@ GOTO_item::GOTO_item()
 void LR1_Grammar::getClosureSum()
 {
 	//得到初始闭包
-	this->start_closure = computeClosure(vector<LR1_item>(1, this->start_item));
+	//this->start_closure = computeClosure(vector<LR1_item>(1, this->start_item));、
+	//初始闭包加入到闭包集合中
 	this->closure_sum.push_back(this->start_closure);
 
 	//应该是用队列循环求出链接情况
@@ -216,15 +215,15 @@ void LR1_Grammar::computeACTION_GOTO()
 
 void LR1_Grammar::printTables()
 {
-	const int width = 5;
+	const int width = 10;
 	const int interval = 10;
 	const int start_state = 5;
 	const int state_action = 20;
-	const int action_goto = 100;
+	const int action_goto = 230;
 
 	ofstream ofs(out_Table_path, ios::out);
 	ofs.setf(std::ios::left);
-	ofs << setw(start_state) << "STATE" << setw(state_action) << "ACTION" << setw(action_goto) << "GOTO" << endl;
+	ofs << "STATE" << setw(state_action) << " " << "ACTION" << setw(action_goto) << " " << "GOTO" << endl;
 
 	int rowNum = this->closure_sum.size();
 	int columnNum = this->symbols.size();
@@ -233,7 +232,7 @@ void LR1_Grammar::printTables()
 	vector<int> terminal_site;//记录终结符在symbols里面的序号
 	vector<int> non_terminal_site;//记录非终结符在symbols里面的序号
 
-	ofs << setw(start_state + state_action);
+	ofs << setw(start_state) << " ";
 
 	/*************
 	要确保terminal和non_terminal加起来是symbols的总和
@@ -242,11 +241,18 @@ void LR1_Grammar::printTables()
 	{
 		if (terminals.find(i) != terminals.end())
 		{
-			ofs << setw(interval);
-			ofs << symbols[i].tag;
+			ofs << setw(interval) << symbols[i].tag;
 			terminal_site.push_back(i);
 		}
 	}
+	
+	//cout << "symbols.size:" << symbols.size() << endl;
+	//cout << "terminal_site.size:" << terminal_site.size() << "  " << "terminal.size:" << terminals.size() << endl;
+	//cout << "terminal_site:" << endl;
+	//for (int i = 0; i < terminal_site.size(); i++)
+	//{
+	//	cout << i << " " << terminal_site[i] << endl;
+	//}
 
 	for (int i = 0; i < columnNum; i++)
 	{
@@ -257,11 +263,20 @@ void LR1_Grammar::printTables()
 			non_terminal_site.push_back(i);
 		}
 	}
+
+	//cout << "non_terminal_site.size:" << non_terminal_site.size() << "  " << "non_terminals.size:" << non_terminals.size() << endl;
+	//cout << "non_terminal_site:" << endl;
+	//for (int i = 0; i < non_terminal_site.size(); i++)
+	//{
+	//	cout << i << " " << non_terminal_site[i] << endl;
+	//}
+
+
 	ofs << endl;
 
 	for (int i = 0; i < rowNum; i++)
 	{
-		ofs << setw(start_state);
+		ofs << setw(start_state) << i;
 		for (int j = 0; j < actionNum; j++)
 		{
 			auto it = ACTION.find(pair<int, int>(i, terminal_site[j]));
@@ -275,7 +290,7 @@ void LR1_Grammar::printTables()
 					ofs << setw(width) << "acc";
 			}
 			else
-				ofs << setw(width);
+				ofs << setw(width) << " ";
 		}
 		for (int j = 0; j < gotoNum; j++)
 		{
@@ -283,7 +298,7 @@ void LR1_Grammar::printTables()
 			if (it != GOTO.end())
 				ofs << setw(width) << it->second.serial;
 			else
-				ofs << setw(width);
+				ofs << setw(width) << " ";
 		}
 
 		ofs << endl;
@@ -450,6 +465,8 @@ void LR1_closure::print(const vector<symbol>symbols)
 			}
 			file_open << symbols[key_item[i].right[j]].tag << " ";
 		}
+		if(key_item[i].dot_site == key_item[i].right.size())
+			file_open << " * ";
 		file_open <<"     terim:  " << symbols[closure[i].forward].tag;
 		file_open << endl;
 	}
@@ -467,6 +484,8 @@ void LR1_closure::print(const vector<symbol>symbols)
 			}
 			file_open << symbols[closure[i].right[j]].tag << " ";
 		}
+		if (closure[i].dot_site == closure[i].right.size())
+			file_open << " * ";
 		file_open << "     terim:  "<< symbols[closure[i].forward].tag;
 		file_open << endl;
 	}
@@ -555,12 +574,12 @@ int LR1_Grammar::checkClosure()
 	// vector<rule>rules;
 	// start_location
 
-	start_item.LR1_itemInit(rules[1].left_symbol, rules[1].right_symbol,0,Find_Symbol_Index_By_Token(EndToken),start_location);
+	start_item.LR1_itemInit(rules[0].left_symbol, rules[0].right_symbol,0,Find_Symbol_Index_By_Token(EndToken),start_location);
 	vector<LR1_item>lr1;
 	lr1.push_back(start_item);
-	 start_closure= computeClosure(lr1);
-	 start_closure.print(this->symbols);
-	 return 0;
+	start_closure = computeClosure(lr1);
+	start_closure.print(this->symbols);
+	return 0;
 	
 }
 LR1_Grammar::LR1_Grammar(const string file_path)

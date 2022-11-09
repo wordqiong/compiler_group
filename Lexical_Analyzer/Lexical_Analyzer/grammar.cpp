@@ -40,9 +40,9 @@ void Trimmed(std::string& str) {
 int mergeSet(set<int>& src, set<int>& dst, int null_index)
 {
 	set<int>temp;
-	set_difference(src.begin(), src.end(),dst.begin(),dst.end(), inserter(temp, temp.begin()));
+	set_difference(src.begin(), src.end(), dst.begin(), dst.end(), inserter(temp, temp.begin()));
 	//如果dst里没有空串，把插入后空串的删除
-	bool isNullExist = dst.find(null_index)!=dst.end();
+	bool isNullExist = dst.find(null_index) != dst.end();
 	int pre_size = dst.size();
 	dst.insert(temp.begin(), temp.end());
 	if (!isNullExist)
@@ -61,7 +61,7 @@ symbol::symbol(symbol_class type, const string tag) {
 
 /************* rule *****************/
 
-rule::rule(const int left, const vector<int>& right){
+rule::rule(const int left, const vector<int>& right) {
 
 	this->left_symbol = left;
 	this->right_symbol = right;
@@ -70,7 +70,7 @@ rule::rule(const int left, const vector<int>& right){
 /************* grammar *****************/
 
 grammar::grammar(const string file_path) {
-	
+
 	ReadGrammar(file_path);
 	//初始化 所有终结符的first
 	print();
@@ -131,7 +131,7 @@ void  grammar::checkGrammar()
 		haveExtendStartToken = false;
 	}
 	else {
-		
+
 		haveExtendStartToken = true;
 	}
 	index = Find_Symbol_Index_By_Token(AllTerminalToken);
@@ -148,7 +148,7 @@ void grammar::ReadGrammar(const string file_path) {
 
 	ifstream file_open;
 	file_open.open(file_path, ios::in);
-	
+
 	symbols.push_back(symbol(symbol_class::epsilon, EpsilonToken));
 
 	if (!file_open.is_open())
@@ -157,7 +157,7 @@ void grammar::ReadGrammar(const string file_path) {
 		//throw FILE_OPEN_ERROR;
 		return;
 	}
-	int rule_index=0;
+	int rule_index = 0;
 	int row_num = 0;
 	string rule_str;
 	while (getline(file_open, rule_str, '\n'))
@@ -179,7 +179,7 @@ void grammar::ReadGrammar(const string file_path) {
 		if (process.size() != 2) {
 			cout << "第" << row_num << "行的产生式格式有误（每行应有且只有一个\"" << ProToken << "\"符号）" << endl;
 			cout << process[0] << " " << process[1] << endl;
-			cout << process.size()<< rule_str;
+			cout << process.size() << rule_str;
 			//throw(GRAMMAR_ERROR);
 			return;
 		}
@@ -214,7 +214,8 @@ void grammar::ReadGrammar(const string file_path) {
 				Trimmed(*it);
 				symbols.push_back(symbol(symbol_class::token_sym, *it));
 				terminals.insert(symbols.size() - 1);
-			}else{
+			}
+			else {
 				vector<int>right_symbol_index;
 				//分割右部
 				vector<string>right_symbol_tag = split(*it, " ");
@@ -229,17 +230,17 @@ void grammar::ReadGrammar(const string file_path) {
 						right_index_now = symbols.size() - 1;
 						non_terminals.insert(right_index_now);
 					}
-	
+
 					right_symbol_index.push_back(right_index_now);
 				}
 				this->rules.push_back(rule(left_symbol, right_symbol_index));
 				//拓展文法产生式在rule中的位置
 				if (symbols[left_symbol].tag == ExtendStartToken)
 				{
-					start_location = rules.size()-1;
+					start_location = rules.size() - 1;
 					cout << "拓展产生式在rule中的位置" << start_location << endl;
 				}
-				
+
 			}
 		}
 	}
@@ -248,16 +249,17 @@ void grammar::ReadGrammar(const string file_path) {
 	//init symbols
 	checkGrammar();
 	initGrammar();
-	
+
 
 }
 
 void grammar::print() {
 	//输出当前的终结符集合
 	// 输出当前的非终结符集合
-	
+
 	fstream file_open;
 	file_open.open("res.txt", ios::out);
+	file_open << symbols[0].tag << " ";
 	file_open << "终结符" << endl;
 	for (set<int>::iterator i = terminals.begin(); i != terminals.end(); i++)
 	{
@@ -274,12 +276,12 @@ void grammar::print() {
 	file_open << endl;
 
 	//输出所有的rules
-	for (int i=0; i <rules.size(); i++)
+	for (int i = 0; i < rules.size(); i++)
 	{
 		file_open << "rule" << i << "  ";
 		file_open << "left: " << symbols[rules[i].left_symbol].tag;
 		file_open << "  right: ";
-		for(int j=0;j<rules[i].right_symbol.size();j++)
+		for (int j = 0; j < rules[i].right_symbol.size(); j++)
 			file_open << symbols[rules[i].right_symbol[j]].tag << " ";
 		file_open << endl;
 	}
@@ -288,11 +290,11 @@ void grammar::print() {
 
 //返回对应符号在symbol中的下标，如果不存在，返回-1
 int grammar::Find_Symbol_Index_By_Token(const string token) {
-	
+
 	//遍历符号表 找到对应的位置
 	//symbol符号表
-	bool have_find=0;
-	int index=0;
+	bool have_find = 0;
+	int index = 0;
 	for (int i = 0; i < symbols.size(); i++)
 	{
 		if (token == symbols[i].tag)
@@ -319,10 +321,10 @@ int grammar::Find_Symbol_Index_By_Token(const string token) {
 }
 
 void grammar::InitFirst() {
-	
+
 	InitFirstTerm();
 	InitFirstNonTerm();
-	ProcessFirst();
+	//ProcessFirst();
 	PrintFirst();
 }
 void grammar::ProcessFirst()
@@ -375,9 +377,11 @@ void grammar::InitFirstNonTerm() {
 			{
 				//如果第一个是终结符 空串
 				//加入后 寻找下一个
+				if (rules[j].left_symbol != *i)
+					continue;
 				if (symbols[rules[j].right_symbol[0]].type == symbol_class::token_sym || symbols[rules[j].right_symbol[0]].type == symbol_class::epsilon)
 				{
-					useful_action=symbols[*i].first_set.insert(rules[j].right_symbol[0]).second|| useful_action;
+					useful_action = symbols[*i].first_set.insert(rules[j].right_symbol[0]).second || useful_action;
 					continue;
 				}
 				//非终结符
@@ -388,13 +392,15 @@ void grammar::InitFirstNonTerm() {
 					//如果右部是终结符
 					if (symbols[rules[j].right_symbol[k]].type == symbol_class::token_sym)
 					{
-						symbols[*i].first_set.insert(rules[j].right_symbol[k]);
+						useful_action = symbols[*i].first_set.insert(rules[j].right_symbol[k]).second || useful_action;
+
+						isAllNull = false;
 						break;
 						//找下一条文法
 					}
 					else {
 						//如果右部是非终结符
-						useful_action =mergeSet(symbols[*i].first_set, symbols[rules[j].right_symbol[k]].first_set, Find_Symbol_Index_By_Token(EpsilonToken))|| useful_action;
+						useful_action = mergeSet(symbols[rules[j].right_symbol[k]].first_set, symbols[*i].first_set, Find_Symbol_Index_By_Token(EpsilonToken)) || useful_action;
 						isAllNull = symbols[rules[j].right_symbol[k]].first_set.count(Find_Symbol_Index_By_Token(EpsilonToken)) && isAllNull;
 
 						if (!isAllNull)
@@ -402,13 +408,13 @@ void grammar::InitFirstNonTerm() {
 					}
 				}
 				if (k == rules[j].right_symbol.size() && isAllNull)
-					useful_action=symbols[*i].first_set.insert(Find_Symbol_Index_By_Token(EpsilonToken)).second|| useful_action;
+					useful_action = symbols[*i].first_set.insert(Find_Symbol_Index_By_Token(EpsilonToken)).second || useful_action;
 				//如果右部是非终结符
 				//迭代右部symbol表
 				//看有无空串 是不是终结符
 
 			}
-			useful_action= useful_action||symbols[*i].first_set.insert(*i).second;
+
 		}
 		if (useful_action == 0)
 			break;
@@ -462,7 +468,7 @@ set<int>grammar::GetFirst(const vector<int>& str) {
 		if (symbols[*i].type == symbol_class::token_sym)
 		{
 			is_epsilon = false;
-			mergeSet(symbols[*i].first_set,first_set,  empty_location);
+			mergeSet(symbols[*i].first_set, first_set, empty_location);
 
 			break;
 		}

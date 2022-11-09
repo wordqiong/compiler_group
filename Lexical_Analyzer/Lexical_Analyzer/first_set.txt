@@ -24,36 +24,36 @@ symbol name: <= first set: <=
 symbol name: != first set: != 
 symbol name: == first set: == 
 symbol name: # first set: # 
-symbol name: S first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Program first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: ExtDefList first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: ExtDef first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: VarSpecifier first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: FunSpecifier first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: FunDec first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Block first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: CreateFunTable_m first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: VarList first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: ParamDec first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: DefList first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: StmtList first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Def first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Stmt first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: AssignStmt first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: ReturnStmt first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: IfStmt first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: WhileStmt first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: CallStmt first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Exp first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: AddSubExp first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Relop first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Item first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Factor first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: CallFunCheck first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: Args first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: IfStmt_m1 first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: IfStmt_m2 first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: IfNext first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: IfStmt_next first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: WhileStmt_m1 first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
-symbol name: WhileStmt_m2 first set: @ return if else while void int <ID> <INT> ; , ( { + - * / > < >= <= != == 
+symbol name: S first set: @ void int 
+symbol name: Program first set: @ void int 
+symbol name: ExtDefList first set: @ void int 
+symbol name: ExtDef first set: void int 
+symbol name: VarSpecifier first set: int 
+symbol name: FunSpecifier first set: void int 
+symbol name: FunDec first set: <ID> 
+symbol name: Block first set: { 
+symbol name: CreateFunTable_m first set: @ 
+symbol name: VarList first set: @ int 
+symbol name: ParamDec first set: int 
+symbol name: DefList first set: @ int 
+symbol name: StmtList first set: @ return if while <ID> 
+symbol name: Def first set: int 
+symbol name: Stmt first set: return if while <ID> 
+symbol name: AssignStmt first set: <ID> 
+symbol name: ReturnStmt first set: return 
+symbol name: IfStmt first set: if 
+symbol name: WhileStmt first set: while 
+symbol name: CallStmt first set: <ID> 
+symbol name: Exp first set: <ID> <INT> ( 
+symbol name: AddSubExp first set: <ID> <INT> ( 
+symbol name: Relop first set: > < >= <= != == 
+symbol name: Item first set: <ID> <INT> ( 
+symbol name: Factor first set: <ID> <INT> ( 
+symbol name: CallFunCheck first set: @ 
+symbol name: Args first set: @ <ID> <INT> ( 
+symbol name: IfStmt_m1 first set: @ 
+symbol name: IfStmt_m2 first set: @ 
+symbol name: IfNext first set: @ else 
+symbol name: IfStmt_next first set: @ 
+symbol name: WhileStmt_m1 first set: @ 
+symbol name: WhileStmt_m2 first set: @ 

@@ -1,0 +1,5 @@
+%token ::= a | b
+S ::= Program
+Program ::= B B
+B ::= a B
+B ::= b
