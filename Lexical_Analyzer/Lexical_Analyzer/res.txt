@@ -1,0 +1,65 @@
+ÖÕ½á·û
+return if else while void int <ID> <INT> ; , ( ) { } + - * / = > < >= <= != == # 
+·ÇÖÕ½á·û
+S  Program  ExtDefList  ExtDef  VarSpecifier  FunSpecifier  FunDec  Block  CreateFunTable_m  VarList  ParamDec  DefList  StmtList  Def  Stmt  AssignStmt  ReturnStmt  IfStmt  WhileStmt  CallStmt  Exp  AddSubExp  Relop  Item  Factor  CallFunCheck  Args  IfStmt_m1  IfStmt_m2  IfNext  IfStmt_next  WhileStmt_m1  WhileStmt_m2  
+rule0  left: S  right: Program 
+rule1  left: Program  right: ExtDefList 
+rule2  left: ExtDefList  right: ExtDef ExtDefList 
+rule3  left: ExtDefList  right: @ 
+rule4  left: ExtDef  right: VarSpecifier <ID> ; 
+rule5  left: ExtDef  right: FunSpecifier FunDec Block 
+rule6  left: VarSpecifier  right: int 
+rule7  left: FunSpecifier  right: void 
+rule8  left: FunSpecifier  right: int 
+rule9  left: FunDec  right: <ID> CreateFunTable_m ( VarList ) 
+rule10  left: CreateFunTable_m  right: @ 
+rule11  left: VarList  right: ParamDec , VarList 
+rule12  left: VarList  right: ParamDec 
+rule13  left: VarList  right: @ 
+rule14  left: ParamDec  right: VarSpecifier <ID> 
+rule15  left: Block  right: { DefList StmtList } 
+rule16  left: DefList  right: Def DefList 
+rule17  left: DefList  right: @ 
+rule18  left: Def  right: VarSpecifier <ID> ; 
+rule19  left: StmtList  right: Stmt StmtList 
+rule20  left: StmtList  right: @ 
+rule21  left: Stmt  right: AssignStmt ; 
+rule22  left: Stmt  right: ReturnStmt ; 
+rule23  left: Stmt  right: IfStmt 
+rule24  left: Stmt  right: WhileStmt 
+rule25  left: Stmt  right: CallStmt ; 
+rule26  left: AssignStmt  right: <ID> = Exp 
+rule27  left: Exp  right: AddSubExp 
+rule28  left: Exp  right: Exp Relop AddSubExp 
+rule29  left: AddSubExp  right: Item 
+rule30  left: AddSubExp  right: Item + Item 
+rule31  left: AddSubExp  right: Item - Item 
+rule32  left: Item  right: Factor 
+rule33  left: Item  right: Factor * Factor 
+rule34  left: Item  right: Factor / Factor 
+rule35  left: Factor  right: <INT> 
+rule36  left: Factor  right: ( Exp ) 
+rule37  left: Factor  right: <ID> 
+rule38  left: Factor  right: CallStmt 
+rule39  left: CallStmt  right: <ID> ( CallFunCheck Args ) 
+rule40  left: CallFunCheck  right: @ 
+rule41  left: Args  right: Exp , Args 
+rule42  left: Args  right: Exp 
+rule43  left: Args  right: @ 
+rule44  left: ReturnStmt  right: return Exp 
+rule45  left: ReturnStmt  right: return 
+rule46  left: Relop  right: > 
+rule47  left: Relop  right: < 
+rule48  left: Relop  right: >= 
+rule49  left: Relop  right: <= 
+rule50  left: Relop  right: == 
+rule51  left: Relop  right: != 
+rule52  left: IfStmt  right: if IfStmt_m1 ( Exp ) IfStmt_m2 Block IfNext 
+rule53  left: IfStmt_m1  right: @ 
+rule54  left: IfStmt_m2  right: @ 
+rule55  left: IfNext  right: @ 
+rule56  left: IfNext  right: IfStmt_next else Block 
+rule57  left: IfStmt_next  right: @ 
+rule58  left: WhileStmt  right: while WhileStmt_m1 ( Exp ) WhileStmt_m2 Block 
+rule59  left: WhileStmt_m1  right: @ 
+rule60  left: WhileStmt_m2  right: @ 

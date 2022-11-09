@@ -131,6 +131,9 @@ void  grammar::checkGrammar()
 		haveExtendStartToken = false;
 	}
 	else {
+		//拓展文法产生式在rule中的位置
+		start_location = index;
+		cout << "拓展产生式在rule中的位置" << index << endl;
 		haveExtendStartToken = true;
 	}
 	index = Find_Symbol_Index_By_Token(AllTerminalToken);
@@ -283,8 +286,8 @@ int grammar::Find_Symbol_Index_By_Token(const string token) {
 	
 	//遍历符号表 找到对应的位置
 	//symbol符号表
-	bool have_find;
-	int index;
+	bool have_find=0;
+	int index=0;
 	for (int i = 0; i < symbols.size(); i++)
 	{
 		if (token == symbols[i].tag)
@@ -436,7 +439,41 @@ void grammar::PrintFirst()
 		file_open << endl;
 	}
 }
+
+//传入一组字串，返回他们的first集合
 set<int>grammar::GetFirst(const vector<int>& str) {
-	set<int>a;
-	return a;
+	set<int>first_set;
+	// above all 是不是空串
+	if (str.empty()) {
+		return first_set;
+	}
+	//1.判断空串是否需要加入
+	//2.判断是终结符还是非终结符
+	// 3.判断非终结符能否推导出空串
+	bool is_epsilon = true;
+	int empty_location = Find_Symbol_Index_By_Token(EpsilonToken);
+	for (auto i = str.begin(); i != str.end(); i++)
+	{
+		if (symbols[*i].type == symbol_class::token_sym)
+		{
+			is_epsilon = false;
+			mergeSet(first_set, symbols[*i].first_set, empty_location);
+
+			break;
+		}
+		if (symbols[*i].type == symbol_class::epsilon)
+		{
+			is_epsilon = false;
+			first_set.insert(*i);
+			break;
+		}
+		mergeSet(first_set, symbols[*i].first_set, empty_location);
+		is_epsilon = symbols[*i].first_set.count(empty_location) && is_epsilon;
+		if (!is_epsilon)
+			break;
+
+	}
+	if (is_epsilon)
+		first_set.insert(empty_location);
+	return first_set;
 }

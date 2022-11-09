@@ -8,8 +8,15 @@ LR1_item::LR1_item(int l, vector<int>& r, int ds, int fw, int gi)
 	this->forward = fw;
 	this->grammar_index = gi;
 }
-
-bool LR1_item::operator==(LR1_item& item)
+void LR1_item::LR1_itemInit(int l, vector<int>& r, int ds, int fw, int gi)
+{
+	this->left = l;
+	this->right = r;
+	this->dot_site = ds;
+	this->forward = fw;
+	this->grammar_index = gi;
+}
+bool LR1_item::operator==(const LR1_item& item)
 {
 	if (this->grammar_index == item.grammar_index && this->dot_site == item.dot_site && this->forward == item.forward)
 		return true;
@@ -421,4 +428,95 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 		step++;
 	}
 	ofs.close();
+}
+
+
+LR1_closure LR1_Grammar::computeClosure(vector<LR1_item> lr1)
+{
+	//传入核心项
+	//计算其闭包
+	LR1_closure closure_now;
+	closure_now.key_item = lr1;
+	closure_now.closure = lr1;
+	//遍历核心项
+	for (int i = 0; i < closure_now.closure.size(); i++) {
+		//处理当前rule
+		LR1_item item_now = closure_now.closure[i];
+		//如果*在最后一个位置
+		if (item_now.dot_site >= item_now.right.size())
+		{
+			continue;
+		}
+		//当前rule下，dot后的符号对应的下标
+		int dot_next_symbol_index = item_now.right[item_now.dot_site];
+		symbol dot_next_symbol = symbols[dot_next_symbol_index];
+		//开始符号判断
+		// 如果这玩意后面是个空串，那么设置为后继
+		if (dot_next_symbol.type == symbol_class::epsilon)
+		{
+			closure_now.closure[i].dot_site++;
+			continue;
+		}
+		//如果这玩意后面是个终结符 那就不用加
+		if (dot_next_symbol.type == symbol_class::token_sym)
+		{
+			continue;
+		}
+		//如果这玩意后面是个非终结符，把这个非终结符的first加进来
+		//将dot后面从第二个开始所有的字符和加入的终结符合并，求一个first集合
+		vector<int>BetaA(item_now.right.begin() + item_now.dot_site + 1, item_now.right.end());
+		BetaA.push_back(item_now.forward);
+		//初始化完成
+		set<int> BetaAset = GetFirst(BetaA);
+		//A->α·Bβ,a 
+		//B->XX ,first(β,a)
+		//完成此步的添加
+		//遍历所有rule，找到对应的rule规则
+		for (int j = 0; j < rules.size(); j++)
+		{
+			rule rule_now = rules[j];
+			if (dot_next_symbol_index != rule_now.left_symbol)
+				continue;
+			//开始加入到closure里 
+			//此处仍需要判断右部产生式是不是空串
+			//空串 dot位置在末端
+			//遍历first
+			for (auto it = BetaAset.begin(); it != BetaAset.end(); it++) {
+				//closure里是否有这项？
+				bool have_exist = false;
+				bool is_epsilon = false;
+				is_epsilon = (symbols[rule_now.right_symbol[0]].type == symbol_class::epsilon);
+				for (auto temp = closure_now.closure.begin(); temp != closure_now.closure.end(); temp++)
+				{
+					if (* temp == LR1_item(rule_now.left_symbol, rule_now.right_symbol, have_exist, *it, j))
+					{
+						have_exist = true;
+						break;
+					}
+				}
+				//如果没有
+				if (!have_exist)
+				{
+					closure_now.closure.push_back(LR1_item(rule_now.left_symbol, rule_now.right_symbol, is_epsilon, *it, j));
+				}
+
+			}
+		}
+
+	}
+	
+	return closure_now;
+}
+//处理rule，转为item_sum存储
+int LR1_Grammar::getItemSum()
+{
+	//related var 
+	// vector<LR1_item> item_sum
+	// LR1_item start_item
+	// vector<rule>rules;
+	// start_location
+
+	start_item.LR1_itemInit(rules[start_location].left_symbol, rules[start_location].right_symbol,0,Find_Symbol_Index_By_Token(EndToken),start_location);
+
+	
 }
