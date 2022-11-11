@@ -1,5 +1,5 @@
 STATE,ACTION,GOTO
-,return,if,else,while,void,int,<ID>,<INT>,;,,,(,),{,},+,-,*,/,=,>,<,>=,<=,!=,==,#,S,Program,ExtDefList,ExtDef,VarSpecifier,FunSpecifier,FunDec,Block,CreateFunTable_m,VarList,ParamDec,DefList,StmtList,Def,Stmt,AssignStmt,ReturnStmt,IfStmt,WhileStmt,CallStmt,Exp,AddSubExp,Relop,Item,Factor,CallFunCheck,Args,IfStmt_m1,IfStmt_m2,IfNext,IfStmt_next,WhileStmt_m1,WhileStmt_m2,
+,return,if,else,while,void,int,<ID>,<INT>,;,",",(,),{,},+,-,*,/,=,>,<,>=,<=,!=,==,#,S,Program,ExtDefList,ExtDef,VarSpecifier,FunSpecifier,FunDec,Block,CreateFunTable_m,VarList,ParamDec,DefList,StmtList,Def,Stmt,AssignStmt,ReturnStmt,IfStmt,WhileStmt,CallStmt,Exp,AddSubExp,Relop,Item,Factor,CallFunCheck,Args,IfStmt_m1,IfStmt_m2,IfNext,IfStmt_next,WhileStmt_m1,WhileStmt_m2,
 0,,,,,s1,s2,,,,,,,,,,,,,,,,,,,,r3,,3,4,5,6,7,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 1,,,,,,,r7,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 2,,,,,,,r8,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

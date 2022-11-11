@@ -240,7 +240,10 @@ void LR1_Grammar::printTables()
 	{
 		if (terminals.find(i) != terminals.end())
 		{
-			ofs << symbols[i].tag << ",";
+			if (symbols[i].tag == ",")
+				ofs << "\"" << symbols[i].tag << "\"" << ",";
+			else
+				ofs << symbols[i].tag << ",";
 			terminal_site.push_back(i);
 		}
 	}
