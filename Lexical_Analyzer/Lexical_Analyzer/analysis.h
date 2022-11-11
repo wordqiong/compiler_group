@@ -1,5 +1,6 @@
 #include"base.h"
 #include<map>
+#include<vector>
 using namespace std;
 #define BUFFER_SIZE 300
 const int KeyWord = 1;
@@ -37,8 +38,8 @@ const char* bracketsLeftBig ="{"; //左大括号
 const char* bracketsRightBig ="}"; //右大括号
 const char* endsign = "#";
 */
-const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" ,">","<"};   //单目运算符 13个
-const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>"}; //双目运算符 14个
+const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" ,">","<" };   //单目运算符 13个
+const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>" }; //双目运算符 14个
 
 class unit
 {
@@ -84,9 +85,10 @@ protected:
     FILE* fout;
     FILE* fout_pre;
     FILE* fout_lable;
+    FILE* fout_analysis_res;
     map<string, int> WordCode;
 public:
-
+    vector<unit> analysis_res;
     analysis();
     void getStrBuffer();//循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
     void deleNotes();//清除注释 
@@ -98,4 +100,7 @@ public:
     void printResult(int kind, char* str, int opt);//打印kindJudge分析出的结果
     int getWordKindCode(int kind, char* str);//获取单词种别值
     virtual ~analysis();
+
+    unit Generate_unit(int kind, char* str);
+    void showAnalysisRes();
 };

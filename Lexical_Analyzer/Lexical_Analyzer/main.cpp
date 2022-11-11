@@ -1,30 +1,32 @@
-
+#include"analysis.h"
 #include"grammar.h"
 #include"LR1.h"
 int main()
 {
 	analysis res;
 	res.getStrBuffer();
+	res.showAnalysisRes();
 
-	LR1_Grammar lr1_grammar("grammar.txt");
-	lr1_grammar.checkClosure();
+	//LR1_Grammar lr1_grammar("grammar.txt");
+	//lr1_grammar.checkClosure();
 
-	//cout << "*********************************" << endl;
-	lr1_grammar.getClosureSum();
-	cout << lr1_grammar.closure_sum.size() << endl;
-	//lr1_grammar.closure_sum[0].print(lr1_grammar.symbols);
 
-	//cout << (lr1_grammar.ACTION.find(pair<int, int>(41, lr1_grammar.Find_Symbol_Index_By_Token("("))) == lr1_grammar.ACTION.end()) << endl;
+	////cout << "*********************************" << endl;
+	//lr1_grammar.getClosureSum();
+	//cout << lr1_grammar.closure_sum.size() << endl;
+	////lr1_grammar.closure_sum[0].print(lr1_grammar.symbols);
 
-	lr1_grammar.computeACTION_GOTO();
-	lr1_grammar.printTables();
+	////cout << (lr1_grammar.ACTION.find(pair<int, int>(41, lr1_grammar.Find_Symbol_Index_By_Token("("))) == lr1_grammar.ACTION.end()) << endl;
+
+	//lr1_grammar.computeACTION_GOTO();
+	//lr1_grammar.printTables();
 
 	//for (int i = 0; i < lr1_grammar.symbols.size(); i++)
 	//{
 	//	cout << i << "  " << lr1_grammar.symbols[i].tag << endl;
 	//}
 	//cout << "*********************************" << endl;
-	
+
 	//map<int, vector<int>> temp = lr1_grammar.closure_sum[41].getShiftinSymbol();
 	//int i = 1;
 	//for (auto it=temp.begin();it!=temp.end();it++)

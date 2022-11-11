@@ -110,7 +110,7 @@ void analysis::getStrBuffer() {
     cout << "The result of lexical analysis has been saved in the res_out.txt file." << endl;
     cout << "The pre-processed code has been saved in the pre-processed_code.txt file." << endl;
     cout << "The word_lable has been saved in the word-lable.txt file." << endl;
-
+    cout << "The analysis_res has been saved in the analysis_res.txt file." << endl;
 }
 //循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
 void analysis::deleNotes() {
@@ -136,7 +136,7 @@ void analysis::deleNotes() {
             {
                 continue;
             }
-            if (buffer_read[buffer_choose].buffer[i + 1] == '/'&&!note_flag)
+            if (buffer_read[buffer_choose].buffer[i + 1] == '/' && !note_flag)
             {
                 //进入 //状态 直到\0停止
                 int j;
@@ -163,7 +163,7 @@ void analysis::deleNotes() {
                 {
 
                     note[note_count++] = buffer_read[buffer_choose].buffer[j];
-                    if (!flag_qoute&&buffer_read[buffer_choose].buffer[j] == '*' && buffer_read[buffer_choose].buffer[j + 1] == '/')
+                    if (!flag_qoute && buffer_read[buffer_choose].buffer[j] == '*' && buffer_read[buffer_choose].buffer[j + 1] == '/')
                     {
                         note_flag = 0;
                         note[note_count++] = '/';
@@ -199,7 +199,7 @@ void analysis::deleNotes() {
                     buffer_read[buffer_choose].buffer[i] = '\0';
                     buffer_read[buffer_choose].count -= note_count;
                     break;
-                    
+
 
 
 
@@ -223,11 +223,11 @@ void analysis::deleSpaces() {
         //不能删除空格字符
         if (buffer_read[buffer_choose].buffer[i] == '\'')
             flag2 = !flag2;
-        if ((buffer_read[buffer_choose].buffer[i] == ' '|| buffer_read[buffer_choose].buffer[i] == '\t') && flag1 && flag2)
+        if ((buffer_read[buffer_choose].buffer[i] == ' ' || buffer_read[buffer_choose].buffer[i] == '\t') && flag1 && flag2)
         {
             //找到空格的最后，末尾或是第一个不是空格的位置
             int j = i + 1;
-            for (; buffer_read[buffer_choose].buffer[j] != '\0' && (buffer_read[buffer_choose].buffer[j] == ' '|| buffer_read[buffer_choose].buffer[j] == '\t'); j++)
+            for (; buffer_read[buffer_choose].buffer[j] != '\0' && (buffer_read[buffer_choose].buffer[j] == ' ' || buffer_read[buffer_choose].buffer[j] == '\t'); j++)
             {
             }
             //如果是到末尾了，直接修改尾零位置即可
@@ -515,7 +515,51 @@ void analysis::spearateStates()
 
 }
 
-//在自动机中调用，判断从自动机输出的单词类型并输出到文件，类似<类型，原值>
+
+unit analysis::Generate_unit(int kind, char* str) {
+    //判断是否是数据
+    if (kind == Integer)
+    {
+        unit r("<INT>", str);
+        return r;
+    }
+    else if (kind == FloatPoint)
+    {
+        unit r("<FLOAT>", str);
+        return r;
+    }
+    else if (kind == Str)
+    {
+        unit r("<STRING>", str);
+        return r;
+    }
+    else if (kind == Char)
+    {
+        unit r("<Char>", str);
+        return r;
+    }
+    //判断是否是标识符
+    else if (kind == SignWord)
+    {
+        unit r("<ID>", str);
+        return r;
+    }
+    //判断是否出错
+    else if (kind == WrongWord)
+    {
+        unit r("<WRONG>", str);
+        return r;
+    }
+    //处理各种符号
+    else
+    {
+        unit r(str, str);
+        return r;
+    }
+}
+
+
+//在自动机中调用，判断从自动机输出的单词类型并输出到文件，类似<类型，原值>，同时完成analysis_res的赋值
 void analysis::kindJudge(char* str)
 {
     int kind = 0;
@@ -570,9 +614,17 @@ void analysis::kindJudge(char* str)
         kind = Char;
     else
         kind = WrongWord;
+    unit t = Generate_unit(kind, str);
+    analysis_res.push_back(t);
     printResult(kind, str, 0);
 }
 
+void analysis::showAnalysisRes()
+{
+    vector<unit>::iterator it;
+    for (it = analysis_res.begin(); it != analysis_res.end(); it++)
+        fprintf(fout_analysis_res, "%s----%s\n", (*it).type, (*it).value);
+}
 void analysis::printResult(int kind, char* str, int opt)
 {
     if (opt == 1)
@@ -632,7 +684,7 @@ void analysis::printResult(int kind, char* str, int opt)
             break;
         case Brackets_Left_Square:
             fprintf(fout, "[左方括号]----[%s]\n", str);
-            break;    
+            break;
         case Brackets_Right_Square:
             fprintf(fout, "[右方括号]----[%s]\n", str);
             break;
@@ -833,6 +885,7 @@ analysis::analysis()
     fout = fopen("res_out.txt", "w");
     fout_pre = fopen("pre-processed_code.txt", "w");
     fout_lable = fopen("word_lable.txt", "w");
+    fout_analysis_res = fopen("analysis_res.txt", "w");
     //map赋初值
     const int keyword_size = 24;
     const int monocular_operator_size = 13;
@@ -888,7 +941,7 @@ analysis::analysis()
         cout << isFloat(t[i]) << endl;
     }
         */
-   
+
 }
 analysis::~analysis()
 {
