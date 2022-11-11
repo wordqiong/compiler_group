@@ -623,7 +623,13 @@ void analysis::showAnalysisRes()
 {
     vector<unit>::iterator it;
     for (it = analysis_res.begin(); it != analysis_res.end(); it++)
-        fprintf(fout_analysis_res, "%s----%s\n", (*it).type, (*it).value);
+    {
+        char ch1[BUFFER_SIZE];
+        strcpy(ch1, (*it).type.c_str());
+        char ch2[BUFFER_SIZE];
+        strcpy(ch2, (*it).value.c_str());
+        fprintf(fout_analysis_res, "%s----%s\n", ch1, ch2);
+    }
 }
 void analysis::printResult(int kind, char* str, int opt)
 {

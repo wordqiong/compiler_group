@@ -29,6 +29,7 @@ const int Point = 23;
 const int Colon = 24;
 const char keyword[50][12] = { "break","case","char","class","continue","do","default","double","define",
 "else","float","for","if","int","include","long","main","return","switch","typedef","void","unsigned","while","iostream" };//24个
+
 /*
 const char* delimiter = ";"; //界符
 const char* separator = ",";//分隔符
@@ -41,7 +42,7 @@ const char* endsign = "#";
 const char monocular_operator[20][5] = { "+","-","*","/","!","%","~","&","|","^","=" ,">","<" };   //单目运算符 13个
 const char binocular_operator[20][5] = { "++","--","&&","||","<=","!=","==",">=","+=","-=","*=","/=","<<",">>" }; //双目运算符 14个
 
-class unit
+struct unit
 {
 public:
     string type;

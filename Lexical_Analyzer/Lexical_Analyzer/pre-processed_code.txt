@@ -105,7 +105,7 @@ note[note_count++]= buffer_read[buffer_choose].buffer[j];
 buffer_read[buffer_choose].buffer[j]='\0';
 }
 note[note_count]='\0';
-fprintf(fout,"[×¢ÊÍ]----[ %s ]\n",note);
+fprintf(fout,"[æ³¨é‡Š]----[ %s ]\n",note);
 buffer_read[buffer_choose].count -= note_count;
 note_count = 0;
 break;
@@ -122,7 +122,7 @@ if(!flag_qoute&&buffer_read[buffer_choose].buffer[j]=='*'&&buffer_read[buffer_ch
 note_flag = 0;
 note[note_count++]='/';
 note[note_count]='\0';
-fprintf(fout,"[×¢ÊÍ]----[ %s ]\n",note);
+fprintf(fout,"[æ³¨é‡Š]----[ %s ]\n",note);
 buffer_read[buffer_choose].count -= note_count;
 note_count = 0;
 break;
@@ -141,7 +141,7 @@ buffer_read[buffer_choose].buffer[i]= buffer_read[buffer_choose].buffer[j];
 }
 if(note_flag){
 note[note_count]='\0';
-fprintf(fout,"[×¢ÊÍ]----[ %s ]\n",note);
+fprintf(fout,"[æ³¨é‡Š]----[ %s ]\n",note);
 buffer_read[buffer_choose].buffer[i]='\0';
 buffer_read[buffer_choose].count -= note_count;
 break;
@@ -454,58 +454,58 @@ if(opt == 1)
 switch(kind)
 {
 case KeyWord:
-fprintf(fout,"[¹Ø¼ü×Ö]----[%s]\n",str);
+fprintf(fout,"[å…³é”®å­—]----[%s]\n",str);
 break;
 case SignWord:
-fprintf(fout,"[±êÊ¶·û]----[%s]\n",str);
+fprintf(fout,"[æ ‡è¯†ç¬¦]----[%s]\n",str);
 break;
 case Integer:
-fprintf(fout,"[ÕûÊı]----[%s]\n",str);
+fprintf(fout,"[æ•´æ•°]----[%s]\n",str);
 break;
 case FloatPoint:
-fprintf(fout,"[¸¡µãÊı]----[%s]\n",str);
+fprintf(fout,"[æµ®ç‚¹æ•°]----[%s]\n",str);
 break;
 case MonocularOperator:
-fprintf(fout,"[µ¥Ä¿ÔËËã·û]----[%s]\n",str);
+fprintf(fout,"[å•ç›®è¿ç®—ç¬¦]----[%s]\n",str);
 break;
 case BinocularOperator:
-fprintf(fout,"[Ë«Ä¿ÔËËã·û]----[%s]\n",str);
+fprintf(fout,"[åŒç›®è¿ç®—ç¬¦]----[%s]\n",str);
 break;
 case Delimiter:
-fprintf(fout,"[½ç·û]----[%s]\n",str);
+fprintf(fout,"[ç•Œç¬¦]----[%s]\n",str);
 break;
 case WrongWord:
-fprintf(fout,"[´íÎó´Ê]----[%s]\n",str);
+fprintf(fout,"[é”™è¯¯è¯]----[%s]\n",str);
 break;
 case Blank:
-fprintf(fout,"[¿Õ¸ñ]----[%s]\n",str);
+fprintf(fout,"[ç©ºæ ¼]----[%s]\n",str);
 break;
 case Separator:
-fprintf(fout,"[·Ö¸ô·û]----[%s]\n",str);
+fprintf(fout,"[åˆ†éš”ç¬¦]----[%s]\n",str);
 break;
 case BracketsLeft:
-fprintf(fout,"[×óÀ¨ºÅ]----[%s]\n",str);
+fprintf(fout,"[å·¦æ‹¬å·]----[%s]\n",str);
 break;
 case BracketsRight:
-fprintf(fout,"[ÓÒÀ¨ºÅ]----[%s]\n",str);
+fprintf(fout,"[å³æ‹¬å·]----[%s]\n",str);
 break;
 case BracketsLeftBig:
-fprintf(fout,"[×ó´óÀ¨ºÅ]----[%s]\n",str);
+fprintf(fout,"[å·¦å¤§æ‹¬å·]----[%s]\n",str);
 break;
 case BracketsRightBig:
-fprintf(fout,"[ÓÒ´óÀ¨ºÅ]----[%s]\n",str);
+fprintf(fout,"[å³å¤§æ‹¬å·]----[%s]\n",str);
 break;
 case End:
-fprintf(fout,"[½áÊø·û]----[%s]\n",str);
+fprintf(fout,"[ç»“æŸç¬¦]----[%s]\n",str);
 break;
 case Str:
-fprintf(fout,"[×Ö·û´®]----[%s]\n",str);
+fprintf(fout,"[å­—ç¬¦ä¸²]----[%s]\n",str);
 break;
 case Char:
-fprintf(fout,"[×Ö·û]----[%s]\n",str);
+fprintf(fout,"[å­—ç¬¦]----[%s]\n",str);
 break;
 default:
-fprintf(fout,"[ÆäËû]----[%s]\n",str);
+fprintf(fout,"[å…¶ä»–]----[%s]\n",str);
 break;
 }
 }
@@ -516,58 +516,58 @@ WordKindCode = getWordKindCode(kind,str);
 switch(kind)
 {
 case KeyWord:
-fprintf(fout,"[¹Ø¼ü×Ö]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å…³é”®å­—]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case SignWord:
-fprintf(fout,"[±êÊ¶·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[æ ‡è¯†ç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case Integer:
-fprintf(fout,"[ÕûÊı]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[æ•´æ•°]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case FloatPoint:
-fprintf(fout,"[¸¡µãÊı]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[æµ®ç‚¹æ•°]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case MonocularOperator:
-fprintf(fout,"[µ¥Ä¿ÔËËã·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å•ç›®è¿ç®—ç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case BinocularOperator:
-fprintf(fout,"[Ë«Ä¿ÔËËã·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[åŒç›®è¿ç®—ç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case Delimiter:
-fprintf(fout,"[½ç·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[ç•Œç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case WrongWord:
-fprintf(fout,"[´íÎó´Ê]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[é”™è¯¯è¯]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case Blank:
-fprintf(fout,"[¿Õ¸ñ]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[ç©ºæ ¼]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case Separator:
-fprintf(fout,"[·Ö¸ô·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[åˆ†éš”ç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case BracketsLeft:
-fprintf(fout,"[×óÀ¨ºÅ]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å·¦æ‹¬å·]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case BracketsRight:
-fprintf(fout,"[ÓÒÀ¨ºÅ]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å³æ‹¬å·]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case BracketsLeftBig:
-fprintf(fout,"[×ó´óÀ¨ºÅ]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å·¦å¤§æ‹¬å·]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case BracketsRightBig:
-fprintf(fout,"[ÓÒ´óÀ¨ºÅ]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å³å¤§æ‹¬å·]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case End:
-fprintf(fout,"[½áÊø·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[ç»“æŸç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case Str:
-fprintf(fout,"[×Ö·û´®]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å­—ç¬¦ä¸²]----[%d]----[%s]\n",WordKindCode,str);
 break;
 case Char:
-fprintf(fout,"[×Ö·û]----[%d]----[%s]\n",WordKindCode,str);
+fprintf(fout,"[å­—ç¬¦]----[%d]----[%s]\n",WordKindCode,str);
 break;
 default:
-fprintf(fout,"[ÆäËû]----[%s]\n",str);
+fprintf(fout,"[å…¶ä»–]----[%s]\n",str);
 }
 }
 }

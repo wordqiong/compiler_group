@@ -1,4 +1,3 @@
-#include"analysis.h"
 #include"grammar.h"
 #include"LR1.h"
 int main()
@@ -7,8 +6,8 @@ int main()
 	res.getStrBuffer();
 	res.showAnalysisRes();
 
-	//LR1_Grammar lr1_grammar("grammar.txt");
-	//lr1_grammar.checkClosure();
+	LR1_Grammar lr1_grammar("grammar.txt");
+	lr1_grammar.checkClosure();
 
 
 	////cout << "*********************************" << endl;
