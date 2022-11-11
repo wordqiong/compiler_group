@@ -10,15 +10,17 @@ int main()
 	lr1_grammar.checkClosure();
 
 
-	////cout << "*********************************" << endl;
-	//lr1_grammar.getClosureSum();
-	//cout << lr1_grammar.closure_sum.size() << endl;
-	////lr1_grammar.closure_sum[0].print(lr1_grammar.symbols);
+	//cout << "*********************************" << endl;
+	lr1_grammar.getClosureSum();
+	cout << lr1_grammar.closure_sum.size() << endl;
+	//lr1_grammar.closure_sum[0].print(lr1_grammar.symbols);
 
-	////cout << (lr1_grammar.ACTION.find(pair<int, int>(41, lr1_grammar.Find_Symbol_Index_By_Token("("))) == lr1_grammar.ACTION.end()) << endl;
+	//cout << (lr1_grammar.ACTION.find(pair<int, int>(41, lr1_grammar.Find_Symbol_Index_By_Token("("))) == lr1_grammar.ACTION.end()) << endl;
 
-	//lr1_grammar.computeACTION_GOTO();
-	//lr1_grammar.printTables();
+	lr1_grammar.computeACTION_GOTO();
+	lr1_grammar.printTables();
+
+	lr1_grammar.analyze(res.analysis_res);
 
 	//for (int i = 0; i < lr1_grammar.symbols.size(); i++)
 	//{

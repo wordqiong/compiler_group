@@ -550,6 +550,12 @@ unit analysis::Generate_unit(int kind, char* str) {
         unit r("<WRONG>", str);
         return r;
     }
+    //特殊处理main
+    else if (kind == KeyWord && !strcmp(str, "main"))
+    {
+        unit r("<ID>", str);
+        return r;
+    }
     //处理各种符号
     else
     {
@@ -557,7 +563,6 @@ unit analysis::Generate_unit(int kind, char* str) {
         return r;
     }
 }
-
 
 //在自动机中调用，判断从自动机输出的单词类型并输出到文件，类似<类型，原值>，同时完成analysis_res的赋值
 void analysis::kindJudge(char* str)
@@ -614,8 +619,11 @@ void analysis::kindJudge(char* str)
         kind = Char;
     else
         kind = WrongWord;
-    unit t = Generate_unit(kind, str);
-    analysis_res.push_back(t);
+    if (kind != Blank)//送到语法分析器中的中间结果不含空格
+    {
+        unit t = Generate_unit(kind, str);
+        analysis_res.push_back(t);
+    }
     printResult(kind, str, 0);
 }
 
@@ -888,10 +896,10 @@ analysis::analysis()
     buffer_choose = 0;
     note_flag = 0;
     fin = fopen("code_in.txt", "r");
-    fout = fopen("res_out.txt", "w");
-    fout_pre = fopen("pre-processed_code.txt", "w");
-    fout_lable = fopen("word_lable.txt", "w");
-    fout_analysis_res = fopen("analysis_res.txt", "w");
+    fout = fopen("../work_dir/Lexical_Result.txt", "w");
+    fout_pre = fopen("../work_dir/Pre-Processed_Code.txt", "w");
+    fout_lable = fopen("../work_dir/Word_Lable.txt", "w");
+    fout_analysis_res = fopen("../work_dir/Lex_to_Parse.txt", "w");
     //map赋初值
     const int keyword_size = 24;
     const int monocular_operator_size = 13;

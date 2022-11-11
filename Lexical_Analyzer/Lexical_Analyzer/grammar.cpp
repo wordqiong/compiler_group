@@ -258,7 +258,7 @@ void grammar::print() {
 	// 输出当前的非终结符集合
 
 	fstream file_open;
-	file_open.open("res.txt", ios::out);
+	file_open.open("../work_dir/Grammar_Rules.txt", ios::out);
 	file_open << symbols[0].tag << " ";
 	file_open << "终结符" << endl;
 	for (set<int>::iterator i = terminals.begin(); i != terminals.end(); i++)
@@ -423,7 +423,7 @@ void grammar::InitFirstNonTerm() {
 void grammar::PrintFirst()
 {
 	fstream file_open;
-	file_open.open("first_set.txt", ios::out);
+	file_open.open("../work_dir/First_Set_Test.txt", ios::out);
 	//输出每个symbol的first集合
 	for (set<int>::iterator it = terminals.begin(); it != terminals.end(); it++)
 	{

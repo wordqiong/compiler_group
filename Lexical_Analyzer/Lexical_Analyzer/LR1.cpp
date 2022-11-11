@@ -212,7 +212,6 @@ void LR1_Grammar::computeACTION_GOTO()
 
 	}
 }
-
 void LR1_Grammar::printTables()
 {
 	const int width = 10;
@@ -223,7 +222,7 @@ void LR1_Grammar::printTables()
 
 	ofstream ofs(out_Table_path, ios::out);
 	ofs.setf(std::ios::left);
-	ofs << "STATE" << setw(state_action) << " " << "ACTION" << setw(action_goto) << " " << "GOTO" << endl;
+	ofs << "STATE" << "," << "ACTION" << "," << "GOTO" << endl;
 
 	int rowNum = this->closure_sum.size();
 	int columnNum = this->symbols.size();
@@ -232,7 +231,7 @@ void LR1_Grammar::printTables()
 	vector<int> terminal_site;//记录终结符在symbols里面的序号
 	vector<int> non_terminal_site;//记录非终结符在symbols里面的序号
 
-	ofs << setw(start_state) << " ";
+	ofs <<  ",";
 
 	/*************
 	要确保terminal和non_terminal加起来是symbols的总和
@@ -241,64 +240,48 @@ void LR1_Grammar::printTables()
 	{
 		if (terminals.find(i) != terminals.end())
 		{
-			ofs << setw(interval) << symbols[i].tag;
+			ofs << symbols[i].tag << ",";
 			terminal_site.push_back(i);
 		}
 	}
-	
-	//cout << "symbols.size:" << symbols.size() << endl;
-	//cout << "terminal_site.size:" << terminal_site.size() << "  " << "terminal.size:" << terminals.size() << endl;
-	//cout << "terminal_site:" << endl;
-	//for (int i = 0; i < terminal_site.size(); i++)
-	//{
-	//	cout << i << " " << terminal_site[i] << endl;
-	//}
 
 	for (int i = 0; i < columnNum; i++)
 	{
 		if (non_terminals.find(i) != non_terminals.end())
 		{
-			ofs << setw(interval);
-			ofs << symbols[i].tag;
+			
+			ofs << symbols[i].tag << ",";
 			non_terminal_site.push_back(i);
 		}
 	}
-
-	//cout << "non_terminal_site.size:" << non_terminal_site.size() << "  " << "non_terminals.size:" << non_terminals.size() << endl;
-	//cout << "non_terminal_site:" << endl;
-	//for (int i = 0; i < non_terminal_site.size(); i++)
-	//{
-	//	cout << i << " " << non_terminal_site[i] << endl;
-	//}
-
 
 	ofs << endl;
 
 	for (int i = 0; i < rowNum; i++)
 	{
-		ofs << setw(start_state) << i;
+		ofs << i << ",";
 		for (int j = 0; j < actionNum; j++)
 		{
 			auto it = ACTION.find(pair<int, int>(i, terminal_site[j]));
 			if (it != ACTION.end())
 			{
 				if (it->second.op == ACTION_Option::SHIFT_IN)
-					ofs << setw(1) << "s" << setw(width - 1) << it->second.serial;
+					ofs << "s" << it->second.serial << ",";
 				else if (it->second.op == ACTION_Option::REDUCE)
-					ofs << setw(1) << "r" << setw(width - 1) << it->second.serial;
+					ofs << "r" << it->second.serial << ",";
 				else if (it->second.op == ACTION_Option::ACCEPT)
-					ofs << setw(width) << "acc";
+					ofs << "acc" << ",";
 			}
 			else
-				ofs << setw(width) << " ";
+				ofs << ",";
 		}
 		for (int j = 0; j < gotoNum; j++)
 		{
 			auto it = GOTO.find(pair<int, int>(i, non_terminal_site[j]));
 			if (it != GOTO.end())
-				ofs << setw(width) << it->second.serial;
+				ofs << it->second.serial << ",";
 			else
-				ofs << setw(width) << " ";
+				ofs << ",";
 		}
 
 		ofs << endl;
@@ -326,7 +309,22 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 	const int status_symbol = 30;
 	const int symbol_lex = 150;
 
-	ofs << setw(start_step) << "STEP" << setw(step_status) << "STATUS STACK" << setw(status_symbol) << "SYMBOL STACK" << setw(symbol_lex) << "INPUT" << endl;
+	ofs << setw(start_step) << "STEP" << setw(step_status) << "STATUS_STACK" << setw(status_symbol) << "SYMBOL_STACK" << setw(symbol_lex) << "INPUT" << endl;
+
+	//输出第一行
+	ofs << setw(start_step) << step;
+	ofs << setw(start_step);
+	for (int t = 0; t < status_stack.size(); t++)
+		ofs << " " << status_stack[t];
+	ofs << setw(status_symbol);
+	for (int t = 0; t < symbol_stack.size(); t++)
+		ofs << symbols[symbol_stack[t]].tag;
+	ofs << setw(symbol_lex);
+	for (int t = 0; t < lexical_res.size(); t++)
+		ofs << lexical_res[t].value;
+	ofs << endl;
+	step++;
+
 
 	//开始进行语法分析
 	for (int i = 0; i < lexical_res.size(); i++)
@@ -336,7 +334,7 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 		//如果是归约，就使用归约规则，将符号栈中涉及归约的项换成右侧表达式，状态栈中删去相同数量的状态，并从GOTO表中查此时状态遇到该非终结符应转移到哪里
 		//并将转移后的状态压入状态栈
 		//当遇到ACTION中为acc时，结束，或reject（即ACTION表中找不到转移），则结束（GOTO中找不到也是错误）
-		string present_terminal = lexical_res[i].value;
+		string present_terminal = lexical_res[i].type;		
 		int present_terminal_serial = Find_Symbol_Index_By_Token(present_terminal);
 		int present_status = status_stack.back();
 		auto it = ACTION.find(pair<int, int>(present_status, present_terminal_serial));
@@ -364,7 +362,13 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 				i--;
 				rule rule_need = rules[it->second.serial];//要使用的产生式
 				int right_length = rule_need.right_symbol.size();//要归约掉的长度
-				for (int k = 0; i < right_length; k++)
+				if (right_length == 1)
+				{
+					//特判epsilon，因为存的size是1，但实际length是0
+					if (rule_need.right_symbol[0] == Find_Symbol_Index_By_Token("@"))
+						right_length = 0;
+				}
+				for (int k = 0; k < right_length; k++)
 				{
 					status_stack.pop_back();//状态栈移出
 					symbol_stack.pop_back();//符号栈移出
@@ -396,7 +400,7 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 			case ACTION_Option::ACCEPT:
 			{
 				//接受状态，直接返回
-				ofs << "Parse successfully!" << endl;
+				ofs << endl << "Parse successfully!" << endl;
 				ofs.close();
 				return;
 				break;
@@ -413,12 +417,12 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 		//有error，直接退出
 		if (error_code == 1)
 		{
-			ofs << "Parse Error:Non-existed action!" << endl;
+			ofs << endl << "Parse Error:Non-existed action!" << endl;
 			break;
 		}
 		else if (error_code == 2)
 		{
-			ofs << "Parse Error:Non-existed goto!" << endl;
+			ofs << endl << "Parse Error:Non-existed goto!" << endl;
 			break;
 		}
 
@@ -435,11 +439,11 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 			ofs << symbols[symbol_stack[t]].tag;
 		}
 		ofs << setw(symbol_lex);
-		for (int t = i; t < lexical_res.size(); t++)
+		for (int t = i + 1; t < lexical_res.size(); t++)
 		{
-			ofs << lexical_res[t].value;
+			ofs << lexical_res[t].type;
 		}
-
+		ofs << endl;
 		step++;
 	}
 	ofs.close();
