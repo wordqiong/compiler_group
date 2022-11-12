@@ -1,6 +1,6 @@
 #include "grammar.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 //工具函数
 //字符串分割函数  
@@ -238,7 +238,7 @@ void grammar::ReadGrammar(const string file_path) {
 				if (symbols[left_symbol].tag == ExtendStartToken)
 				{
 					start_location = rules.size() - 1;
-					cout << "拓展产生式在rule中的位置" << start_location << endl;
+					//cout << "拓展产生式在rule中的位置" << start_location << endl;
 				}
 
 			}

@@ -107,10 +107,10 @@ void analysis::getStrBuffer() {
         }
 
     }
-    cout << "The result of lexical analysis has been saved in the res_out.txt file." << endl;
-    cout << "The pre-processed code has been saved in the pre-processed_code.txt file." << endl;
-    cout << "The word_lable has been saved in the word-lable.txt file." << endl;
-    cout << "The analysis_res has been saved in the analysis_res.txt file." << endl;
+    //cout << "The result of lexical analysis has been saved in the res_out.txt file." << endl;
+    //cout << "The pre-processed code has been saved in the pre-processed_code.txt file." << endl;
+    //cout << "The word_lable has been saved in the word-lable.txt file." << endl;
+    //cout << "The analysis_res has been saved in the analysis_res.txt file." << endl;
 }
 //循环得到一串新的strbuffer  并经过deleNotes后 送到状态机函数中
 void analysis::deleNotes() {

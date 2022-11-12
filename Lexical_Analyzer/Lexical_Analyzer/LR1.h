@@ -10,6 +10,8 @@
 const string out_Table_path = "../work_dir/Tables.csv";//输出表地址
 const string analysis_process_path = "../work_dir/Analysis_Process.txt";//输出归约地址
 const string closure_test_path = "../work_dir/Zero_Closure.txt";//输出闭包测试地址
+const string tree_dot_path = "../work_dir/Parse_Tree.dot";//画图dot文件地址
+const string tree_png_path = "../work_dir/Parse_Tree.png";//语法树图片地址
 
 class LR1_item
 {
@@ -105,7 +107,7 @@ public:
 	//判断闭包集合中是否有该闭包，若有返回序号，若没有返回-1
 	int getClosureIndex(LR1_closure& clos);
 
-	//得到所有闭包，初始闭包是0号闭包，在过程中就把DFA确定了，但是这样没有序号？？？？？？？有的
+	//得到所有闭包，初始闭包是0号闭包，过程中同时确定DFA
 	void getClosureSum();
 
 	//计算ACTION表和GOTO表
@@ -115,5 +117,8 @@ public:
 	void printTables();
 
 	//进行归约，在过程中进行打印
-	void analyze(vector<unit>& lexical_res);
+	int analyze(vector<unit>& lexical_res);
+
+	//生成语法树
+	void generateTree(vector<unit>& lexical_res);
 }; 

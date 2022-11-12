@@ -292,7 +292,7 @@ void LR1_Grammar::printTables()
 	ofs.close();
 }
 
-void LR1_Grammar::analyze(vector<unit>& lexical_res)
+int LR1_Grammar::analyze(vector<unit>& lexical_res)
 {
 	vector<int> status_stack;//状态栈
 	vector<int> symbol_stack;//符号栈
@@ -328,11 +328,11 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 	ofs << endl;
 	step++;
 
-
+	int err_code = 0;
 	//开始进行语法分析
 	for (int i = 0; i < lexical_res.size(); i++)
 	{
-		//每次从输入串读入一个非终结符，放入符号栈中，看当前状态下遇到该符号后ACTION表中的操作
+		//每次从输入串读入一个终结符，放入符号栈中，看当前状态下遇到该符号后ACTION表中的操作
 		//如果是转移，就状态栈中加入转移后的状态
 		//如果是归约，就使用归约规则，将符号栈中涉及归约的项换成右侧表达式，状态栈中删去相同数量的状态，并从GOTO表中查此时状态遇到该非终结符应转移到哪里
 		//并将转移后的状态压入状态栈
@@ -342,11 +342,10 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 		int present_status = status_stack.back();
 		auto it = ACTION.find(pair<int, int>(present_status, present_terminal_serial));
 
-		int error_code = 0;
 		//不存在，即REJECT，错误退出
 		if (it == ACTION.end())
 		{
-			error_code = 1;
+			err_code = 1;
 		}
 		else
 		{
@@ -383,7 +382,7 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 				auto goto_it = GOTO.find(pair<int, int>(temp_status, rule_need.left_symbol));
 				if (goto_it == GOTO.end())//不存在转移，则应退出GOTO，编译错误
 				{
-					error_code = 2;
+					err_code = 2;
 					break;
 				}
 				else
@@ -394,7 +393,7 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 					}
 					else//不会出现
 					{
-						error_code = 2;
+						err_code = 2;
 						break;
 					}
 				}
@@ -405,12 +404,12 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 				//接受状态，直接返回
 				ofs << endl << "Parse successfully!" << endl;
 				ofs.close();
-				return;
+				return err_code;
 				break;
 			}
 			case ACTION_Option::REJECT:
 			{
-				error_code = 1;
+				err_code = 1;
 				break;
 			}
 			default:
@@ -418,12 +417,12 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 			}
 		}
 		//有error，直接退出
-		if (error_code == 1)
+		if (err_code == 1)
 		{
 			ofs << endl << "Parse Error:Non-existed action!" << endl;
 			break;
 		}
-		else if (error_code == 2)
+		else if (err_code == 2)
 		{
 			ofs << endl << "Parse Error:Non-existed goto!" << endl;
 			break;
@@ -450,6 +449,132 @@ void LR1_Grammar::analyze(vector<unit>& lexical_res)
 		step++;
 	}
 	ofs.close();
+	return err_code;
+}
+void LR1_Grammar::generateTree(vector<unit>& lexical_res)
+{
+	int node_serial = 0;
+	vector<int> status_stack;//状态栈
+	vector<int> symbol_stack;//符号栈
+	vector<int> serial_stack;//用于记录符号栈中的tmp值
+	int step = 0;
+
+	unit end(EndToken, EndToken);
+	lexical_res.push_back(end);//在输入串的最后加上结束符号
+	status_stack.push_back(0);//状态栈先压入状态0
+	symbol_stack.push_back(Find_Symbol_Index_By_Token(EndToken));//在符号栈中先放入结束符号
+
+	ofstream ofs(tree_dot_path, ios::out);
+	ofs << "digraph mygraph {\n";
+	step++;
+	int err_code = 0;
+	for (int i = 0; i < lexical_res.size(); i++)
+	{
+		string present_terminal = lexical_res[i].type;
+		int present_terminal_serial = Find_Symbol_Index_By_Token(present_terminal);
+		int present_status = status_stack.back();
+		auto it = ACTION.find(pair<int, int>(present_status, present_terminal_serial));
+
+		//不存在，即REJECT，错误退出
+		if (it == ACTION.end())
+		{
+			err_code = 1;
+		}
+		else
+		{
+			switch (it->second.op)
+			{
+			case ACTION_Option::SHIFT_IN:
+			{
+				//移进
+				status_stack.push_back(it->second.serial);//新状态入栈
+				symbol_stack.push_back(present_terminal_serial);//读入的终结符压栈
+				serial_stack.push_back(node_serial);
+				ofs << "n" << node_serial++ << "[label=\"" << lexical_res[i].value << "\",color=red];" << endl;
+				break;
+			}
+			case ACTION_Option::REDUCE:
+			{
+				//归约，要归约则当前输入串不加一！！
+				i--;
+				rule rule_need = rules[it->second.serial];//要使用的产生式
+				int right_length = rule_need.right_symbol.size();//要归约掉的长度
+				if (right_length == 1)
+				{
+					//特判epsilon，因为存的size是1，但实际length是0
+					if (rule_need.right_symbol[0] == Find_Symbol_Index_By_Token("@"))
+						right_length = 0;
+				}
+				vector<int> drop;
+				for (int k = 0; k < right_length; k++)
+				{
+					status_stack.pop_back();//状态栈移出
+					symbol_stack.pop_back();//符号栈移出
+					drop.push_back(serial_stack.back());
+					serial_stack.pop_back();
+				}
+				symbol_stack.push_back(rule_need.left_symbol);//符号栈压入非终结符
+				int temp_status = status_stack.back();
+
+				//归约之后查看GOTO表
+				auto goto_it = GOTO.find(pair<int, int>(temp_status, rule_need.left_symbol));
+				if (goto_it == GOTO.end())//不存在转移，则应退出GOTO，编译错误
+				{
+					err_code = 2;
+					break;
+				}
+				else
+				{
+					if (goto_it->second.op == GOTO_Option::GO)
+					{
+						status_stack.push_back(goto_it->second.serial);//将新状态压栈
+						serial_stack.push_back(node_serial);
+					}
+					else//不会出现
+					{
+						err_code = 2;
+						break;
+					}
+				}
+
+				ofs << "n" << node_serial++ << "[label=\"" << symbols[rule_need.left_symbol].tag << "\"];\n";
+				if (right_length == 0)
+				{
+					ofs << "e" << node_serial << "[label=\"@\"];\n";
+					ofs << "n" << node_serial - 1 << " -> " << "e" << node_serial << ";\n";
+				}
+				else
+				{
+					for (auto t = drop.begin(); t != drop.end(); t++)
+						ofs << "n" << node_serial - 1 << " -> " << "n" << *t << ";\n";
+				}
+
+				break;
+			}
+			case ACTION_Option::ACCEPT:
+			{
+				//接受状态，直接返回
+				ofs << "}";
+				ofs.close();
+				return;
+				break;
+			}
+			case ACTION_Option::REJECT:
+			{
+				err_code = 1;
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		//有error，直接退出
+		if (err_code != 0)
+			break;
+		step++;
+	}
+	ofs.close();
+
 }
 void LR1_item::print() {
 
