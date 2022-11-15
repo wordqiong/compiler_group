@@ -6,7 +6,10 @@ int main()
 	cout << "LR(1)词法语法分析器" << endl;
 	cout << "****************************************" << endl << endl;
 	cout << "系统默认读入文法文件grammar.txt" << endl << endl;
-
+	//TODO 读入位置的处理，如果出错，那么程序结束
+	//TODO 读入源文件的处理，如果出错，那么报错
+	//TODO 程序默认输出文件夹为XXX ，如需更改，请输入对应的文件夹路径，并确保存在
+	//TODO 程序的更改
 	LR1_Grammar lr1_grammar("grammar.txt");
 	lr1_grammar.checkClosure();
 	lr1_grammar.getClosureSum();
