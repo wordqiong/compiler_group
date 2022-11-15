@@ -1,5 +1,5 @@
 #include "grammar.h"
-
+#define FILE_OPEN_ERROR 1
 #define DEBUG 0
 
 //¹¤¾ßº¯Êý
@@ -154,7 +154,7 @@ void grammar::ReadGrammar(const string file_path) {
 	if (!file_open.is_open())
 	{
 		cout << "file open fail" << endl;
-		//throw FILE_OPEN_ERROR;
+		throw FILE_OPEN_ERROR;
 		return;
 	}
 	int rule_index = 0;
