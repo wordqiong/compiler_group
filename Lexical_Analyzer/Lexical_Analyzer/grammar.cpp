@@ -153,7 +153,6 @@ void grammar::ReadGrammar(const string file_path) {
 
 	if (!file_open.is_open())
 	{
-		cout << "file open fail" << endl;
 		throw FILE_OPEN_ERROR;
 		return;
 	}
