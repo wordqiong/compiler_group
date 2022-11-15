@@ -329,6 +329,8 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 	step++;
 
 	int err_code = 0;
+	int reduce_error_status = -1;
+	int reduce_error_symbol = -1;
 	//开始进行语法分析
 	for (int i = 0; i < lexical_res.size(); i++)
 	{
@@ -383,6 +385,8 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 				if (goto_it == GOTO.end())//不存在转移，则应退出GOTO，编译错误
 				{
 					err_code = 2;
+					reduce_error_status = temp_status;
+					reduce_error_symbol = rule_need.left_symbol;
 					break;
 				}
 				else
@@ -420,11 +424,15 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 		if (err_code == 1)
 		{
 			ofs << endl << "Parse Error:Non-existed action!" << endl;
+			ofs << "Present Status: " << present_status << endl;
+			ofs << "Present Terminal Type: " << present_terminal << endl;
 			break;
 		}
 		else if (err_code == 2)
 		{
 			ofs << endl << "Parse Error:Non-existed goto!" << endl;
+			ofs << "Present Status: " << reduce_error_status << endl;
+			ofs << "Present NonTerminal: " << symbols[reduce_error_symbol].tag << endl;
 			break;
 		}
 

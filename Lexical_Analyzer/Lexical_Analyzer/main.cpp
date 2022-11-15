@@ -37,12 +37,12 @@ int main()
 	{
 		lr1_grammar.generateTree(res.analysis_res);
 		system("dot -Tpng ../work_dir/Parse_Tree.dot -o ../work_dir/Parse_Tree.png");
-		cout << "文法分析已结束，可在../work_dir文件夹中查看\n1. 文法分析过程文件Analysis_Process.txt\n2. 语法树图片Parse_Tree.png。" << endl;
+		cout << "语法分析已结束，可在../work_dir文件夹中查看\n1. 文法分析过程文件Analysis_Process.txt\n2. 语法树图片Parse_Tree.png。" << endl;
 	}
 	else if (mark == 1)
-		cout << "文法分析过程中ACTION表查找出错，请在../work_dir文件夹中查看文法分析过程文件Analysis_Process.txt。" << endl;
+		cout << "语法分析过程中ACTION表查找出错，请在../work_dir文件夹中查看文法分析过程文件Analysis_Process.txt。" << endl;
 	else
-		cout << "文法分析过程中GOTO表查找出错，请在../work_dir文件夹中查看文法分析过程文件Analysis_Process.txt。" << endl;
+		cout << "语法分析过程中GOTO表查找出错，请在../work_dir文件夹中查看文法分析过程文件Analysis_Process.txt。" << endl;
 
 	return 0;
 }
