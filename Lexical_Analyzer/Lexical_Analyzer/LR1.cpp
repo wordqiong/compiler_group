@@ -303,6 +303,10 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 	status_stack.push_back(0);//状态栈先压入状态0
 	symbol_stack.push_back(Find_Symbol_Index_By_Token(EndToken));//在符号栈中先放入结束符号
 
+	//语义分析初始化
+	semantic_analysis = SemanticAnalysis();
+	semantic_analysis.AddSymbolToList({ StartToken,"",-1,-1 });
+
 	ofstream ofs(analysis_process_path, ios::out);
 
 	const int width = 5;
@@ -358,6 +362,10 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 				//移进
 				status_stack.push_back(it->second.serial);//新状态入栈
 				symbol_stack.push_back(present_terminal_serial);//读入的终结符压栈
+				
+				//SHIFT_IN 移进，也需要移进语义分析的符号流
+				semantic_analysis.AddSymbolToList({ lexical_res[i].type ,lexical_res[i].value ,-1,-1 });
+				
 				break;
 			}
 			case ACTION_Option::REDUCE:
@@ -378,6 +386,7 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 					symbol_stack.pop_back();//符号栈移出
 				}
 				symbol_stack.push_back(rule_need.left_symbol);//符号栈压入非终结符
+
 				int temp_status = status_stack.back();
 
 				//归约之后查看GOTO表
@@ -394,6 +403,14 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 					if (goto_it->second.op == GOTO_Option::GO)
 					{
 						status_stack.push_back(goto_it->second.serial);//将新状态压栈
+					
+						//语义分析，归约，使用归约时的产生式，在语法分析归约完全成功时调用
+						vector<string> production_right;
+						for (int i = 0; i < rule_need.right_symbol.size(); i++)
+							production_right.push_back(symbols[rule_need.right_symbol[i]].tag);
+
+						semantic_analysis.Analysis(symbols[rule_need.left_symbol].tag, production_right);
+
 					}
 					else//不会出现
 					{

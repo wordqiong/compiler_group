@@ -23,8 +23,6 @@ struct SemanticSymbol
 {
 	string type;//类型
 	string val;//值
-	int row;//该符号在输入文件中的行号，在词法分析的构造函数中进行赋值
-	int col;//该符号在输入文件中的列号，在词法分析的构造函数中进行赋值
 	int table_index;//符号所在table的index
 	int symbol_index;//符号在table内部的index
 };
@@ -64,6 +62,8 @@ struct Quaternion
 	string arg1;//操作数1
 	string arg2;//操作数2
 	string result;//结果
+
+	Quaternion(int i, string op_type, string a1, string a2, string res);
 };
 
 
@@ -73,11 +73,11 @@ public:
 	int main_index;//main函数对应的四元式标号
 	int backpatching_level;//回填层次
 
-	vector<int> backpatching_list;//回填列表
-	int next_quaternion_index;//下一个四元式标号
+	vector<int> backpatching_list;//待回填的四元式在四元式表quaternion_list中的序号
+	int next_quaternion_index;//当前位置下一个四元式标号
 	int tmp_var_count;//临时变量计数
 
-	vector<SemanticSymbol> symbol_list;//语义分析过程的符号流
+	vector<SemanticSymbol> symbol_list;//语义分析过程的符号流，可以理解为在语义分析中的符号栈，跟着语法分析中的要求走
 	vector<SemanticSymbolTable> tables;//程序所有符号表
 	vector<int> current_table_stack;//当前作用域对应的符号表索引栈
 
@@ -91,6 +91,7 @@ public:
 	void PrintQuaternion(const string file_path);
 
 private:
+	//每次翻译都对应的语法分析中的一个归约式
 	void TranslateProgram(const string production_left, const vector<string> production_right);
 	void TranslateExtDef(const string production_left, const vector<string> production_right);
 	void TranslateVarSpecifier(const string production_left, const vector<string> production_right);

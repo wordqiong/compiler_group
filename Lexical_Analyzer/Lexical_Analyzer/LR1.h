@@ -1,6 +1,7 @@
 #pragma once
 #include "grammar.h"
 #include "analysis.h"
+#include "semantic.h"
 #include <vector>
 #include <map>
 #include <queue>
@@ -92,6 +93,9 @@ public:
 	map<pair<int, int>, ACTION_item> ACTION;//ACTION表
 	//GOTO表就是非终结符与状态之间，只有状态转移或空
 	map<pair<int, int>, GOTO_item> GOTO;
+
+	//语义分析
+	SemanticAnalysis semantic_analysis;
 
 	LR1_item start_item; //初始项目
 	LR1_closure start_closure; //初始项目闭包
