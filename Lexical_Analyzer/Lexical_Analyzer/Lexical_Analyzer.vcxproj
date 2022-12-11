@@ -131,6 +131,7 @@
     <ClInclude Include="base.h" />
     <ClInclude Include="grammar.h" />
     <ClInclude Include="LR1.h" />
+    <ClInclude Include="semantic.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="analysis.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="grammar.cpp" />
     <ClCompile Include="LR1.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="semantic.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

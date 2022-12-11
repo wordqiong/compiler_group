@@ -231,7 +231,7 @@ void LR1_Grammar::printTables()
 	vector<int> terminal_site;//记录终结符在symbols里面的序号
 	vector<int> non_terminal_site;//记录非终结符在symbols里面的序号
 
-	ofs <<  ",";
+	ofs << ",";
 
 	/*************
 	要确保terminal和non_terminal加起来是symbols的总和
@@ -252,7 +252,7 @@ void LR1_Grammar::printTables()
 	{
 		if (non_terminals.find(i) != non_terminals.end())
 		{
-			
+
 			ofs << symbols[i].tag << ",";
 			non_terminal_site.push_back(i);
 		}
@@ -339,7 +339,7 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 		//如果是归约，就使用归约规则，将符号栈中涉及归约的项换成右侧表达式，状态栈中删去相同数量的状态，并从GOTO表中查此时状态遇到该非终结符应转移到哪里
 		//并将转移后的状态压入状态栈
 		//当遇到ACTION中为acc时，结束，或reject（即ACTION表中找不到转移），则结束（GOTO中找不到也是错误）
-		string present_terminal = lexical_res[i].type;		
+		string present_terminal = lexical_res[i].type;
 		int present_terminal_serial = Find_Symbol_Index_By_Token(present_terminal);
 		int present_status = status_stack.back();
 		auto it = ACTION.find(pair<int, int>(present_status, present_terminal_serial));
@@ -605,9 +605,9 @@ void LR1_closure::print(const vector<symbol>symbols)
 			}
 			file_open << symbols[key_item[i].right[j]].tag << " ";
 		}
-		if(key_item[i].dot_site == key_item[i].right.size())
+		if (key_item[i].dot_site == key_item[i].right.size())
 			file_open << " * ";
-		file_open <<"     terim:  " << symbols[closure[i].forward].tag;
+		file_open << "     terim:  " << symbols[closure[i].forward].tag;
 		file_open << endl;
 	}
 	//输出所有的key
@@ -626,7 +626,7 @@ void LR1_closure::print(const vector<symbol>symbols)
 		}
 		if (closure[i].dot_site == closure[i].right.size())
 			file_open << " * ";
-		file_open << "     terim:  "<< symbols[closure[i].forward].tag;
+		file_open << "     terim:  " << symbols[closure[i].forward].tag;
 		file_open << endl;
 	}
 }
@@ -687,7 +687,7 @@ LR1_closure LR1_Grammar::computeClosure(vector<LR1_item> lr1)
 				is_epsilon = (symbols[rule_now.right_symbol[0]].type == symbol_class::epsilon);
 				for (auto temp = closure_now.closure.begin(); temp != closure_now.closure.end(); temp++)
 				{
-					if (* temp == LR1_item(rule_now.left_symbol, rule_now.right_symbol, have_exist, *it, j))
+					if (*temp == LR1_item(rule_now.left_symbol, rule_now.right_symbol, have_exist, *it, j))
 					{
 						have_exist = true;
 						break;
@@ -714,13 +714,13 @@ int LR1_Grammar::checkClosure()
 	// vector<rule>rules;
 	// start_location
 
-	start_item.LR1_itemInit(rules[0].left_symbol, rules[0].right_symbol,0,Find_Symbol_Index_By_Token(EndToken),start_location);
+	start_item.LR1_itemInit(rules[0].left_symbol, rules[0].right_symbol, 0, Find_Symbol_Index_By_Token(EndToken), start_location);
 	vector<LR1_item>lr1;
 	lr1.push_back(start_item);
 	start_closure = computeClosure(lr1);
 	start_closure.print(this->symbols);
 	return 0;
-	
+
 }
 LR1_Grammar::LR1_Grammar(const string file_path)
 {

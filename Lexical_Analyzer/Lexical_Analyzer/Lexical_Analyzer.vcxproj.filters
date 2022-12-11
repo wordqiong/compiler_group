@@ -27,6 +27,9 @@
     <ClInclude Include="LR1.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="semantic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="base.cpp">
@@ -42,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="LR1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="semantic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

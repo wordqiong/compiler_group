@@ -1,4 +1,5 @@
 #include "analysis.h"
+#define CODE_FILE_OPEN_ERROR 2
 unit::unit(string tp, string v)
 {
     this->type = tp;
@@ -895,7 +896,30 @@ analysis::analysis()
 {
     buffer_choose = 0;
     note_flag = 0;
-    fin = fopen("code_in.txt", "r");
+
+    string cfile_name = "code_in.txt";
+    string c;
+    cout << "系统默认读入源程序文件code_in.txt" << endl << endl;
+    cout << "请输入要进行词法、语法分析的源程序文件名：（如果选择默认文件，请输入e）\n";
+    cin >> c;
+    if (c != "e")
+    {
+        cfile_name = c;
+        cout << "正在读入文件" << cfile_name << endl;
+    }
+
+    else {
+        cout << "正在读入默认文件" << cfile_name << endl;
+    }
+
+    fin = fopen(cfile_name.c_str(), "r");
+    if ((fin = fopen(cfile_name.c_str(), "r")) == NULL)
+    {
+
+        throw CODE_FILE_OPEN_ERROR;
+        return;
+    }
+
     fout = fopen("../work_dir/Lexical_Result.txt", "w");
     fout_pre = fopen("../work_dir/Pre-Processed_Code.txt", "w");
     fout_lable = fopen("../work_dir/Word_Lable.txt", "w");
