@@ -174,11 +174,12 @@ void SemanticAnalysis::TranslateProgram(const string production_left,
 		//TODO:是用她的throw退出吗
 		exit(-1);
 	}
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
 
+	//插入初始四元式
 	quaternion_list.insert(quaternion_list.begin(), { 0, "j","-" , "-", to_string(main_index) });
 	//修改符号流
+	for (int i = 0; i < production_right.size(); i++)
+		symbol_list.pop_back();
 	symbol_list.push_back({ production_left,"",-1,-1 });//推入一个空，表示main
 }
 
@@ -188,22 +189,23 @@ void SemanticAnalysis::TranslateProgram(const string production_left,
 void SemanticAnalysis::TranslateExtDef(const string production_left,
 	const vector<string> production_right)
 {
-	//TODO:这个个数怎么判断的，为啥函数定义右边能拿到标识符？？？？
+	//TODO:这个个数怎么判断的，产生式右边都是三个怎么区分；修改成了判断最后一个string是不是分号
 	
 	//变量定义
-	if (production_right.size() == 3)
+	//if (production_right.size() == 3)
+	if (production_right.back() == ";")
 	{
-		//变量类型
-		SemanticSymbol type = symbol_list[symbol_list.size() - 3];
 		//变量名
 		SemanticSymbol name = symbol_list[symbol_list.size() - 2];
+		//变量类型
+		SemanticSymbol type = symbol_list[symbol_list.size() - 3];
 
 		//判断是否已经有定义
 		//当前符号表
 		SemanticSymbolTable table = tables[current_table_stack.back()];
 		if (table.FindSymbol(name.val) != -1)
 		{
-			cout << "Semantic Analysis Error:变量" << name.val <<"重定义" << endl;
+			cout << "Semantic Analysis Error:变量" << name.val << "重定义" << endl;
 			//TODO;退出
 			exit(-1);
 		}
@@ -226,9 +228,10 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 	else //函数定义
 	{
 		//TODO：函数定义好像不需要加入到符号表(符号表是给每个作用域一个符号表)，那标识符的Function是干什么的
+		//TODO:函数定义右边能拿到标识符应该是FunDec的value存的是函数名
 		SemanticSymbol name = symbol_list[symbol_list.size() - 2];
 
-		//函数定义语法归约，表示从函数内部出来了，所以要弹出此时的作用域
+		//函数定义语法归约，表示从函数内部自底向上归约出来了，所以要弹出此时的作用域
 		current_table_stack.pop_back();
 
 		//修改符号流
@@ -243,7 +246,7 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 void  SemanticAnalysis::TranslateVarSpecifier(const string production_left, const vector<string> production_right)
 {
 	//归约修改符号流即可
-	SemanticSymbol type = symbol_list.back();
+	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
 	for (int i = 0; i < production_right.size(); i++)
 		symbol_list.pop_back();
 	//保存类型值
@@ -254,7 +257,7 @@ void  SemanticAnalysis::TranslateVarSpecifier(const string production_left, cons
 void  SemanticAnalysis::TranslateFunSpecifier(const string production_left, const vector<string> production_right)
 {
 	//同样是修改符号流
-	SemanticSymbol type = symbol_list.back();
+	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
 	for (int i = 0; i < production_right.size(); i++)
 		symbol_list.pop_back();
 	//保存函数类型
@@ -325,32 +328,25 @@ void SemanticAnalysis::TranslateRelop(const string production_left, const vector
 //IfStmt ::= if IfStmt_m1 ( Exp ) IfStmt_m2 Block IfNext
 void SemanticAnalysis::TranslateIfStmt(const string production_left, const vector<string> production_right)
 {
+	//从符号流中读取组成部分
 	SemanticSymbol IfStmt_m2 = symbol_list[symbol_list.size() - 3];
 	SemanticSymbol IfNext = symbol_list[symbol_list.size() - 1];
 
-	//如果没有else，只需要回填IfStmt_m2的两个四元式
+	//如果没有else，只需要回填IfStmt_m2的一个四元式
 	if (IfNext.val.empty())
 	{
-		//真出口，进入到block中
-		quaternion_list[backpatching_list.back()].result = IfStmt_m2.val;
-		backpatching_list.pop_back();
-
-		//假出口，跳出if，这里的next_quaternary_index是整体的下一条
+		//回填假出口，跳出if，这里的next_quaternary_index是整体的下一条
 		quaternion_list[backpatching_list.back()].result = to_string(next_quaternion_index);
 		backpatching_list.pop_back();
 	}
 	else
-		//有else，需要回填三个四元式
+		//有else，需要回填两个四元式
 	{
-		//if块出口，填的是整体出口，对应Block执行完的无条件jump的跳转目标
+		//回填if块出口，填的是整体出口，对应Block执行完的无条件jump的跳转目标
 		quaternion_list[backpatching_list.back()].result = to_string(next_quaternion_index);
 		backpatching_list.pop_back();
 
-		//if真出口，是IfStmt_m2装入的待回填四元式，表示exp为真时的出口
-		quaternion_list[backpatching_list.back()].result = IfStmt_m2.val;
-		backpatching_list.pop_back();
-
-		//if假出口
+		//回填if假出口
 		quaternion_list[backpatching_list.back()].result = IfNext.val;
 		backpatching_list.pop_back();
 	}
@@ -380,9 +376,9 @@ void SemanticAnalysis::TranslateIfStmt_m2(const string production_left, const ve
 	quaternion_list.push_back({ next_quaternion_index++ ,"j=",expression.val,"0","" });
 	backpatching_list.push_back(quaternion_list.size() - 1);
 
-	//布尔表达式真出口，待回填,TODO
-	quaternion_list.push_back({ next_quaternion_index++ ,"j=","-","-","" });
-	backpatching_list.push_back(quaternion_list.size() - 1);
+	//布尔表达式真出口，可以直接写入结果
+	//TODO，其实感觉可以不写这个j=，或直接写成j，或不写，因为要执行的就是下一条语句，在回填的时候也体现出来了
+	//quaternion_list.push_back({ next_quaternion_index++ ,"j=","-","-",to_string(next_quaternion_index)});
 
 	//修改symbol list
 	symbol_list.push_back({ production_left,to_string(next_quaternion_index),-1,-1 });

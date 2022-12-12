@@ -408,7 +408,7 @@ int LR1_Grammar::analyze(vector<unit>& lexical_res)
 						vector<string> production_right;
 						for (int i = 0; i < rule_need.right_symbol.size(); i++)
 							production_right.push_back(symbols[rule_need.right_symbol[i]].tag);
-
+						//传给语义分析的产生式是语法规则的字符串形式，这里使用的是symbol数组的tag
 						semantic_analysis.Analysis(symbols[rule_need.left_symbol].tag, production_right);
 
 					}
