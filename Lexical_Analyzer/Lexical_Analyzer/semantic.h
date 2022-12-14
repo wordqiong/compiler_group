@@ -12,11 +12,7 @@
 
 using namespace std;
 
-//定义标识符类型，分别为函数、变量、临时变量、常量、返回值
-enum IdentifierType { Function, Variable, TempVar, ConstVar, ReturnVar };
 
-//几种表的类型，分别为全局表、函数表、块级表、临时表
-enum TableType { GlobalTable, FunctionTable, BlockTable, TempTable };
 
 //语义分析中的符号
 struct SemanticSymbol
@@ -27,9 +23,12 @@ struct SemanticSymbol
 	int symbol_index;//符号在table内部的index
 };
 
+
 //标识符信息，即函数、变量、临时变量、常量的具体信息
 struct IdentifierInfo
 {
+	//定义标识符类型，分别为函数、变量、临时变量、常量、返回值
+	enum IdentifierType { Function, Variable, TempVar, ConstVar, ReturnVar };
 	IdentifierType identifier_type;//标识符的类型
 	string specifier_type;//变(常)量类型/函数返回类型
 	string identifier_name;//标识符名称/常量值
@@ -40,9 +39,12 @@ struct IdentifierInfo
 
 //语义分析中的符号表
 struct SemanticSymbolTable {
+	//几种表的类型，分别为全局表、函数表、块级表、临时表
+	enum TableType { GlobalTable, FunctionTable, BlockTable, TempTable };
+
 	TableType type;//表类型
-	string name;//表名
 	vector<IdentifierInfo> content;//符号表的内容
+	string name;//表名
 
 	//构造函数
 	SemanticSymbolTable(const TableType type, const string name);

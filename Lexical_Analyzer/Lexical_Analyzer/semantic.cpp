@@ -42,11 +42,11 @@ int SemanticSymbolTable::InsertSymbol(const IdentifierInfo ident)
 SemanticAnalysis::SemanticAnalysis()
 {
 	//创建全局的符号表
-	tables.push_back(SemanticSymbolTable(GlobalTable, "global table"));
+	tables.push_back(SemanticSymbolTable(SemanticSymbolTable::GlobalTable, "global table"));
 	//当前作用域为全局作用域
 	current_table_stack.push_back(0);
 	//创建临时变量表
-	tables.push_back(SemanticSymbolTable(TempTable, "temp variable table"));
+	tables.push_back(SemanticSymbolTable(SemanticSymbolTable::TempTable, "temp variable table"));
 
 	//从标号1开始生成四元式标号；0号用于 (j, -, -, main_address)
 	next_quaternion_index = 1;
@@ -161,7 +161,7 @@ void SemanticAnalysis::PrintQuaternion(const string file_path)
 
 /*
 * 函数名：PrintQuaternion
-* 功能：翻译Program ::= ExtDefList 
+* 功能：翻译Program ::= ExtDefList
 *
 *
 */
@@ -190,7 +190,7 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 	const vector<string> production_right)
 {
 	//TODO:这个个数怎么判断的，产生式右边都是三个怎么区分；修改成了判断最后一个string是不是分号
-	
+
 	//变量定义
 	//if (production_right.size() == 3)
 	if (production_right.back() == ";")
@@ -212,7 +212,7 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 
 		//未重定义，加入符号表
 		IdentifierInfo variable;
-		variable.identifier_type = IdentifierType::Variable;//是个变量
+		variable.identifier_type = IdentifierInfo::Variable;//是个变量
 		variable.specifier_type = type.val;
 		variable.identifier_name = name.val;
 
@@ -265,24 +265,119 @@ void  SemanticAnalysis::TranslateFunSpecifier(const string production_left, cons
 }
 void  SemanticAnalysis::TranslateFunDec(const string production_left, const vector<string> production_right)
 {
-
-
+	//symbol_list的最后一个是int或void
+	//同样是修改符号流
+	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
+	for (int i = 0; i < production_right.size(); i++)
+		symbol_list.pop_back();
+	//保存函数类型
+	symbol_list.push_back({ production_left,type.val,-1,-1 });//就是替换，先不改值，不改位置，只是将右侧归约成左侧
 }
 void  SemanticAnalysis::TranslateCreateFunTable_m(const string production_left, const vector<string> production_right)
 {
+	//创建函数表
+	//func_name函数名，func_para函数参数
+	SemanticSymbol func_name = symbol_list.back();
+	SemanticSymbol func_para = symbol_list[symbol_list.size() - 2];
 
+	//在全局的table判断函数名是否重定义
+	if (tables[0].FindSymbol(func_name.val) != -1) {
+		cout << "语义分析中发生错误：" <<
+			"函数" << func_name.val <<
+			"重定义" << endl;
+		//throw(SEMANTIC_ERROR_REDEFINED);抛出错误是否要考虑
+	}
+
+	//创建函数表
+	tables.push_back(SemanticSymbolTable(SemanticSymbolTable::FunctionTable, func_name.val));
+	//在全局符号表创建当前函数的符号项（这里参数个数和入口地址会进行回填）
+	tables[0].InsertSymbol({ IdentifierInfo::Function,func_para.val,
+		func_name.val,0,0,int(tables.size() - 1) });
+	//这个后面的3个整型参数是干嘛的
+
+	//函数表压入栈
+	current_table_stack.push_back(tables.size() - 1);
+
+	//返回值
+	IdentifierInfo return_value;
+	return_value.identifier_type = IdentifierInfo::ReturnVar;
+	return_value.identifier_name = tables.back().name + "_return_value";
+	return_value.specifier_type = func_para.val;
+	//如果为main函数，则进行记录
+	if (func_name.val == "main")
+		main_index = next_quaternion_index;
+	//加入四元式
+	quaternion_list.push_back({ next_quaternion_index++ , func_name.val,"-","-" ,"-" });
+	//向函数表中加入返回变量
+	tables[current_table_stack.back()].InsertSymbol(return_value);
+	//空串不需要pop
+	//进行pushback
+	symbol_list.push_back({ production_left,func_name.val,
+		0,int(tables[0].content.size() - 1) });
 }
 void  SemanticAnalysis::TranslateParamDec(const string production_left, const vector<string> production_right)
 {
+	//symbol_list最后一个为变量名，倒数第二个为类型
+	SemanticSymbol func_name = symbol_list.back();
+	SemanticSymbol func_para = symbol_list[symbol_list.size() - 2];
+	//当前函数表
+	SemanticSymbolTable& function_table = tables[current_table_stack.back()];
 
+
+	//如果已经进行过定义
+	if (function_table.FindSymbol(func_name.val) != -1) {
+		cout << "语义分析中发生错误：" <<
+			"函数参数" << func_name.val << "重定义" << endl;
+		//throw(SEMANTIC_ERROR_REDEFINED);
+	}
+	//函数表加入形参变量
+	int new_position = function_table.InsertSymbol(
+		{ IdentifierInfo::Variable,func_para.val,func_name.val,-1,-1,-1 });
+	//当前函数在全局符号中的索引
+	int table_position = tables[0].FindSymbol(function_table.name);
+	//形参个数++
+	tables[0].content[table_position].function_parameter_num++;
+
+	//加入四元式
+	quaternion_list.push_back({ next_quaternion_index++, "defpar","-" , "-", func_name.val });
+
+	//symbol_list更新
+	int count = production_right.size();
+	while (count--)
+		symbol_list.pop_back();
+	symbol_list.push_back({ production_left,func_name.val,
+		current_table_stack.back(),new_position });
 }
 void  SemanticAnalysis::TranslateBlock(const string production_left, const vector<string> production_right)
 {
-
+	//更新symbol_list
+	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
+	for (int i = 0; i < production_right.size(); i++)
+		symbol_list.pop_back();
+	symbol_list.push_back({ production_left,
+		to_string(next_quaternion_index),-1,-1 });
 }
 void  SemanticAnalysis::TranslateDef(const string production_left, const vector<string> production_right)
 {
+	//symbol_list的倒数第二个、倒数第三个是变量名和类型
+	SemanticSymbol name = symbol_list[symbol_list.size() - 2];
+	SemanticSymbol type = symbol_list[symbol_list.size() - 3];
+	SemanticSymbolTable& current_table = tables[current_table_stack.back()];
 
+	//重定义则报错
+	if (current_table.FindSymbol(name.val) != -1)
+	{
+		cout << "语义分析中发生错误："
+			<< "变量" << name.val << "重定义" << endl;
+		//throw(SEMANTIC_ERROR_REDEFINED);
+	}
+
+	current_table.InsertSymbol({ IdentifierInfo::Variable,type.val,name.val ,-1,-1,-1 });
+
+	for (int i = 0; i < production_right.size(); i++)
+		symbol_list.pop_back();
+	symbol_list.push_back({ production_left, name.val,
+		current_table_stack.back(),int(tables[current_table_stack.back()].content.size() - 1) });
 }
 void  SemanticAnalysis::TranslateAssignStmt(const string production_left, const vector<string> production_right)
 {
@@ -388,7 +483,7 @@ void SemanticAnalysis::TranslateIfStmt_m2(const string production_left, const ve
 //IfNext ::= @ | IfStmt_next else Block
 //else可有可无
 void SemanticAnalysis::TranslateIfNext(const string production_left, const vector<string> production_right)
-{	
+{
 	//TODO:这个应该是要判断的，不然IfStmt_next可能拿到不正确的东西
 	if (production_right.size() == 3)
 	{
@@ -420,15 +515,47 @@ void SemanticAnalysis::TranslateIfStmt_next(const string production_left, const 
 }
 void SemanticAnalysis::TranslateWhileStmt(const string production_left, const vector<string> production_right)
 {
+	SemanticSymbol whilestmt_m1 = symbol_list[symbol_list.size() - 6];
+	SemanticSymbol whilestmt_m2 = symbol_list[symbol_list.size() - 2];
 
+	// 无条件跳转到 while 的条件判断语句处
+	quaternion_list.push_back({ next_quaternion_index++,"j","-","-" ,whilestmt_m1.val });
+
+	//回填真出口
+	quaternion_list[backpatching_list.back()].result = whilestmt_m2.val;
+	backpatching_list.pop_back();
+
+	//回填假出口
+	quaternion_list[backpatching_list.back()].result = to_string(next_quaternion_index);
+	backpatching_list.pop_back();
+
+	backpatching_level--;
+
+	int count = production_right.size();
+	while (count--)
+		symbol_list.pop_back();
+
+	symbol_list.push_back({ production_left,"",-1,-1 });
 }
 void SemanticAnalysis::TranslateWhileStmt_m1(const string production_left, const vector<string> production_right)
 {
-
+	backpatching_level++;
+	symbol_list.push_back({ production_left,to_string(next_quaternion_index),-1,-1 });
 }
 void SemanticAnalysis::TranslateWhileStmt_m2(const string production_left, const vector<string> production_right)
 {
+	SemanticSymbol while_exp = symbol_list[symbol_list.size() - 2];
 
+	//假出口
+	SemanticSymbol while_exp = symbol_list[symbol_list.size() - 2];
+
+	//假出口
+	quaternion_list.push_back({ next_quaternion_index++,"j=",while_exp.val,"0","" });
+	backpatching_list.push_back(quaternion_list.size() - 1);
+	//真出口
+	quaternion_list.push_back({ next_quaternion_index++ ,"j","-","-" ,"" });
+	backpatching_list.push_back(quaternion_list.size() - 1);
+
+	symbol_list.push_back({ production_left,to_string(next_quaternion_index),-1,-1 });
 }
-
 
