@@ -69,6 +69,101 @@ void SemanticAnalysis::AddSymbolToList(const SemanticSymbol symbol)
 {
 	symbol_list.push_back(symbol);
 }
+bool SemanticAnalysis::CheckIdDefine(SemanticSymbol identifier, int* tb_index, int* tb_index_index) {
+	bool exist = false;
+	int index_table = -1;
+	int index = -1;
+	//从当前层向上遍历
+	for (int now_layer = current_table_stack.size() - 1; now_layer >= 0; now_layer--)
+	{
+		SemanticSymbolTable now_table = tables[current_table_stack[now_layer]];
+		*tb_index_index = now_table.FindSymbol(identifier.val);
+		if (*tb_index_index != -1)
+		{
+			*tb_index = current_table_stack[now_layer];
+			exist = true;
+			break;
+		}
+	}
+	return exist;
+}
+int SemanticAnalysis::CheckParNum(SemanticSymbol check, int* value) {
+	int para_num = tables[check.table_index].content[check.symbol_index].function_parameter_num;
+	if (para_num > *value)
+	{
+		return 1;
+	}
+	else if (para_num < *value)
+	{
+		return 2;
+	}
+	return 0;
+}
+void SemanticAnalysis::ProcessError(SemanticSymbol identifier, int* tb_index, int* tb_index_index, ErrorProcess type) {
+	if (type == ID_UNDEFIEND) {
+		if (!CheckIdDefine(identifier, tb_index, tb_index_index))
+		{
+			cout << "语义分析中发生错误：（" << identifier.val << "未定义" << endl;
+			throw(SEMANTIC_ERROR_UNDEFINED);
+		}
+		else {
+			return;
+		}
+	}
+	else if (type == WRONG_PARAMETER_NUM) {
+		int res = CheckParNum(identifier, tb_index);
+		if (res == 1)
+		{
+			cout << "调用参数过多" << endl;
+			throw(SEMANTIC_ERROR_PARAMETER_NUM);
+		}
+		if (res == 2)
+		{
+			cout << "调用参数过少" << endl;
+			throw(SEMANTIC_ERROR_PARAMETER_NUM);
+		}
+		return;
+	}
+	else if (type == FUN_ID_REDEFINED) {
+		//在全局的table判断函数名是否重定义
+		if (tables[0].FindSymbol(identifier.val) != -1) {
+			cout << "语义分析中发生错误：" <<
+				"函数" << identifier.val <<
+				"重定义" << endl;
+			throw(SEMANTIC_ERROR_REDEFINED);//抛出错误是否要考虑
+		}
+	}
+	else if (type == PARA_ID_REDEFINED) {
+		SemanticSymbolTable& function_table = tables[*tb_index];
+		//如果已经进行过定义
+		if (function_table.FindSymbol(identifier.val) != -1) {
+			cout << "语义分析中发生错误：" <<
+				"函数参数" << identifier.val << "重定义" << endl;
+			throw(SEMANTIC_ERROR_REDEFINED);
+		}
+	}
+	else if (type == ID_REDEFINED) {
+		SemanticSymbolTable& current_table = tables[*tb_index];
+		//重定义则报错
+		if (current_table.FindSymbol(identifier.val) != -1)
+		{
+			cout << "语义分析中发生错误："
+				<< "变量" << identifier.val << "重定义" << endl;
+			throw(SEMANTIC_ERROR_REDEFINED);
+		}
+	}
+	else if (type == MAIN_UNDEFINED)
+	{
+		cout << "语义分析中发生错误：main函数未定义" << endl;
+		throw(SEMANTIC_ERROR_MAIN_UNDEFINED);
+	}
+
+}
+void SemanticAnalysis::PopSymbolList(int count) {
+	int cnt = count;
+	while (cnt--)
+		symbol_list.pop_back();
+}
 
 /*
 * 函数名：Analysis
@@ -170,16 +265,14 @@ void SemanticAnalysis::TranslateProgram(const string production_left,
 {
 	if (main_index == -1)
 	{
-		cout << "Semantic Analysis Error:main函数未定义" << endl;
-		//TODO:是用她的throw退出吗
-		exit(-1);
+		//cout << "Semantic Analysis Error:main函数未定义" << endl;
+		ProcessError({ "","",-1,-1 }, NULL, NULL, MAIN_UNDEFINED);
 	}
 
 	//插入初始四元式
 	quaternion_list.insert(quaternion_list.begin(), { 0, "j","-" , "-", to_string(main_index) });
 	//修改符号流
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 	symbol_list.push_back({ production_left,"",-1,-1 });//推入一个空，表示main
 }
 
@@ -202,13 +295,8 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 
 		//判断是否已经有定义
 		//当前符号表
-		SemanticSymbolTable table = tables[current_table_stack.back()];
-		if (table.FindSymbol(name.val) != -1)
-		{
-			cout << "Semantic Analysis Error:变量" << name.val << "重定义" << endl;
-			//TODO;退出
-			exit(-1);
-		}
+		ProcessError(name, &(current_table_stack.back()), NULL, ID_REDEFINED);
+
 
 		//未重定义，加入符号表
 		IdentifierInfo variable;
@@ -220,8 +308,7 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 		tables[current_table_stack.back()].InsertSymbol(variable);
 
 		//修改符号流
-		for (int i = 0; i < production_right.size(); i++)
-			symbol_list.pop_back();
+		PopSymbolList(production_right.size());
 		//保存当前标识符的名字
 		symbol_list.push_back({ production_left,name.val,-1,-1 });
 	}
@@ -235,8 +322,7 @@ void SemanticAnalysis::TranslateExtDef(const string production_left,
 		current_table_stack.pop_back();
 
 		//修改符号流
-		for (int i = 0; i < production_right.size(); i++)
-			symbol_list.pop_back();
+		PopSymbolList(production_right.size());
 		//保存当前函数标识符的名字
 		symbol_list.push_back({ production_left,name.val,-1,-1 });
 	}
@@ -247,8 +333,7 @@ void  SemanticAnalysis::TranslateVarSpecifier(const string production_left, cons
 {
 	//归约修改符号流即可
 	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 	//保存类型值
 	symbol_list.push_back({ production_left,type.val,-1,-1 });//就是替换，先不改值，不改位置，只是将右侧归约成左侧
 }
@@ -258,8 +343,7 @@ void  SemanticAnalysis::TranslateFunSpecifier(const string production_left, cons
 {
 	//同样是修改符号流
 	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 	//保存函数类型
 	symbol_list.push_back({ production_left,type.val,-1,-1 });//就是替换，先不改值，不改位置，只是将右侧归约成左侧
 }
@@ -268,8 +352,7 @@ void  SemanticAnalysis::TranslateFunDec(const string production_left, const vect
 	//symbol_list的最后一个是int或void
 	//同样是修改符号流
 	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 	//保存函数类型
 	symbol_list.push_back({ production_left,type.val,-1,-1 });//就是替换，先不改值，不改位置，只是将右侧归约成左侧
 }
@@ -280,13 +363,15 @@ void  SemanticAnalysis::TranslateCreateFunTable_m(const string production_left, 
 	SemanticSymbol func_name = symbol_list.back();
 	SemanticSymbol func_para = symbol_list[symbol_list.size() - 2];
 
+	/*
 	//在全局的table判断函数名是否重定义
 	if (tables[0].FindSymbol(func_name.val) != -1) {
 		cout << "语义分析中发生错误：" <<
 			"函数" << func_name.val <<
 			"重定义" << endl;
-		//throw(SEMANTIC_ERROR_REDEFINED);抛出错误是否要考虑
-	}
+		throw(SEMANTIC_ERROR_REDEFINED);//抛出错误是否要考虑
+	}*/
+	ProcessError(func_name, NULL, NULL, FUN_ID_REDEFINED);
 
 	//创建函数表
 	tables.push_back(SemanticSymbolTable(SemanticSymbolTable::FunctionTable, func_name.val));
@@ -318,42 +403,43 @@ void  SemanticAnalysis::TranslateCreateFunTable_m(const string production_left, 
 void  SemanticAnalysis::TranslateParamDec(const string production_left, const vector<string> production_right)
 {
 	//symbol_list最后一个为变量名，倒数第二个为类型
-	SemanticSymbol func_name = symbol_list.back();
-	SemanticSymbol func_para = symbol_list[symbol_list.size() - 2];
+	SemanticSymbol name = symbol_list.back();
+	SemanticSymbol type = symbol_list[symbol_list.size() - 2];
+
+
 	//当前函数表
 	SemanticSymbolTable& function_table = tables[current_table_stack.back()];
-
-
+	/*
 	//如果已经进行过定义
 	if (function_table.FindSymbol(func_name.val) != -1) {
 		cout << "语义分析中发生错误：" <<
 			"函数参数" << func_name.val << "重定义" << endl;
 		//throw(SEMANTIC_ERROR_REDEFINED);
-	}
+	}*/
+
+	ProcessError(name, &(current_table_stack.back()), NULL, PARA_ID_REDEFINED);
+
 	//函数表加入形参变量
 	int new_position = function_table.InsertSymbol(
-		{ IdentifierInfo::Variable,func_para.val,func_name.val,-1,-1,-1 });
+		{ IdentifierInfo::Variable,type.val,name.val,-1,-1,-1 });
 	//当前函数在全局符号中的索引
 	int table_position = tables[0].FindSymbol(function_table.name);
 	//形参个数++
 	tables[0].content[table_position].function_parameter_num++;
 
 	//加入四元式
-	quaternion_list.push_back({ next_quaternion_index++, "defpar","-" , "-", func_name.val });
+	quaternion_list.push_back({ next_quaternion_index++, "defpar","-" , "-", name.val });
 
 	//symbol_list更新
-	int count = production_right.size();
-	while (count--)
-		symbol_list.pop_back();
-	symbol_list.push_back({ production_left,func_name.val,
+	PopSymbolList(production_right.size());
+	symbol_list.push_back({ production_left,name.val,
 		current_table_stack.back(),new_position });
 }
 void  SemanticAnalysis::TranslateBlock(const string production_left, const vector<string> production_right)
 {
 	//更新symbol_list
 	SemanticSymbol type = symbol_list[symbol_list.size() - 1];
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 	symbol_list.push_back({ production_left,
 		to_string(next_quaternion_index),-1,-1 });
 }
@@ -363,14 +449,15 @@ void  SemanticAnalysis::TranslateDef(const string production_left, const vector<
 	SemanticSymbol name = symbol_list[symbol_list.size() - 2];
 	SemanticSymbol type = symbol_list[symbol_list.size() - 3];
 	SemanticSymbolTable& current_table = tables[current_table_stack.back()];
-
+	/*
 	//重定义则报错
 	if (current_table.FindSymbol(name.val) != -1)
 	{
 		cout << "语义分析中发生错误："
 			<< "变量" << name.val << "重定义" << endl;
 		//throw(SEMANTIC_ERROR_REDEFINED);
-	}
+	}*/
+	ProcessError(name, &(current_table_stack.back()), NULL, ID_REDEFINED);
 
 	current_table.InsertSymbol({ IdentifierInfo::Variable,type.val,name.val ,-1,-1,-1 });
 
@@ -378,67 +465,6 @@ void  SemanticAnalysis::TranslateDef(const string production_left, const vector<
 		symbol_list.pop_back();
 	symbol_list.push_back({ production_left, name.val,
 		current_table_stack.back(),int(tables[current_table_stack.back()].content.size() - 1) });
-}
-bool SemanticAnalysis::CheckIdDefine(SemanticSymbol identifier, int* tb_index, int* tb_index_index) {
-	bool exist = false;
-	int index_table = -1;
-	int index = -1;
-	//从当前层向上遍历
-	for (int now_layer = current_table_stack.size() - 1; now_layer >= 0; now_layer--)
-	{
-		SemanticSymbolTable now_table = tables[current_table_stack[now_layer]];
-		*tb_index_index = now_table.FindSymbol(identifier.val);
-		if (*tb_index_index != -1)
-		{
-			*tb_index = current_table_stack[now_layer];
-			exist = true;
-			break;
-		}
-	}
-	return exist;
-}
-int SemanticAnalysis::CheckParNum(SemanticSymbol check,int *value) {
-	int para_num = tables[check.table_index].content[check.symbol_index].function_parameter_num;
-	if (para_num > *value)
-	{
-		return 1;
-	}
-	else if (para_num < *value)
-	{
-		return 2;
-	}
-	return 0;
-}
-void SemanticAnalysis::ProcessError(SemanticSymbol identifier,int* tb_index,int* tb_index_index, ErrorProcess type) {
-	if (type == ID_UNDEFIEND) {
-		if (!CheckIdDefine(identifier, tb_index, tb_index_index))
-		{
-			cout << "语义分析中发生错误：（" << identifier.val << "未定义" << endl;
-			throw(SEMANTIC_ERROR_UNDEFINED);
-		}
-		else {
-			return;
-		}
-	}
-	if (type == WRONG_PARAMETER_NUM) {
-		int res = CheckParNum(identifier, tb_index);
-		if (res == 1)
-		{
-			cout << "调用参数过多" << endl;
-			throw(SEMANTIC_ERROR_PARAMETER_NUM);
-		}
-		if (res == 2)
-		{
-			cout << "调用参数过少" << endl;
-			throw(SEMANTIC_ERROR_PARAMETER_NUM);
-		}
-		return;
-	}
-}
-void SemanticAnalysis::PopSymbolList(int count){
-	int cnt = count;
-	while (cnt--)
-		symbol_list.pop_back();
 }
 void  SemanticAnalysis::TranslateAssignStmt(const string production_left, const vector<string> production_right)
 {
@@ -450,7 +476,7 @@ void  SemanticAnalysis::TranslateAssignStmt(const string production_left, const 
 	SemanticSymbol idtf = symbol_list[s_size - 3];
 	int tb_index = -1, tb_index_index = -1;
 	//检查ID未定义
-	ProcessError(idtf,&tb_index,&tb_index_index, ID_UNDEFIEND);
+	ProcessError(idtf, &tb_index, &tb_index_index, ID_UNDEFIEND);
 	quaternion_list.push_back({ next_quaternion_index++,"=",exp.val,"-",idtf.val });
 	//process symbol_list
 	int cnt = production_right.size();
@@ -467,7 +493,7 @@ void SemanticAnalysis::TranslateExp(const string production_left, const vector<s
 	int r_size = production_right.size();
 	int s_size = symbol_list.size();
 	if (r_size == 1) {
-		SemanticSymbol add_sub_exp = symbol_list[s_size-1];
+		SemanticSymbol add_sub_exp = symbol_list[s_size - 1];
 		PopSymbolList(r_size);
 
 		symbol_list.push_back({ production_left,add_sub_exp.val,add_sub_exp.table_index,add_sub_exp.symbol_index });
@@ -481,7 +507,7 @@ void SemanticAnalysis::TranslateExp(const string production_left, const vector<s
 
 		quaternion_list.push_back({ lable_num_next,"j" + op.val,exp1.val,exp2.val,to_string(lable_num_next) });
 		quaternion_list.push_back({ next_quaternion_index++,"=" ,"0","-",var });
-		quaternion_list.push_back({ next_quaternion_index++,"j" ,"-","-",to_string(lable_num_next+4) });
+		quaternion_list.push_back({ next_quaternion_index++,"j" ,"-","-",to_string(lable_num_next + 4) });
 		quaternion_list.push_back({ next_quaternion_index++,"=" ,"1","-",var });
 		PopSymbolList(r_size);
 		symbol_list.push_back({ production_left,var,-1,-1 });
@@ -505,7 +531,7 @@ void SemanticAnalysis::TranslateAddSubExp(const string production_left, const ve
 		SemanticSymbol op = symbol_list[s_size - 2];
 		SemanticSymbol exp2 = symbol_list[s_size - 1];
 		string var = "T" + to_string(tmp_var_count++);
-		
+
 		quaternion_list.push_back({ next_quaternion_index++,op.val, exp1.val, exp2.val,var });
 		PopSymbolList(r_size);
 		symbol_list.push_back({ production_left,var,-1,-1 });
@@ -576,7 +602,7 @@ void SemanticAnalysis::TranslateCallStmt(const string production_left, const vec
 	int temp = -1;
 	ProcessError(chk, &value, &temp, WRONG_PARAMETER_NUM);
 	string var = "T" + to_string(tmp_var_count++);
-	quaternion_list.push_back({next_quaternion_index++,"call",idtf.val,"-",var});
+	quaternion_list.push_back({ next_quaternion_index++,"call",idtf.val,"-",var });
 	PopSymbolList(r_size);
 	symbol_list.push_back({ production_left,var,-1,-1 });
 
@@ -598,7 +624,7 @@ void SemanticAnalysis::TranslateCallFunCheck(const string production_left, const
 		check_ID = true;
 	if (!check_ID)
 	{
-		cout << "未定义的函数名" << endl; 
+		cout << "未定义的函数名" << endl;
 		throw(SEMANTIC_ERROR_UNDEFINED);
 	}
 	if (tables[0].content[func_pos].identifier_type != IdentifierInfo::Function)
@@ -662,7 +688,7 @@ void SemanticAnalysis::TranslateReturnStmt(const string production_left, const v
 		SemanticSymbol exp = symbol_list[s_size - 1];
 
 		quaternion_list.push_back({ next_quaternion_index++,"=",exp.val,"-",tb.content[0].identifier_name });
-		quaternion_list.push_back({ next_quaternion_index++,"return",tb.content[0].identifier_name,"-",tb.name});
+		quaternion_list.push_back({ next_quaternion_index++,"return",tb.content[0].identifier_name,"-",tb.name });
 		PopSymbolList(r_size);
 		symbol_list.push_back({ production_left,exp.val,-1,-1 });
 	}
@@ -707,8 +733,7 @@ void SemanticAnalysis::TranslateIfStmt(const string production_left, const vecto
 	}
 
 	//修改symbol list
-	for (int i = 0; i < production_right.size(); i++)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 	symbol_list.push_back({ production_left,"",-1,-1 });
 }
 
@@ -749,8 +774,7 @@ void SemanticAnalysis::TranslateIfNext(const string production_left, const vecto
 	{
 		SemanticSymbol IfStmt_next = symbol_list[symbol_list.size() - 3];
 		//修改symbol list
-		for (int i = 0; i < production_right.size(); i++)
-			symbol_list.pop_back();
+		PopSymbolList(production_right.size());
 		//存的和IfStmt_next一样，是第一段结束后无条件跳转到哪里
 		symbol_list.push_back({ production_left,IfStmt_next.val,-1,-1 });
 	}
@@ -791,9 +815,7 @@ void SemanticAnalysis::TranslateWhileStmt(const string production_left, const ve
 
 	backpatching_level--;
 
-	int count = production_right.size();
-	while (count--)
-		symbol_list.pop_back();
+	PopSymbolList(production_right.size());
 
 	symbol_list.push_back({ production_left,"",-1,-1 });
 }
@@ -818,4 +840,3 @@ void SemanticAnalysis::TranslateWhileStmt_m2(const string production_left, const
 
 	symbol_list.push_back({ production_left,to_string(next_quaternion_index),-1,-1 });
 }
-
