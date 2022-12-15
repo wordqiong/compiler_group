@@ -379,44 +379,304 @@ void  SemanticAnalysis::TranslateDef(const string production_left, const vector<
 	symbol_list.push_back({ production_left, name.val,
 		current_table_stack.back(),int(tables[current_table_stack.back()].content.size() - 1) });
 }
+bool SemanticAnalysis::CheckIdDefine(SemanticSymbol identifier, int* tb_index, int* tb_index_index) {
+	bool exist = false;
+	int index_table = -1;
+	int index = -1;
+	//从当前层向上遍历
+	for (int now_layer = current_table_stack.size() - 1; now_layer >= 0; now_layer--)
+	{
+		SemanticSymbolTable now_table = tables[current_table_stack[now_layer]];
+		*tb_index_index = now_table.FindSymbol(identifier.val);
+		if (*tb_index_index != -1)
+		{
+			*tb_index = current_table_stack[now_layer];
+			exist = true;
+			break;
+		}
+	}
+	return exist;
+}
+int SemanticAnalysis::CheckParNum(SemanticSymbol check,int *value) {
+	int para_num = tables[check.table_index].content[check.symbol_index].function_parameter_num;
+	if (para_num > *value)
+	{
+		return 1;
+	}
+	else if (para_num < *value)
+	{
+		return 2;
+	}
+	return 0;
+}
+void SemanticAnalysis::ProcessError(SemanticSymbol identifier,int* tb_index,int* tb_index_index, ErrorProcess type) {
+	if (type == ID_UNDEFIEND) {
+		if (!CheckIdDefine(identifier, tb_index, tb_index_index))
+		{
+			cout << "语义分析中发生错误：（" << identifier.val << "未定义" << endl;
+			throw(SEMANTIC_ERROR_UNDEFINED);
+		}
+		else {
+			return;
+		}
+	}
+	if (type == WRONG_PARAMETER_NUM) {
+		int res = CheckParNum(identifier, tb_index);
+		if (res == 1)
+		{
+			cout << "调用参数过多" << endl;
+			throw(SEMANTIC_ERROR_PARAMETER_NUM);
+		}
+		if (res == 2)
+		{
+			cout << "调用参数过少" << endl;
+			throw(SEMANTIC_ERROR_PARAMETER_NUM);
+		}
+		return;
+	}
+}
+void SemanticAnalysis::PopSymbolList(int count){
+	int cnt = count;
+	while (cnt--)
+		symbol_list.pop_back();
+}
 void  SemanticAnalysis::TranslateAssignStmt(const string production_left, const vector<string> production_right)
 {
+	//AssignStmt ::= <ID> = Exp
+	//1.相关symbol已存入symbol_list的后部
+	//2.查错机制：ID是否被定义过
+	int s_size = symbol_list.size();
+	SemanticSymbol exp = symbol_list[s_size - 1];
+	SemanticSymbol idtf = symbol_list[s_size - 3];
+	int tb_index = -1, tb_index_index = -1;
+	//检查ID未定义
+	ProcessError(idtf,&tb_index,&tb_index_index, ID_UNDEFIEND);
+	quaternion_list.push_back({ next_quaternion_index++,"=",exp.val,"-",idtf.val });
+	//process symbol_list
+	int cnt = production_right.size();
+	PopSymbolList(cnt);
+
+	symbol_list.push_back({ production_left,idtf.val,tb_index,tb_index_index });
 
 }
 void SemanticAnalysis::TranslateExp(const string production_left, const vector<string> production_right)
 {
+	//Exp ::= AddSubExp | Exp Relop AddSubExp
+	//1.两种判断方式
+	//2.查错机制：无法进行查错
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	if (r_size == 1) {
+		SemanticSymbol add_sub_exp = symbol_list[s_size-1];
+		PopSymbolList(r_size);
 
+		symbol_list.push_back({ production_left,add_sub_exp.val,add_sub_exp.table_index,add_sub_exp.symbol_index });
+	}
+	else {
+		SemanticSymbol exp1 = symbol_list[s_size - 3];
+		SemanticSymbol op = symbol_list[s_size - 2];
+		SemanticSymbol exp2 = symbol_list[s_size - 1];
+		string var = "T" + to_string(tmp_var_count++);
+		int lable_num_next = next_quaternion_index++;
+
+		quaternion_list.push_back({ lable_num_next,"j" + op.val,exp1.val,exp2.val,to_string(lable_num_next) });
+		quaternion_list.push_back({ next_quaternion_index++,"=" ,"0","-",var });
+		quaternion_list.push_back({ next_quaternion_index++,"j" ,"-","-",to_string(lable_num_next+4) });
+		quaternion_list.push_back({ next_quaternion_index++,"=" ,"1","-",var });
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,var,-1,-1 });
+	}
 }
 void SemanticAnalysis::TranslateAddSubExp(const string production_left, const vector<string> production_right)
 {
 
+	//AddSubExp ::= Item | Item + Item | Item - Item
+	//1.三种判断方式
+	//2.查错机制：无法进行查错
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	if (r_size == 1) {
+		SemanticSymbol add_sub_exp = symbol_list[s_size - 1];
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,add_sub_exp.val,add_sub_exp.table_index,add_sub_exp.symbol_index });
+	}
+	else {
+		SemanticSymbol exp1 = symbol_list[s_size - 3];
+		SemanticSymbol op = symbol_list[s_size - 2];
+		SemanticSymbol exp2 = symbol_list[s_size - 1];
+		string var = "T" + to_string(tmp_var_count++);
+		
+		quaternion_list.push_back({ next_quaternion_index++,op.val, exp1.val, exp2.val,var });
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,var,-1,-1 });
+	}
 }
 void SemanticAnalysis::TranslateItem(const string production_left, const vector<string> production_right)
 {
+	//Item ::= Factor | Factor * Factor | Factor / Factor
+	//1.三种判断方式
+	//2.查错机制：无法进行查错
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	if (r_size == 1) {
+		SemanticSymbol item_exp = symbol_list[s_size - 1];
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,item_exp.val,item_exp.table_index,item_exp.symbol_index });
+	}
+	else {
+		SemanticSymbol exp1 = symbol_list[s_size - 3];
+		SemanticSymbol op = symbol_list[s_size - 2];
+		SemanticSymbol exp2 = symbol_list[s_size - 1];
+		string var = "T" + to_string(tmp_var_count++);
+
+		quaternion_list.push_back({ next_quaternion_index++,op.val, exp1.val, exp2.val,var });
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,var,-1,-1 });
+	}
 
 }
 void SemanticAnalysis::TranslateFactor(const string production_left, const vector<string> production_right)
 {
+	//Factor ::= <INT> | ( Exp ) | <ID> | CallStmt
+	//1.四种判断方式
+	//2.查错机制：ID是否定义
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	if (r_size == 1) {
+		SemanticSymbol exp = symbol_list[s_size - 1];
+		if ("<ID>" == production_right[0]) {
+			int tb_index = -1, tb_index_index = -1;
+			ProcessError(exp, &tb_index, &tb_index_index, ID_UNDEFIEND);
 
+		}
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,exp.val,exp.table_index,exp.symbol_index });
+	}
+	else {
+		SemanticSymbol exp = symbol_list[s_size - 2];
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,exp.val,exp.table_index,exp.symbol_index });
+	}
 }
 void SemanticAnalysis::TranslateCallStmt(const string production_left, const vector<string> production_right)
 {
+	//CallStmt ::= <ID> ( CallFunCheck Args )
+	//1.一种判断方式
+	//2.查错机制：ID是否定义 CallFunCheck检查
+	//			  检查functiontalbe，函数参数是否满足要求
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	SemanticSymbol idtf = symbol_list[s_size - 5];
+	SemanticSymbol chk = symbol_list[s_size - 3];
+	SemanticSymbol args = symbol_list[s_size - 2];
+
+	int value = stoi(args.val);
+	int temp = -1;
+	ProcessError(chk, &value, &temp, WRONG_PARAMETER_NUM);
+	string var = "T" + to_string(tmp_var_count++);
+	quaternion_list.push_back({next_quaternion_index++,"call",idtf.val,"-",var});
+	PopSymbolList(r_size);
+	symbol_list.push_back({ production_left,var,-1,-1 });
+
 
 }
 void SemanticAnalysis::TranslateCallFunCheck(const string production_left, const vector<string> production_right)
 {
-
+	//CallFunCheck ::= @
+	//1.一种判断方式
+	//2.查错机制：func是否定义过(ID是否定义，其类型是否为func)
+	int s_size = symbol_list.size();
+	bool check_ID = false;
+	bool check_ID_type = false;
+	SemanticSymbol func_id = symbol_list[s_size - 2];
+	int func_pos = tables[0].FindSymbol(func_id.val);
+	if (func_pos == -1)
+		check_ID = false;
+	else
+		check_ID = true;
+	if (!check_ID)
+	{
+		cout << "未定义的函数名" << endl; 
+		throw(SEMANTIC_ERROR_UNDEFINED);
+	}
+	if (tables[0].content[func_pos].identifier_type != IdentifierInfo::Function)
+		check_ID_type = false;
+	else
+		check_ID_type = true;
+	if (!check_ID_type) {
+		cout << "ID定义，类型不对" << endl;
+		throw(SEMANTIC_ERROR_UNDEFINED);
+	}
+	symbol_list.push_back({ production_left,func_id.val,0,func_pos });
 }
 void SemanticAnalysis::TranslateArgs(const string production_left, const vector<string> production_right)
 {
-
+	//Args ::= Exp , Args | Exp | @
+	//1.三种判断方式
+	//2.查错机制：无法进行查错
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	if (r_size == 3)
+	{
+		SemanticSymbol exp = symbol_list[s_size - 3];
+		int args_num = stoi(symbol_list[s_size - 1].val) + 1;
+		PopSymbolList(r_size);
+		quaternion_list.push_back({ next_quaternion_index++,"param",exp.val,"-","-" });
+		symbol_list.push_back({ production_left,to_string(args_num),-1,-1 });
+	}
+	else {
+		if ("Exp" == production_right[0]) {
+			SemanticSymbol exp = symbol_list[s_size - 1];
+			PopSymbolList(r_size);
+			quaternion_list.push_back({ next_quaternion_index++,"param",exp.val,"-","-" });
+			symbol_list.push_back({ production_left,"1",-1,-1 });
+		}
+		if ("@" == production_right[0]) {
+			symbol_list.push_back({ production_left,"0",-1,-1 });
+		}
+	}
 }
 void SemanticAnalysis::TranslateReturnStmt(const string production_left, const vector<string> production_right)
 {
+	//ReturnStmt ::= return Exp | return
+	//1.两种判断方式
+	//2.查错机制：无法进行查错
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	SemanticSymbolTable tb = tables[current_table_stack.back()];
 
+	if (r_size == 1) {
+		auto type = tables[0].content[tables[0].FindSymbol(tb.name)].specifier_type;
+		if (type != "void")
+		{
+			cout << "需要有返回值" << endl;
+			throw(SEMANTIC_ERROR_NO_RETURN);
+		}
+		PopSymbolList(r_size);
+		quaternion_list.push_back({ next_quaternion_index++,"return","-","-",tb.name });
+		symbol_list.push_back({ production_left,"" - 1,-1 });
+	}
+	else {
+		SemanticSymbol exp = symbol_list[s_size - 1];
+
+		quaternion_list.push_back({ next_quaternion_index++,"=",exp.val,"-",tb.content[0].identifier_name });
+		quaternion_list.push_back({ next_quaternion_index++,"return",tb.content[0].identifier_name,"-",tb.name});
+		PopSymbolList(r_size);
+		symbol_list.push_back({ production_left,exp.val,-1,-1 });
+	}
 }
 void SemanticAnalysis::TranslateRelop(const string production_left, const vector<string> production_right)
 {
+	//Relop ::= > | < | >= | <= | == | !=
+	//1.六种判断方式
+	//2.查错机制：无法进行查错
+	int r_size = production_right.size();
+	int s_size = symbol_list.size();
+	SemanticSymbol exp = symbol_list[s_size - 1];
+	PopSymbolList(r_size);
+	symbol_list.push_back({ production_left,exp.val,-1,-1 });
 
 }
 

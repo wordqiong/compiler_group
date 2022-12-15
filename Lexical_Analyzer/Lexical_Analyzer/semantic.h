@@ -12,7 +12,13 @@
 
 using namespace std;
 
-
+#define SEMANTIC_ERROR_UNDEFINED 1
+#define SEMANTIC_ERROR_PARAMETER_NUM 2
+#define SEMANTIC_ERROR_NO_RETURN 3
+enum ErrorProcess {
+	ID_UNDEFIEND,
+	WRONG_PARAMETER_NUM
+};
 
 //语义分析中的符号
 struct SemanticSymbol
@@ -126,4 +132,9 @@ private:
 	void TranslateReturnStmt(const string production_left, const vector<string> production_right);
 	void TranslateRelop(const string production_left, const vector<string> production_right);
 
+	//=====================tool======================================
+	bool CheckIdDefine(SemanticSymbol identifier, int* tb_index, int* tb_index_index);
+	int CheckParNum(SemanticSymbol check, int* value);
+	void ProcessError(SemanticSymbol identifier, int* tb_index, int* tb_index_index, ErrorProcess type);
+	void PopSymbolList(int count);
 };
