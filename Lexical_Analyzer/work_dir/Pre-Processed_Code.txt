@@ -2,7 +2,7 @@ int program(int a,int b,int c)
 {
 int i;
 int j;
-i=0;
+j=0;
 if(a>(b+c))
 {
 j=a+(b*c+1);
@@ -31,6 +31,6 @@ int c;
 a=3;
 b=4;
 c=2;
-a=program(a,b,demo(c));
+a=program(a,b,demo());
 return;
 }eturn;

@@ -2,7 +2,7 @@ int program(int a,int b, int c)
 {
 	int i;
 	int j;
-	i=0;
+	j=0;
 	if(a>(b+c))
 	{
 		j=a+(b*c+1);

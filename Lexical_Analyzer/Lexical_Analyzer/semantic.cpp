@@ -22,7 +22,11 @@ SemanticSymbolTable::SemanticSymbolTable(const TableType type, const string name
 */
 int SemanticSymbolTable::FindSymbol(const string id_name)
 {
-
+	for (int i = 0; i < this->content.size(); i++)
+	{
+		if (id_name == this->content[i].identifier_name)
+			return i;
+	}
 	return -1;
 }
 
@@ -34,7 +38,14 @@ int SemanticSymbolTable::FindSymbol(const string id_name)
 */
 int SemanticSymbolTable::InsertSymbol(const IdentifierInfo ident)
 {
-
+	int is_existed = this->FindSymbol(ident.identifier_name);
+	if (is_existed == -1)
+	{
+		this->content.push_back(ident);
+		return this->content.size() - 1;
+	}
+	else
+		return -1;
 }
 
 //====================语义分析 ===========================
@@ -103,7 +114,7 @@ void SemanticAnalysis::ProcessError(SemanticSymbol identifier, int* tb_index, in
 	if (type == ID_UNDEFIEND) {
 		if (!CheckIdDefine(identifier, tb_index, tb_index_index))
 		{
-			cout << "语义分析中发生错误：（" << identifier.val << "未定义" << endl;
+			cout << "语义分析中发生错误：\"" << identifier.val << "\"未定义" << endl;
 			throw(SEMANTIC_ERROR_UNDEFINED);
 		}
 		else {
@@ -112,14 +123,14 @@ void SemanticAnalysis::ProcessError(SemanticSymbol identifier, int* tb_index, in
 	}
 	else if (type == WRONG_PARAMETER_NUM) {
 		int res = CheckParNum(identifier, tb_index);
-		if (res == 1)
-		{
-			cout << "调用参数过多" << endl;
-			throw(SEMANTIC_ERROR_PARAMETER_NUM);
-		}
 		if (res == 2)
 		{
-			cout << "调用参数过少" << endl;
+			cout << "语义分析中发生错误：函数调用参数过多" << endl;
+			throw(SEMANTIC_ERROR_PARAMETER_NUM);
+		}
+		if (res == 1)
+		{
+			cout << "语义分析中发生错误：函数调用参数过少" << endl;
 			throw(SEMANTIC_ERROR_PARAMETER_NUM);
 		}
 		return;
@@ -249,9 +260,16 @@ void SemanticAnalysis::Analysis(const string production_left, const vector<strin
 */
 void SemanticAnalysis::PrintQuaternion(const string file_path)
 {
+	ofstream ofs(file_path, ios::out);
 
+	for (int i = 0; i < this->quaternion_list.size(); i++)
+	{
+		Quaternion temp = quaternion_list[i];
+		ofs << temp.index << "(";
+		ofs << temp.operator_type << "," << temp.arg1 << "," << temp.arg2 << "," << temp.result << ")" << endl;
 
-
+	}
+	ofs.close();
 }
 
 /*
@@ -544,8 +562,7 @@ void SemanticAnalysis::TranslateItem(const string production_left, const vector<
 	//2.查错机制：无法进行查错
 	int r_size = production_right.size();
 	int s_size = symbol_list.size();
-	int r_size = production_right.size();
-	int s_size = symbol_list.size();
+
 	if (r_size == 1) {
 		SemanticSymbol item_exp = symbol_list[s_size - 1];
 		PopSymbolList(r_size);
@@ -758,7 +775,7 @@ void SemanticAnalysis::TranslateIfStmt_m2(const string production_left, const ve
 
 	//布尔表达式真出口，可以直接写入结果
 	//TODO，其实感觉可以不写这个j=，或直接写成j，或不写，因为要执行的就是下一条语句，在回填的时候也体现出来了
-	//quaternion_list.push_back({ next_quaternion_index++ ,"j=","-","-",to_string(next_quaternion_index)});
+	quaternion_list.push_back({ next_quaternion_index++ ,"j=","-","-",to_string(next_quaternion_index)});
 
 	//修改symbol list
 	symbol_list.push_back({ production_left,to_string(next_quaternion_index),-1,-1 });
@@ -826,8 +843,6 @@ void SemanticAnalysis::TranslateWhileStmt_m1(const string production_left, const
 }
 void SemanticAnalysis::TranslateWhileStmt_m2(const string production_left, const vector<string> production_right)
 {
-	SemanticSymbol while_exp = symbol_list[symbol_list.size() - 2];
-
 	//假出口
 	SemanticSymbol while_exp = symbol_list[symbol_list.size() - 2];
 
@@ -840,3 +855,4 @@ void SemanticAnalysis::TranslateWhileStmt_m2(const string production_left, const
 
 	symbol_list.push_back({ production_left,to_string(next_quaternion_index),-1,-1 });
 }
+

@@ -18,6 +18,8 @@ using namespace std;
 #define SEMANTIC_ERROR_REDEFINED 4
 #define SEMANTIC_ERROR_MAIN_UNDEFINED 5
 
+const string quaternion_path = "../work_dir/Quaternion_List.txt";
+
 enum ErrorProcess {
 	ID_UNDEFIEND,
 	WRONG_PARAMETER_NUM,
