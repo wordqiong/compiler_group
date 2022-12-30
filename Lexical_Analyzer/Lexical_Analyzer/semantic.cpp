@@ -125,12 +125,12 @@ void SemanticAnalysis::ProcessError(SemanticSymbol identifier, int* tb_index, in
 		int res = CheckParNum(identifier, tb_index);
 		if (res == 2)
 		{
-			cout << "语义分析中发生错误：函数调用参数过多" << endl;
+			cout << "语义分析中发生错误：函数调用参数过多，出错函数名为   " <<identifier.val<< endl;
 			throw(SEMANTIC_ERROR_PARAMETER_NUM);
 		}
 		if (res == 1)
 		{
-			cout << "语义分析中发生错误：函数调用参数过少" << endl;
+			cout << "语义分析中发生错误：函数调用参数过少，出错函数名为   " << identifier.val<< endl;
 			throw(SEMANTIC_ERROR_PARAMETER_NUM);
 		}
 		return;
@@ -523,7 +523,7 @@ void SemanticAnalysis::TranslateExp(const string production_left, const vector<s
 		string var = "T" + to_string(tmp_var_count++);
 		int lable_num_next = next_quaternion_index++;
 
-		quaternion_list.push_back({ lable_num_next,"j" + op.val,exp1.val,exp2.val,to_string(lable_num_next) });
+		quaternion_list.push_back({ lable_num_next,"j" + op.val,exp1.val,exp2.val,to_string(lable_num_next+3) });
 		quaternion_list.push_back({ next_quaternion_index++,"=" ,"0","-",var });
 		quaternion_list.push_back({ next_quaternion_index++,"j" ,"-","-",to_string(lable_num_next + 4) });
 		quaternion_list.push_back({ next_quaternion_index++,"=" ,"1","-",var });

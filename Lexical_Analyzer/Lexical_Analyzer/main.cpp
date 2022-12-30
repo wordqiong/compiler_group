@@ -2,6 +2,11 @@
 #include"LR1.h"
 #define FILE_OPEN_ERROR 1
 #define CODE_FILE_OPEN_ERROR 2
+#define SEMANTIC_ERROR_UNDEFINED 3
+#define SEMANTIC_ERROR_PARAMETER_NUM 4
+#define SEMANTIC_ERROR_NO_RETURN 5
+#define SEMANTIC_ERROR_REDEFINED 6
+#define SEMANTIC_ERROR_MAIN_UNDEFINED 7
 
 int main()
 {
@@ -84,6 +89,16 @@ int main()
 			cout << "读入的文法文件打开失败！请检查对应的路径" << endl;
 		else if (a == CODE_FILE_OPEN_ERROR)
 			cout << "读入的code文件打开失败！请检查对应的路径" << endl;
+		else if (a == SEMANTIC_ERROR_UNDEFINED)
+			cout<<"参数未定义"<<endl;
+		else if (a == SEMANTIC_ERROR_PARAMETER_NUM)
+			cout << "函数调用参数过多/过少" << endl;
+		else if (a == SEMANTIC_ERROR_NO_RETURN)
+			cout << "无返回值" << endl;
+		else if (a == SEMANTIC_ERROR_REDEFINED)
+			cout << "参数重定义" << endl;
+		else if (a == SEMANTIC_ERROR_MAIN_UNDEFINED)
+			cout << "未定义main" << endl;
 		return 0;
 	}
 
